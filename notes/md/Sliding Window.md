@@ -32,10 +32,10 @@ PART 8: Complete Problem List (by Pattern)
 
 USE WHEN: Need to count ALL valid subarrays OR find minimum window
 
+```
 int left = 0, ans = 0;
 
 for (int right = 0; right < n; right++) {
-```
 addToWindow(arr[right]);                               
 
 while (isInvalid()) {              //  MUST be while   
@@ -45,11 +45,11 @@ while (isInvalid()) {              //  MUST be while
 ans = max(ans, right - left + 1);  // For max length   
 // OR                                                  
 // ans = min(ans, right - left + 1);  // For min length
-```
 
 }
 
 return ans;
+```
 
 KEY: Window is ALWAYS valid after while loop
 
@@ -66,8 +66,8 @@ PROBLEM: Find longest substring with all unique characters.
 
 KEY INSIGHT: Window invalid when freq[char] > 1. Shrink until all unique.
 
-int lengthOfLongestSubstring(string s) {
 ```
+int lengthOfLongestSubstring(string s) {
 int freq[128] = {};                                              
 int left = 0, maxLen = 0;                                        
 
@@ -82,9 +82,9 @@ for (int right = 0; right < s.size(); right++) {
     maxLen = max(maxLen, right - left + 1);                      
 }                                                                
 return maxLen;                                                   
-```
 
 }
+```
 
 WHY TEMPLATE 1: Need exact max length, shrink until valid (no duplicates).
 TIME: O(N)  |  SPACE: O(128) = O(1)
@@ -95,8 +95,8 @@ PROBLEM: Find minimum length subarray with sum >= target.
 
 KEY INSIGHT: Window VALID when sum >= target. Shrink while valid to find min!
 
+```cpp
 int minSubArrayLen(int target, vector<int>& nums) {
-```
 int left = 0, sum = 0;                                         
 int minLen = INT_MAX;                                          
 
@@ -110,9 +110,9 @@ for (int right = 0; right < nums.size(); right++) {
     }                                                          
 }                                                              
 return minLen == INT_MAX ? 0 : minLen;                         
-```
 
 }
+```
 
 WHY TEMPLATE 1: Finding MINIMUM window, shrink while VALID (opposite logic!).
 TIME: O(N)  |  SPACE: O(1)
@@ -123,8 +123,8 @@ PROBLEM: Max fruits you can pick with only 2 baskets (2 types max).
 
 KEY INSIGHT: Longest subarray with at most 2 distinct elements.
 
+```cpp
 int totalFruit(vector<int>& fruits) {
-```
 unordered_map<int, int> freq;                                      
 int left = 0, maxLen = 0;                                          
 
@@ -140,9 +140,9 @@ for (int right = 0; right < fruits.size(); right++) {
     maxLen = max(maxLen, right - left + 1);                        
 }                                                                  
 return maxLen;                                                     
-```
 
 }
+```
 
 WHY TEMPLATE 1: Max length with constraint (<2 types), shrink when invalid.
 TIME: O(N)  |  SPACE: O(1) - at most 3 entries in map
@@ -153,8 +153,8 @@ PROBLEM: Max consecutive 1s if you can flip at most k zeros.
 
 KEY INSIGHT: Longest subarray with at most k zeros.
 
+```cpp
 int longestOnes(vector<int>& nums, int k) {
-```
 int left = 0, zeros = 0, maxLen = 0;                            
 
 for (int right = 0; right < nums.size(); right++) {             
@@ -168,9 +168,9 @@ for (int right = 0; right < nums.size(); right++) {
     maxLen = max(maxLen, right - left + 1);                     
 }                                                               
 return maxLen;                                                  
-```
 
 }
+```
 
 WHY TEMPLATE 1: Max length with constraint (<k zeros), shrink when invalid.
 TIME: O(N)  |  SPACE: O(1)
@@ -180,10 +180,10 @@ TIME: O(N)  |  SPACE: O(1)
 PROBLEM: Max consecutive 1s after deleting exactly one element.
 
 KEY INSIGHT: Same as LC 1004 with k=1, but MUST delete one element.
+```cpp
 Answer = maxLen - 1 (or maxLen if entire array is result)
 
 int longestSubarray(vector<int>& nums) {
-```
 int left = 0, zeros = 0, maxLen = 0;                           
 
 for (int right = 0; right < nums.size(); right++) {            
@@ -198,9 +198,9 @@ for (int right = 0; right < nums.size(); right++) {
 }                                                              
 
 return maxLen - 1;  // Must delete one element!                
-```
 
 }
+```
 
 WHY TEMPLATE 1: Same as 1004 with k=1. Subtract 1 because deletion required.
 TIME: O(N)  |  SPACE: O(1)
@@ -211,20 +211,20 @@ TIME: O(N)  |  SPACE: O(1)
 
 USE WHEN: ONLY need maximum window size (cleaner code)
 
+```
 int left = 0;
 
 for (int right = 0; right < n; right++) {
-```
 addToWindow(arr[right]);                               
 
 if (isInvalid()) {                //  Use if, not while
     removeFromWindow(arr[left++]);                     
 }                                                      
-```
 
 }
 
 return right - left;  // Final window size = answer
+```
 
 KEY: Window size is monotonic (never decreases)
 
@@ -241,8 +241,8 @@ KEY INSIGHT: Window valid if (window_size - maxFreq) <= k
 We can replace all non-majority chars with majority char.
 Track maxFreq - no need to decrease it (we want MAX length)!
 
-int characterReplacement(string s, int k) {
 ```
+int characterReplacement(string s, int k) {
 int freq[26] = {};                                                    
 int left = 0, maxFreq = 0, maxLen = 0;                                
 
@@ -260,9 +260,9 @@ for (int right = 0; right < s.size(); right++) {
     maxLen = max(maxLen, right - left + 1);                           
 }                                                                     
 return maxLen;                                                        
-```
 
 }
+```
 
 WHY TEMPLATE 2: Only need MAX length. maxFreq never needs to decrease
 because smaller window can't give better answer anyway!
@@ -276,8 +276,8 @@ KEY INSIGHT: Sort array. For window ending at right, cost to make all
 elements equal to nums[right] = nums[right]*windowSize - sum.
 Window valid if cost <= k.
 
+```cpp
 int maxFrequency(vector<int>& nums, int k) {
-```
 sort(nums.begin(), nums.end());                               
 
 long left = 0, sum = 0, maxLen = 0;                           
@@ -295,9 +295,9 @@ for (int right = 0; right < nums.size(); right++) {
     maxLen = max(maxLen, right - left + 1);                   
 }                                                             
 return maxLen;                                                
-```
 
 }
+```
 
 WHY SORTED: After sorting, all elements in window can only increase to
 reach nums[right] (the maximum in window).
@@ -310,8 +310,8 @@ PROBLEM: Max consecutive same answers after at most k changes.
 KEY INSIGHT: Same as LC 424! Run twice - once for 'T', once for 'F'.
 Or: Track both counts, window invalid if min(countT, countF) > k.
 
+```cpp
 int maxConsecutiveAnswers(string answerKey, int k) {
-```
 // Helper: max consecutive 'target' with at most k flips    
 auto maxConsec = [&](char target) {                         
     int left = 0, flips = 0, maxLen = 0;                    
@@ -328,13 +328,11 @@ auto maxConsec = [&](char target) {
 };                                                          
 
 return max(maxConsec('T'), maxConsec('F'));                 
-```
 
 }
 
 // Alternative: Single pass (track min of both counts)
 int maxConsecutiveAnswers_v2(string answerKey, int k) {
-```
 int left = 0, countT = 0, countF = 0, maxLen = 0;                 
 
 for (int right = 0; right < answerKey.size(); right++) {          
@@ -349,9 +347,9 @@ for (int right = 0; right < answerKey.size(); right++) {
     maxLen = max(maxLen, right - left + 1);                       
 }                                                                 
 return maxLen;                                                    
-```
 
 }
+```
 
 WHY TEMPLATE 1/2: Max length with constraint. Either approach works.
 TIME: O(N)  |  SPACE: O(1)
@@ -360,10 +358,10 @@ TIME: O(N)  |  SPACE: O(1)
 
 USE WHEN: Count ALL subarrays satisfying condition
 
+```
 int left = 0, count = 0;
 
 for (int right = 0; right < n; right++) {
-```
 addToWindow(arr[right]);                                    
 
 while (isInvalid()) {                                       
@@ -371,11 +369,11 @@ while (isInvalid()) {
 }                                                           
 
 count += right - left + 1;  // All subarrays ending at right
-```
 
 }
 
 return count;
+```
 
 WHY (right - left + 1)?
 If [left, right] is valid, these are ALL valid subarrays ending at right:
@@ -396,8 +394,8 @@ PROBLEM: Count subarrays where product of all elements < k.
 KEY INSIGHT: Multiply when expanding, divide when shrinking.
 All subarrays ending at right = (right - left + 1).
 
+```cpp
 int numSubarrayProductLessThanK(vector<int>& nums, int k) {
-```
 if (k <= 1) return 0;  // Edge case: product can't be < 1 with positive nums
 
 int left = 0, count = 0;                                                    
@@ -414,9 +412,9 @@ for (int right = 0; right < nums.size(); right++) {
     count += right - left + 1;        // All valid subarrays ending at right
 }                                                                           
 return count;                                                               
-```
 
 }
+```
 
 WHY TEMPLATE 3: Count ALL valid subarrays. Each position contributes
 (right - left + 1) new subarrays ending there.
@@ -427,11 +425,14 @@ TIME: O(N)  |  SPACE: O(1)
 PROBLEM: Count substrings containing at least one 'a', 'b', and 'c'.
 
 KEY INSIGHT: Once window has all three, ALL extensions to right are valid!
+```
 Count = left + 1 (all starting positions from 0 to left).
+```
+
 Shrink while VALID to find minimum left for each right.
 
-int numberOfSubstrings(string s) {
 ```
+int numberOfSubstrings(string s) {
 int freq[3] = {};                                                            
 int left = 0, count = 0;                                                     
 
@@ -448,9 +449,9 @@ for (int right = 0; right < s.size(); right++) {
     count += left;                                                           
 }                                                                            
 return count;                                                                
-```
 
 }
+```
 
 WHY THIS COUNTING: After shrinking, window [left, right] is INVALID (missing one).
 So window [left-1, right] was last valid > all [0..left-1] starting points work.
@@ -462,8 +463,8 @@ PROBLEM: Count subarrays where (sum * length) < k.
 
 KEY INSIGHT: Score = sum * (right - left + 1). Shrink when score >= k.
 
+```cpp
 long long countSubarrays(vector<int>& nums, long long k) {
-```
 int left = 0;                                                               
 long long sum = 0, count = 0;                                               
 
@@ -478,9 +479,9 @@ for (int right = 0; right < nums.size(); right++) {
     count += right - left + 1;        // All valid subarrays ending at right
 }                                                                           
 return count;                                                               
-```
 
 }
+```
 
 WHY TEMPLATE 3: Count subarrays with condition. Positive numbers ensure
 monotonicity (larger window = larger score).
@@ -495,8 +496,8 @@ USE WHEN: Problem asks for "exactly K" (hard to do directly)
 
 FORMULA: exactly(K) = atMost(K) - atMost(K-1)
 
+```cpp
 int atMost(vector<int>& arr, int k) {
-```
 if (k < 0) return 0;  // CRITICAL edge case!      
 
     int left = 0, count = 0;                      
@@ -511,7 +512,6 @@ for (int right = 0; right < arr.size(); right++) {
 }                                                 
 
         count += right - left + 1;                
-```
 
 }
 
@@ -519,11 +519,10 @@ return count;
 }
 
 int exactlyK(vector<int>& arr, int k) {
-```
 return atMost(arr, k) - atMost(arr, k - 1);
-```
 
 }
+```
 
 **PRACTICE PROBLEMS:**
 - 930.  Binary Subarrays With Sum
@@ -537,15 +536,13 @@ PROBLEM: Count subarrays with sum exactly equal to goal.
 
 KEY INSIGHT: exactly(goal) = atMost(goal) - atMost(goal - 1)
 
+```cpp
 int numSubarraysWithSum(vector<int>& nums, int goal) {
-```
 return atMost(nums, goal) - atMost(nums, goal - 1);
-```
 
 }
 
 int atMost(vector<int>& nums, int goal) {
-```
 if (goal < 0) return 0;                            
 
 int left = 0, sum = 0, count = 0;                  
@@ -561,9 +558,9 @@ for (int right = 0; right < nums.size(); right++) {
     count += right - left + 1;                     
 }                                                  
 return count;                                      
-```
 
 }
+```
 
 WHY TEMPLATE 4: "Exactly K" is hard directly. Use atMost trick!
 TIME: O(N)  |  SPACE: O(1)
@@ -574,15 +571,13 @@ PROBLEM: Count subarrays with exactly k distinct integers.
 
 KEY INSIGHT: exactly(k) = atMost(k) - atMost(k - 1)
 
+```cpp
 int subarraysWithKDistinct(vector<int>& nums, int k) {
-```
 return atMost(nums, k) - atMost(nums, k - 1);
-```
 
 }
 
 int atMost(vector<int>& nums, int k) {
-```
 if (k < 0) return 0;                                         
 
 unordered_map<int, int> freq;                                
@@ -600,9 +595,9 @@ for (int right = 0; right < nums.size(); right++) {
     count += right - left + 1;                               
 }                                                            
 return count;                                                
-```
 
 }
+```
 
 WHY TEMPLATE 4: Classic "exactly K" problem. Can't do directly because
 adding element might keep same distinct count (if already present).
@@ -613,17 +608,15 @@ TIME: O(N)  |  SPACE: O(K)
 PROBLEM: Count subarrays with exactly k odd numbers.
 
 KEY INSIGHT: Transform odd>1, even>0. Now it's "subarrays with sum = k".
+```cpp
 exactly(k) = atMost(k) - atMost(k - 1)
 
 int numberOfSubarrays(vector<int>& nums, int k) {
-```
 return atMost(nums, k) - atMost(nums, k - 1);
-```
 
 }
 
 int atMost(vector<int>& nums, int k) {
-```
 if (k < 0) return 0;                                       
 
 int left = 0, odds = 0, count = 0;                         
@@ -639,9 +632,9 @@ for (int right = 0; right < nums.size(); right++) {
     count += right - left + 1;                             
 }                                                          
 return count;                                              
-```
 
 }
+```
 
 WHY TEMPLATE 4: "Exactly k odds" = "Exactly k sum" after transformation.
 TIME: O(N)  |  SPACE: O(1)
@@ -653,15 +646,13 @@ PROBLEM: Count substrings with ALL 5 vowels and ONLY vowels.
 KEY INSIGHT: exactly(5 vowels) = atMost(5) - atMost(4)
 But also need "only vowels" constraint!
 
+```cpp
 int countVowelSubstrings(string word) {
-```
 return atMost(word, 5) - atMost(word, 4);
-```
 
 }
 
 int atMost(string& word, int k) {
-```
 if (k < 0) return 0;                                                   
 
 string vowels = "aeiou";                                               
@@ -690,9 +681,9 @@ for (int right = 0; right < word.size(); right++) {
     count += right - left + 1;                                         
 }                                                                      
 return count;                                                          
-```
 
 }
+```
 
 WHY TEMPLATE 4: "Exactly 5 distinct vowels" with added constraint.
 Consonant acts as barrier - reset window completely.
@@ -704,6 +695,7 @@ USE WHEN: Window size k is FIXED/given
 
 APPROACH: Add right element, remove left element when window exceeds size k
 
+```
 // Basic Template
 int windowSum = 0, maxSum = 0;
 
@@ -722,6 +714,7 @@ maxSum = max(maxSum, windowSum);
 }
 
 return maxSum;
+```
 
 **KEY INSIGHT:**
 - Window always has exactly k elements
@@ -732,8 +725,8 @@ return maxSum;
 
 PROBLEM: Find contiguous subarray of length k with maximum average.
 
+```cpp
 double findMaxAverage(vector<int>& nums, int k) {
-```
 double sum = 0;                        
 
 // Initial window                      
@@ -750,9 +743,9 @@ for (int i = k; i < nums.size(); i++) {
 }                                      
 
 return maxSum / k;                     
-```
 
 }
+```
 
 TIME: O(N)  |  SPACE: O(1)
 
@@ -760,8 +753,8 @@ TIME: O(N)  |  SPACE: O(1)
 
 PROBLEM: Find max sum of subarray of length k with ALL DISTINCT elements.
 
+```cpp
 long long maximumSubarraySum(vector<int>& nums, int k) {
-```
 unordered_map<int, int> freq;                   
 long long sum = 0, maxSum = 0;                  
 
@@ -786,11 +779,12 @@ for (int i = 0; i < nums.size(); i++) {
 }                                               
 
 return maxSum;                                  
-```
 
 }
 
 class Solution {
+```
+
 public:
 ```
 long long maximumSubarraySum(vector<int>& nums, int k) {       
@@ -823,7 +817,9 @@ long long maximumSubarraySum(vector<int>& nums, int k) {
 }                                                              
 ```
 
+```
 };
+```
 
 TIME: O(N)  |  SPACE: O(K)
 
@@ -831,8 +827,8 @@ TIME: O(N)  |  SPACE: O(K)
 
 PROBLEM: Check if duplicate exists within distance k.
 
+```cpp
 bool containsNearbyDuplicate(vector<int>& nums, int k) {
-```
 unordered_set<int> window;             
 
 for (int i = 0; i < nums.size(); i++) {
@@ -850,9 +846,9 @@ for (int i = 0; i < nums.size(); i++) {
 }                                      
 
 return false;                          
-```
 
 }
+```
 
 TIME: O(N)  |  SPACE: O(K)
 
@@ -879,8 +875,8 @@ APPROACH: Maintain two window states in parallel OR use the atMost trick
 
 PROBLEM: Find all starting indices where substring is concatenation of all words.
 
+```cpp
 vector<int> findSubstring(string s, vector<string>& words) {
-```
 vector<int> result;                                                             
 if (words.empty() || s.empty()) return result;                                  
 
@@ -930,9 +926,9 @@ for (int offset = 0; offset < wordLen; offset++) {
 }                                                                               
 
 return result;                                                                  
-```
 
 }
+```
 
 TIME: O(N * wordLen)  |  SPACE: O(words.size())
 
@@ -940,8 +936,8 @@ TIME: O(N * wordLen)  |  SPACE: O(words.size())
 
 PROBLEM: Find longest subarray where AND of any two elements is 0.
 
+```cpp
 int longestNiceSubarray(vector<int>& nums) {
-```
 int left = 0, usedBits = 0, maxLen = 0;            
 
 for (int right = 0; right < nums.size(); right++) {
@@ -956,9 +952,9 @@ for (int right = 0; right < nums.size(); right++) {
 }                                                  
 
 return maxLen;                                     
-```
 
 }
+```
 
 TIME: O(N)  |  SPACE: O(1)
 
@@ -968,8 +964,8 @@ PROBLEM: Max difference between frequency of any two chars in any substring.
 
 APPROACH: For each pair (a, b), find max(freq_a - freq_b) using Kadane's variant.
 
-int largestVariance(string s) {
 ```
+int largestVariance(string s) {
 int maxVariance = 0;                                            
 
 // Try all pairs of characters                                  
@@ -1001,9 +997,9 @@ for (char a = 'a'; a <= 'z'; a++) {
 }                                                               
 
 return maxVariance;                                             
-```
 
 }
+```
 
 TIME: O(26 * 26 * N)  |  SPACE: O(1)
 
@@ -1162,8 +1158,8 @@ o All valid or all invalid
  PATTERN: Variable-Size Window - Maximum length
  TEMPLATE: Shrinkable
 
-int lengthOfLongestSubstring(string s) {
 ```
+int lengthOfLongestSubstring(string s) {
 int left = 0, ans = 0;                          
 int cnt[128] = {};                              
 
@@ -1189,8 +1185,8 @@ TIME: O(N)  |  SPACE: O(1)
  PATTERN: Frequency Map - Minimum window
  TEMPLATE: Shrinkable (shrink while VALID!)
 
-string minWindow(string s, string t) {
 ```
+string minWindow(string s, string t) {
 if (t.empty() || s.empty()) return "";                    
 
 unordered_map<char, int> required;                        
@@ -1226,9 +1222,9 @@ for (int right = 0; right < s.size(); right++) {
     }                                                     
 
 return minLen == INT_MAX ? "" : s.substr(minLeft, minLen);
-```
 
 }
+```
 
 TIME: O(|S| + |T|)  |  SPACE: O(|S| + |T|)
 
@@ -1237,8 +1233,8 @@ TIME: O(|S| + |T|)  |  SPACE: O(|S| + |T|)
  PATTERN: At Most K Distinct
  TEMPLATE: Shrinkable
 
-int lengthOfLongestSubstringKDistinct(string s, int k) {
 ```
+int lengthOfLongestSubstringKDistinct(string s, int k) {
 unordered_map<char, int> freq;                      
     int left = 0, ans = 0;                          
 
@@ -1269,8 +1265,8 @@ TIME: O(N)  |  SPACE: O(K)
 
 KEY: window_length - max_frequency < k
 
-int characterReplacement(string s, int k) {
 ```
+int characterReplacement(string s, int k) {
 int left = 0, maxFreq = 0, ans = 0;                 
 int freq[26] = {};                                  
 
@@ -1326,8 +1322,8 @@ TIME: O(N)  |  SPACE: O(1)
  PATTERN: Exactly K (using atMost transformation)
  TEMPLATE: exactly(K) = atMost(K) - atMost(K-1)
 
+```cpp
 int atMostK(vector<int>& nums, int k) {
-```
 if (k == 0) return 0;                                  
 
 unordered_map<int, int> freq;                          
@@ -1348,16 +1344,14 @@ int left = 0, count = 0;
 }                                                      
 
 return count;                                          
-```
 
 }
 
 int subarraysWithKDistinct(vector<int>& nums, int k) {
-```
 return atMostK(nums, k) - atMostK(nums, k - 1);
-```
 
 }
+```
 
 TIME: O(N)  |  SPACE: O(K)
 
@@ -1366,8 +1360,8 @@ TIME: O(N)  |  SPACE: O(K)
  PATTERN: Fixed-Size + Frequency Map
  TEMPLATE: Fixed window with "matches" optimization
 
-bool checkInclusion(string s1, string s2) {
 ```
+bool checkInclusion(string s1, string s2) {
 if (s1.size() > s2.size()) return false;               
 
 int cnt1[26] = {}, cnt2[26] = {};                      
@@ -1393,9 +1387,9 @@ for (int right = 0; right < s2.size(); right++) {
 }                                                      
 
 return false;                                          
-```
 
 }
+```
 
 TIME: O(N)  |  SPACE: O(1)
 
@@ -1404,8 +1398,8 @@ TIME: O(N)  |  SPACE: O(1)
  PATTERN: Fixed-Size + Monotonic Deque
  TEMPLATE: Deque stores indices in decreasing order of values
 
+```cpp
 vector<int> maxSlidingWindow(vector<int>& nums, int k) {
-```
 deque<int> dq;  // Store indices                      
 vector<int> result;                                   
 
@@ -1428,9 +1422,9 @@ for (int i = 0; i < nums.size(); i++) {
 }                                                     
 
 return result;                                        
-```
 
 }
+```
 
 TIME: O(N)  |  SPACE: O(K)
 
@@ -1439,8 +1433,8 @@ TIME: O(N)  |  SPACE: O(K)
  PATTERN: Two Monotonic Deques (max + min)
  TEMPLATE: Maintain both max and min efficiently
 
+```cpp
 int longestSubarray(vector<int>& nums, int limit) {
-```
 deque<int> maxQ, minQ;                                        
 int left = 0, ans = 0;                                        
 
@@ -1468,9 +1462,9 @@ for (int right = 0; right < nums.size(); right++) {
 }                                                             
 
 return ans;                                                   
-```
 
 }
+```
 
 TIME: O(N)  |  SPACE: O(N)
 
@@ -1544,20 +1538,24 @@ USE WHEN: Array wraps around (last element connects to first)
 
 ### APPROACH 1: Double the array (simpler)
 
+```
 // For array of size n, create virtual array of size 2n
 // Access arr[i % n] instead of duplicating
+```
 
 ### APPROACH 2: Process twice
 
+```
 // First pass: normal sliding window
 // Second pass: handle wrap-around cases
+```
 
 ## **SOLVED: Defuse the Bomb (LC 1652)**
 
 PROBLEM: Replace each element with sum of next/previous k elements (circular).
 
+```cpp
 vector<int> decrypt(vector<int>& code, int k) {
-```
 int n = code.size();                
 vector<int> result(n, 0);           
 
@@ -1582,9 +1580,9 @@ for (int i = 0; i < n; i++) {
 }                                   
 
 return result;                      
-```
 
 }
+```
 
 TIME: O(N)  |  SPACE: O(1) (excluding output)
 
@@ -1594,8 +1592,8 @@ PROBLEM: Type-1 (rotate) + Type-2 (flip) to make alternating.
 
  **KEY INSIGHT**: Rotate = Circular array! Double the string.
 
-int minFlips(string s) {
 ```
+int minFlips(string s) {
 int n = s.size();                                  
 s += s;  // Double for circular                    
 
@@ -1625,9 +1623,9 @@ for (int i = 0; i < s.size(); i++) {
 }                                                  
 
 return minFlips;                                   
-```
 
 }
+```
 
 TIME: O(N)  |  SPACE: O(N)
 
@@ -1652,8 +1650,8 @@ PROBLEM: Remove from left/right ends to get sum = x. Find minimum operations.
 
  **TRANSFORMATION**: Find LONGEST middle subarray with sum = (total - x)
 
+```cpp
 int minOperations(vector<int>& nums, int x) {
-```
 int n = nums.size();                                
 int total = accumulate(nums.begin(), nums.end(), 0);
 int target = total - x;                             
@@ -1677,9 +1675,9 @@ for (int right = 0; right < n; right++) {
 }                                                   
 
 return maxLen == -1 ? -1 : n - maxLen;              
-```
 
 }
+```
 
 TIME: O(N)  |  SPACE: O(1)
 
@@ -1689,8 +1687,8 @@ PROBLEM: Take chars from left/right such that at least k of each 'a','b','c'.
 
  **TRANSFORMATION**: Find LONGEST middle we can KEEP (has at most (count[c]-k) of each)
 
-int takeCharacters(string s, int k) {
 ```
+int takeCharacters(string s, int k) {
 int n = s.size();                                                   
 int total[3] = {};                                                  
 for (char c : s) total[c - 'a']++;                                  
@@ -1719,9 +1717,9 @@ for (int right = 0; right < n; right++) {
 }                                                                   
 
 return n - maxKeep;  // What we must take from edges                
-```
 
 }
+```
 
 TIME: O(N)  |  SPACE: O(1)
 
@@ -1746,8 +1744,8 @@ PROBLEM: Choose k scores, minimize (max - min) among chosen.
 
  **KEY INSIGHT**: After sorting, optimal k elements are consecutive!
 
+```cpp
 int minimumDifference(vector<int>& nums, int k) {
-```
 sort(nums.begin(), nums.end());                       
 
 int minDiff = INT_MAX;                                
@@ -1756,9 +1754,9 @@ for (int i = 0; i + k - 1 < nums.size(); i++) {
 }                                                     
 
 return minDiff;                                       
-```
 
 }
+```
 
 TIME: O(N log N)  |  SPACE: O(1)
 
@@ -1768,8 +1766,8 @@ PROBLEM: Find k closest elements to x in sorted array.
 
  **APPROACH**: Binary search start position + sliding window concept
 
+```cpp
 vector<int> findClosestElements(vector<int>& arr, int k, int x) {
-```
 int left = 0, right = arr.size() - k;                          
 
 while (left < right) {                                         
@@ -1783,9 +1781,9 @@ while (left < right) {
 }                                                              
 
 return vector<int>(arr.begin() + left, arr.begin() + left + k);
-```
 
 }
+```
 
 TIME: O(log(N-K) + K)  |  SPACE: O(1)
 
@@ -1795,8 +1793,8 @@ PROBLEM: Each element can change to [nums[i]-k, nums[i]+k]. Find max identical e
 
  **KEY INSIGHT**: After sorting, find longest window where max-min <= 2*k
 
+```cpp
 int maximumBeauty(vector<int>& nums, int k) {
-```
 sort(nums.begin(), nums.end());                                  
 
 int left = 0, maxLen = 0;                                        
@@ -1810,9 +1808,9 @@ for (int right = 0; right < nums.size(); right++) {
 }                                                                
 
 return maxLen;                                                   
-```
 
 }
+```
 
 TIME: O(N log N)  |  SPACE: O(1)
 
@@ -1822,8 +1820,8 @@ PROBLEM: Make array continuous (consecutive unique elements). Find min ops.
 
  **KEY INSIGHT**: Sort + dedupe, find max elements fitting in range [x, x+n-1]
 
+```cpp
 int minOperations(vector<int>& nums) {
-```
 int n = nums.size();                              
 
 // Sort and remove duplicates                     
@@ -1841,9 +1839,9 @@ for (int right = 0; right < arr.size(); right++) {
 }                                                 
 
 return n - maxKeep;                               
-```
 
 }
+```
 
 TIME: O(N log N)  |  SPACE: O(N)
 
@@ -1867,8 +1865,8 @@ PROBLEM: Find smallest range that includes at least one element from each list.
 
  **APPROACH**: Min-heap tracks current element from each list
 
+```cpp
 vector<int> smallestRange(vector<vector<int>>& nums) {
-```
 // Min-heap: {value, list_idx, element_idx}                    
 priority_queue<vector<int>, vector<vector<int>>, greater<>> pq;
 
@@ -1897,9 +1895,9 @@ while (pq.size() == nums.size()) {
 }                                                              
 
 return {rangeStart, rangeEnd};                                 
-```
 
 }
+```
 
 TIME: O(N log K)  |  SPACE: O(K) where N = total elements, K = number of lists
 
@@ -1917,8 +1915,8 @@ USE WHEN: Count subarrays where specific element/condition appears at least k ti
 
 PROBLEM: Count subarrays where max element of array appears >= k times.
 
+```cpp
 long long countSubarrays(vector<int>& nums, int k) {
-```
 int maxVal = *max_element(nums.begin(), nums.end());                             
 int n = nums.size();                                                             
 long long count = 0;                                                             
@@ -1936,9 +1934,9 @@ for (int right = 0; right < n; right++) {
 }                                                                                
 
 return count;                                                                    
-```
 
 }
+```
 
 TIME: O(N)  |  SPACE: O(1)
 
@@ -1948,15 +1946,13 @@ PROBLEM: Count substrings with all 5 vowels and exactly k consonants.
 
  **KEY INSIGHT**: Use atLeast(k) - atLeast(k+1) for exactly k consonants
 
+```cpp
 long long countOfSubstrings(string word, int k) {
-```
 return atLeast(word, k) - atLeast(word, k + 1);
-```
 
 }
 
 long long atLeast(string& word, int k) {
-```
 int n = word.size();                                                
 long long count = 0;                                                
 int left = 0, consonants = 0;                                       
@@ -1988,9 +1984,9 @@ for (int right = 0; right < n; right++) {
 }                                                                   
 
 return count;                                                       
-```
 
 }
+```
 
 TIME: O(N)  |  SPACE: O(1)
 
@@ -2166,7 +2162,9 @@ Pattern 9:  Inverse/Complement     > Remove from edges = Keep middle
 Pattern 10: Sorting + SW           > Sort first when order doesn't matter
 Pattern 11: SW + Heap              > For median, k-th element in window
 
+```
   Sum=K with NEGATIVES > Use Prefix Sum.txt (Sliding Window doesn't work!)
+```
 
 ```
 +------------------------------------------------------------------------------+
@@ -2204,4 +2202,3 @@ Pattern 11: SW + Heap              > For median, k-th element in window
                                    END                                          
 ================================================================================
 ```
-

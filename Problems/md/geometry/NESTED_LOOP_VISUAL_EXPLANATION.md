@@ -25,8 +25,8 @@ how many trapezoids can be formed from each pair.
 
 Setup:
 ------
-points = [[1,1], [2,1], [3,1],    < y=1: 3 points
 ```
+points = [[1,1], [2,1], [3,1],    < y=1: 3 points
       [1,2], [2,2],            < y=2: 2 points
       [1,3], [2,3]]            < y=3: 2 points
 ```
@@ -37,9 +37,11 @@ y-level 1 (y=2): count[1] = 2 points
 y-level 2 (y=3): count[2] = 2 points
 
 Calculate "edges" (ways to pick 2 points from each level):
+```
 e0 = C(3,2) = 3*2/2 = 3
 e1 = C(2,2) = 2*1/2 = 1
 e2 = C(2,2) = 2*1/2 = 1
+```
 
 ## VISUAL: THE NESTED LOOP EXECUTION
 
@@ -57,7 +59,9 @@ i=1 (y=2, 2 pts) --------------------------------------------------+
                   +--> j=2 (y=3, 2 pts)   >   ans += e1*e2 = 1*1 = 1
 ```
 
+```
 i=2 (y=3, 2 pts)   (no j, because j must be > i)
+```
 
 TOTAL: ans = 3 + 3 + 1 = 7 trapezoids
 
@@ -83,7 +87,9 @@ i=2  |  X  |  X  |  X  |  < i=2 has no j>i
      +-----+-----------------------------------+
 ```
 
+```
 X = skipped (j < i)
+```
 
 Sum of upper triangle: 3 + 3 + 1 = 7
 
@@ -91,8 +97,10 @@ Sum of upper triangle: 3 + 3 + 1 = 7
 
 ### Computation 1: i=0, j=1 > ans += 3*1 = 3
 
+```
 y=1 has 3 points: A, B, C
 y=2 has 2 points: D, E
+```
 
 Ways to pick 2 from y=1: {AB, AC, BC} = 3 ways
 Ways to pick 2 from y=2: {DE} = 1 way
@@ -113,8 +121,10 @@ Total: 3 trapezoids from (y=1, y=2)
 
 ### Computation 2: i=0, j=2 > ans += 3*1 = 3
 
+```
 y=1 has 3 points: A, B, C
 y=3 has 2 points: F, G
+```
 
 Ways to pick 2 from y=1: {AB, AC, BC} = 3 ways
 Ways to pick 2 from y=3: {FG} = 1 way
@@ -128,8 +138,10 @@ Total: 3 trapezoids from (y=1, y=3)
 
 ### Computation 3: i=1, j=2 > ans += 1*1 = 1
 
+```
 y=2 has 2 points: D, E
 y=3 has 2 points: F, G
+```
 
 Ways to pick 2 from y=2: {DE} = 1 way
 Ways to pick 2 from y=3: {FG} = 1 way
@@ -152,13 +164,17 @@ GRAND TOTAL: 3 + 3 + 1 = 7 trapezoids Y
 
 What does C(n, 2) mean?
 -----------------------
+```
 C(n, 2) = "n choose 2" = number of ways to pick 2 items from n items
+```
 
 Formula: C(n, 2) = n! / (2! * (n-2)!)
 = n * (n-1) / 2
 
 Example: If we have 4 points {A, B, C, D}
+```
 C(4, 2) = 4*3/2 = 6 ways
+```
 
 Enumerate: {AB, AC, AD, BC, BD, CD} = 6 pairs Y
 
@@ -192,14 +208,18 @@ Why not j=0?
 Because we'd count each pair twice!
 
 Example:
+```
 i=0, j=1 > count trapezoid between y-level 0 and 1
 i=1, j=0 > count trapezoid between y-level 1 and 0 (SAME!)
+```
 
 We'd double count!
 
 Why j = i+1 (instead of j=i)?
 Because a trapezoid needs TWO DIFFERENT horizontal lines!
+```
 i=j means same y-level > can't form trapezoid
+```
 
 By using j = i+1, we ensure:
 1. Each pair of y-levels is counted exactly once Y
@@ -215,7 +235,9 @@ X  (1,2) Y  (1,3) Y
 X        X  (2,3) Y
 X        X        X
 
+```
 Y = computed  X = skipped
+```
 
 ## COMPLEXITY ANALYSIS
 
@@ -258,4 +280,3 @@ Level j: o-o    (pick 2)
 
 = All ways to form trapezoids between these two levels
 ```
-

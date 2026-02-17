@@ -53,7 +53,9 @@ Observation:
 Invariant: Each non-escaping moving car > 1 collision
 
 Solution:
+```
 collisions = count('L' and 'R' in active zone)
+```
 
 ## PROBLEM 2: REMOVE OUTER PARENTHESES (LC 1021)
 
@@ -69,9 +71,9 @@ Observation:
 Invariant: Characters at depth > 2 always included
 
 Solution:
+```
 int depth = 0;
 for (char c : s) {
-```
   if (c == '(') {                                  
       if (depth > 0) result += c;  // Not outermost
       depth++;                                     
@@ -79,9 +81,9 @@ for (char c : s) {
       depth--;                                     
       if (depth > 0) result += c;  // Not outermost
   }                                                
-```
 
 }
+```
 
 ## PROBLEM 3: CANDY CRUSH (Similar Pattern)
 
@@ -106,19 +108,21 @@ Observation:
 - Unmatched ')' at the beginning > delete
 
 Invariant:
+```
 deletions = unmatched_open + unmatched_close
+```
 
 Solution:
+```
 int open = 0, deletions = 0;
 for (char c : s) {
-```
   if (c == '(') open++;              
   else if (open > 0) open--;         
   else deletions++;  // Unmatched ')'
-```
 
 }
 return deletions + open;  // Add unmatched '('
+```
 
 ## PROBLEM 5: ASTEROID COLLISION (LC 735)
 
@@ -165,10 +169,12 @@ Example (Collision):
 "LLRR" > trim LL from left, RR from right > ""
 
 Code Pattern:
+```
 int left = 0, right = n - 1;
 while (left < n && shouldSkip(arr[left])) left++;
 while (right >= 0 && shouldSkip(arr[right])) right--;
 // Process [left, right]
+```
 
 TECHNIQUE 2: INVARIANT COUNTING
 --------------------------------
@@ -178,13 +184,13 @@ Example (Collision):
 Each moving car in active zone > +1 collision
 
 Code Pattern:
+```
 int count = 0;
 for (element in active_zone) {
-```
   if (participates(element)) count++;
-```
 
 }
+```
 
 TECHNIQUE 3: STACK FOR CANCELLATION
 ------------------------------------
@@ -195,15 +201,15 @@ Example (Parentheses):
 Unmatched elements need deletion
 
 Code Pattern:
+```
 stack<T> st;
 for (element : elements) {
-```
   if (should_push(element)) st.push(element);                  
   else if (!st.empty() && cancels(st.top(), element)) st.pop();
   else deletions++;                                            
-```
 
 }
+```
 
 TECHNIQUE 4: BALANCE/DEPTH TRACKING
 ------------------------------------
@@ -214,15 +220,15 @@ depth++ for open, depth-- for close
 Know nesting level without storing
 
 Code Pattern:
+```
 int balance = 0;
 for (element : elements) {
-```
   if (opens(element)) balance++;      
   else if (closes(element)) balance--;
   // Use balance to make decisions    
-```
 
 }
+```
 
 ## COMPLEXITY IMPROVEMENTS
 
@@ -371,4 +377,3 @@ This pattern appears frequently in:
 - Process simplification
 
 Master this and you'll solve many problems faster! 
-

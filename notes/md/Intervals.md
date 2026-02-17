@@ -35,30 +35,32 @@ Common representations:
 
 ### SORT BY START (Default for most problems):
 
+```
 sort(intervals.begin(), intervals.end());
 // Default sorts by [0], then [1]
+```
 
 USE FOR: Merge intervals, Insert interval, Meeting rooms
 
 ### SORT BY END (Greedy selection):
 
+```
 sort(intervals.begin(), intervals.end(), [](auto& a, auto& b) {
-```
 return a[1] < b[1];
-```
 
 });
+```
 
 USE FOR: Non-overlapping intervals, Activity selection, Min arrows
 
 ### SORT BY START, THEN BY END DESCENDING (Remove covered):
 
+```
 sort(intervals.begin(), intervals.end(), [](auto& a, auto& b) {
-```
 return a[0] == b[0] ? a[1] > b[1] : a[0] < b[0];
-```
 
 });
+```
 
 USE FOR: Remove covered intervals (detect contained intervals)
 
@@ -66,13 +68,19 @@ USE FOR: Remove covered intervals (detect contained intervals)
 
 ### TWO INTERVALS OVERLAP if:
 
+```
 // Intervals [a, b] and [c, d] overlap if:
 max(a, c) <= min(b, d)
 
 // Or equivalently:
+```
+
 NOT (b < c || d < a)  // NOT (completely before OR completely after)
 
+```
 // Simplified for sorted intervals (a <= c):
+```
+
 b >= c  // Previous end >= Current start
 
 **OVERLAP TYPES:**
@@ -108,8 +116,8 @@ USE WHEN: Combine overlapping intervals into one
 
 **TEMPLATE:**
 
+```cpp
 vector<vector<int>> merge(vector<vector<int>>& intervals) {
-```
 if (intervals.empty()) return {};                                 
 
 sort(intervals.begin(), intervals.end());                         
@@ -126,9 +134,9 @@ for (int i = 1; i < intervals.size(); i++) {
 }                                                                 
 
 return result;                                                    
-```
 
 }
+```
 
 TIME: O(N log N)  |  SPACE: O(N)
 
@@ -138,8 +146,8 @@ PROBLEM: Insert new interval and merge if necessary (intervals already sorted).
 
  **APPROACH**: Three phases - before, overlap (merge), after
 
+```cpp
 vector<vector<int>> insert(vector<vector<int>>& intervals, vector<int>& newInterval) {
-```
 vector<vector<int>> result;                               
 int i = 0, n = intervals.size();                          
 
@@ -162,9 +170,9 @@ while (i < n) {
 }                                                         
 
 return result;                                            
-```
 
 }
+```
 
 TIME: O(N)  |  SPACE: O(N)
 
@@ -174,8 +182,8 @@ PROBLEM: Bold all substrings that match words in dictionary, merge adjacent tags
 
  **APPROACH**: Mark bold positions > Merge consecutive bold regions
 
+```cpp
 string addBoldTag(string s, vector<string>& words) {
-```
 int n = s.size();                                                        
 vector<bool> bold(n, false);                                             
 
@@ -201,9 +209,9 @@ for (int i = 0; i < n; i++) {
 }                                                                        
 
 return result;                                                           
-```
 
 }
+```
 
 TIME: O(N * W * L)  |  SPACE: O(N) where W = words count, L = avg word length
 
@@ -224,8 +232,8 @@ USE WHEN: Find common parts of two interval lists
 
 PROBLEM: Find intersection of two sorted interval lists.
 
+```cpp
 vector<vector<int>> intervalIntersection(vector<vector<int>>& A, vector<vector<int>>& B) {
-```
 vector<vector<int>> result;                               
 int i = 0, j = 0;                                         
 
@@ -246,9 +254,9 @@ while (i < A.size() && j < B.size()) {
 }                                                         
 
 return result;                                            
-```
 
 }
+```
 
 TIME: O(M + N)  |  SPACE: O(1) excluding output
 
@@ -265,8 +273,8 @@ USE WHEN: Find uncovered ranges between intervals
 
 PROBLEM: Find missing ranges in [lower, upper] given sorted unique numbers.
 
+```cpp
 vector<vector<int>> findMissingRanges(vector<int>& nums, int lower, int upper) {
-```
 vector<vector<int>> result;                            
 int prev = lower - 1;                                  
 
@@ -281,9 +289,9 @@ for (int i = 0; i <= nums.size(); i++) {
 }                                                      
 
 return result;                                         
-```
 
 }
+```
 
 TIME: O(N)  |  SPACE: O(1)
 
@@ -291,8 +299,8 @@ TIME: O(N)  |  SPACE: O(1)
 
 PROBLEM: Remove interval from list, return remaining intervals.
 
+```cpp
 vector<vector<int>> removeInterval(vector<vector<int>>& intervals, vector<int>& toBeRemoved) {
-```
 vector<vector<int>> result;                                              
 
 for (auto& interval : intervals) {                                       
@@ -312,9 +320,9 @@ for (auto& interval : intervals) {
 }                                                                        
 
 return result;                                                           
-```
 
 }
+```
 
 TIME: O(N)  |  SPACE: O(N)
 
@@ -322,8 +330,8 @@ TIME: O(N)  |  SPACE: O(N)
 
 PROBLEM: Count days in [1, days] that have no meetings.
 
+```cpp
 int countDays(int days, vector<vector<int>>& meetings) {
-```
 sort(meetings.begin(), meetings.end());     
 
 int freeDays = 0;                           
@@ -341,9 +349,9 @@ for (auto& m : meetings) {
 freeDays += days - coveredUntil;            
 
 return freeDays;                            
-```
 
 }
+```
 
 TIME: O(N log N)  |  SPACE: O(1)
 
@@ -368,8 +376,8 @@ PROBLEM: Remove minimum intervals to make rest non-overlapping.
 
  **INSIGHT**: Keep intervals that end earliest (greedy)
 
+```cpp
 int eraseOverlapIntervals(vector<vector<int>>& intervals) {
-```
 if (intervals.empty()) return 0;                               
 
 // Sort by end time                                            
@@ -391,9 +399,9 @@ for (int i = 1; i < intervals.size(); i++) {
 }                                                              
 
 return removed;                                                
-```
 
 }
+```
 
 TIME: O(N log N)  |  SPACE: O(1)
 
@@ -403,8 +411,8 @@ PROBLEM: Minimum arrows (vertical lines) to burst all balloons.
 
  **INSIGHT**: Same as counting non-overlapping groups
 
+```cpp
 int findMinArrowShots(vector<vector<int>>& points) {
-```
 if (points.empty()) return 0;                                
 
 // Sort by end position                                      
@@ -424,9 +432,9 @@ for (int i = 1; i < points.size(); i++) {
 }                                                            
 
 return arrows;                                               
-```
 
 }
+```
 
 TIME: O(N log N)  |  SPACE: O(1)
 
@@ -436,8 +444,8 @@ PROBLEM: Remove intervals completely covered by another. Return count remaining.
 
  **INSIGHT**: Sort by start ASC, then end DESC. Check if covered by previous.
 
+```cpp
 int removeCoveredIntervals(vector<vector<int>>& intervals) {
-```
 // Sort by start, then by end descending                       
 sort(intervals.begin(), intervals.end(), [](auto& a, auto& b) {
     return a[0] == b[0] ? a[1] > b[1] : a[0] < b[0];           
@@ -455,9 +463,9 @@ for (auto& interval : intervals) {
 }                                                              
 
 return count;                                                  
-```
 
 }
+```
 
 TIME: O(N log N)  |  SPACE: O(1)
 
@@ -480,8 +488,8 @@ TIME: O(N log N)  |  SPACE: O(1)
 
 PROBLEM: Can attend all meetings (no overlap)?
 
+```cpp
 bool canAttendMeetings(vector<vector<int>>& intervals) {
-```
 sort(intervals.begin(), intervals.end());     
 
 for (int i = 1; i < intervals.size(); i++) {  
@@ -491,9 +499,9 @@ for (int i = 1; i < intervals.size(); i++) {
 }                                             
 
 return true;                                  
-```
 
 }
+```
 
 TIME: O(N log N)  |  SPACE: O(1)
 
@@ -503,8 +511,8 @@ PROBLEM: Minimum meeting rooms needed.
 
  **APPROACH 1**: Sweep Line (events)
 
+```cpp
 int minMeetingRooms(vector<vector<int>>& intervals) {
-```
 vector<pair<int, int>> events;  // (time, type: +1 start, -1 end)       
 
 for (auto& interval : intervals) {                                      
@@ -524,14 +532,14 @@ for (auto& [time, type] : events) {
 }                                                                       
 
 return maxRooms;                                                        
-```
 
 }
+```
 
  **APPROACH 2**: Min-Heap (track end times)
 
+```cpp
 int minMeetingRooms(vector<vector<int>>& intervals) {
-```
 sort(intervals.begin(), intervals.end());                            
 
 priority_queue<int, vector<int>, greater<int>> endTimes;  // Min-heap
@@ -545,9 +553,9 @@ for (auto& interval : intervals) {
 }                                                                    
 
 return endTimes.size();                                              
-```
 
 }
+```
 
 TIME: O(N log N)  |  SPACE: O(N)
 
@@ -556,8 +564,8 @@ TIME: O(N log N)  |  SPACE: O(N)
 PROBLEM: n rooms, assign meetings to lowest-numbered available room.
 If none available, wait for earliest ending, then lowest number.
 
+```cpp
 int mostBooked(int n, vector<vector<int>>& meetings) {
-```
 sort(meetings.begin(), meetings.end());                                                      
 
 vector<int> count(n, 0);                                                                     
@@ -592,9 +600,9 @@ for (auto& meeting : meetings) {
 }                                                                                            
 
 return max_element(count.begin(), count.end()) - count.begin();                              
-```
 
 }
+```
 
 TIME: O(M log M + M log N)  |  SPACE: O(N)
 
@@ -604,8 +612,8 @@ PROBLEM: Divide intervals into minimum groups where no two overlap in same group
 
  **INSIGHT**: Same as Meeting Rooms II! Max concurrent = Min groups
 
+```cpp
 int minGroups(vector<vector<int>>& intervals) {
-```
 vector<pair<int, int>> events;                                       
 
 for (auto& interval : intervals) {                                   
@@ -622,9 +630,9 @@ for (auto& [time, type] : events) {
 }                                                                    
 
 return maxGroups;                                                    
-```
 
 }
+```
 
 TIME: O(N log N)  |  SPACE: O(N)
 
@@ -632,8 +640,8 @@ TIME: O(N log N)  |  SPACE: O(N)
 
 PROBLEM: Friends arrive/leave, each takes smallest available chair. Find targetFriend's chair.
 
+```cpp
 int smallestChair(vector<vector<int>>& times, int targetFriend) {
-```
 int targetArrival = times[targetFriend][0];                                                       
 
 // Sort by arrival time, keep track of original index                                             
@@ -673,9 +681,9 @@ for (int i : order) {
 }                                                                                                 
 
 return -1;                                                                                        
-```
 
 }
+```
 
 TIME: O(N log N)  |  SPACE: O(N)
 
@@ -701,8 +709,10 @@ TIME: O(N log N)  |  SPACE: O(N)
 
 PROBLEM: Book events, no double booking allowed.
 
+```java
 class MyCalendar {
 map<int, int> calendar;  // start -> end
+```
 
 public:
 ```
@@ -725,7 +735,9 @@ bool book(int start, int end) {
 }                                                 
 ```
 
+```
 };
+```
 
 TIME: O(log N) per book  |  SPACE: O(N)
 
@@ -733,8 +745,10 @@ TIME: O(log N) per book  |  SPACE: O(N)
 
 PROBLEM: Allow double booking, no triple booking.
 
+```java
 class MyCalendarTwo {
 map<int, int> delta;  // time -> change in booking count
+```
 
 public:
 ```
@@ -759,7 +773,9 @@ bool book(int start, int end) {
 }                                                     
 ```
 
+```
 };
+```
 
 TIME: O(N) per book  |  SPACE: O(N)
 
@@ -767,8 +783,10 @@ TIME: O(N) per book  |  SPACE: O(N)
 
 PROBLEM: Add numbers one by one, maintain disjoint intervals.
 
+```java
 class SummaryRanges {
 map<int, int> intervals;  // start -> end
+```
 
 public:
 ```
@@ -806,7 +824,9 @@ vector<vector<int>> getIntervals() {
 }                                                              
 ```
 
+```
 };
+```
 
 TIME: O(log N) addNum, O(N) getIntervals  |  SPACE: O(N)
 
@@ -827,8 +847,8 @@ USE WHEN: Answer queries about intervals efficiently
 
 PROBLEM: For each query, find smallest interval containing it.
 
+```cpp
 vector<int> minInterval(vector<vector<int>>& intervals, vector<int>& queries) {
-```
 // Sort intervals by start                                                           
 sort(intervals.begin(), intervals.end());                                            
 
@@ -863,9 +883,9 @@ for (int q : queries) {
 }                                                                                    
 
 return ans;                                                                          
-```
 
 }
+```
 
 TIME: O((N + Q) log N)  |  SPACE: O(N + Q)
 
@@ -949,4 +969,3 @@ TIME: O((N + Q) log N)  |  SPACE: O(N + Q)
                                    END                                                  
 ================================================================================        
 ```
-

@@ -59,8 +59,8 @@ D7. Pattern Recognition Guide
 
 ### TEMPLATE - Path Processing:
 
-string simplifyPath(string path) {
 ```
+string simplifyPath(string path) {
 stack<string> st;                                     
 stringstream ss(path);                                
 string token;                                         
@@ -81,14 +81,14 @@ while (!st.empty()) {
     st.pop();                                         
 }                                                     
 return result.empty() ? "/" : result;                 
-```
 
 }
+```
 
 ### TEMPLATE - State Simulation (Baseball Game):
 
+```cpp
 int calPoints(vector<string>& ops) {
-```
 stack<int> st;                                    
 
 for (string& op : ops) {                          
@@ -109,9 +109,9 @@ for (string& op : ops) {
 int sum = 0;                                      
 while (!st.empty()) { sum += st.top(); st.pop(); }
 return sum;                                       
-```
 
 }
+```
 
 ### **A2. PARENTHESES MATCHING**
 
@@ -133,8 +133,8 @@ return sum;
 
 ### TEMPLATE - Valid Parentheses:
 
-bool isValid(string s) {
 ```
+bool isValid(string s) {
 stack<char> st;                                                        
 unordered_map<char, char> match = {{')', '('}, {']', '['}, {'}', '{'}};
 
@@ -147,14 +147,14 @@ for (char c : s) {
     }                                                                  
 }                                                                      
 return st.empty();                                                     
-```
 
 }
+```
 
 ### TEMPLATE - Minimum Add to Make Valid:
 
-int minAddToMakeValid(string s) {
 ```
+int minAddToMakeValid(string s) {
 int open = 0, close = 0;  // Unmatched counts    
 
 for (char c : s) {                               
@@ -166,9 +166,9 @@ for (char c : s) {
     }                                            
 }                                                
 return open + close;  // Total unmatched         
-```
 
 }
+```
 
 ### **A3. STRING PROCESSING WITH STACK**
 
@@ -199,8 +199,8 @@ return open + close;  // Total unmatched
 
 ### TEMPLATE - Remove Adjacent (Make String Great):
 
+```cpp
 string makeGood(string s) {
-```
 string st;  // Use string as stack for easy result    
 
 for (char c : s) {                                    
@@ -211,14 +211,14 @@ for (char c : s) {
     }                                                 
 }                                                     
 return st;                                            
-```
 
 }
+```
 
 ### TEMPLATE - Remove K Adjacent Duplicates:
 
-string removeDuplicates(string s, int k) {
 ```
+string removeDuplicates(string s, int k) {
 stack<pair<char, int>> st;  // (char, count)                  
 
 for (char c : s) {                                            
@@ -236,9 +236,9 @@ while (!st.empty()) {
     st.pop();                                                 
 }                                                             
 return result;                                                
-```
 
 }
+```
 
 ### **A4. COLLISION / MERGING PROBLEMS**
 
@@ -264,8 +264,8 @@ New element may collide with stack elements until it survives or dies.
 
 ### TEMPLATE - Asteroid Collision:
 
+```cpp
 vector<int> asteroidCollision(vector<int>& asteroids) {
-```
 stack<int> st;                                               
 
 for (int ast : asteroids) {                                  
@@ -291,14 +291,14 @@ for (int i = st.size() - 1; i >= 0; i--) {
     result[i] = st.top(); st.pop();                          
 }                                                            
 return result;                                               
-```
 
 }
+```
 
 ### TEMPLATE - Car Fleet:
 
+```cpp
 int carFleet(int target, vector<int>& position, vector<int>& speed) {
-```
 int n = position.size();                                         
 vector<pair<int, double>> cars(n);                               
 
@@ -318,9 +318,9 @@ for (auto& [pos, time] : cars) {
 }                                                                
 
 return st.size();                                                
-```
 
 }
+```
 
 ## **SECTION B: EXPRESSION EVALUATION**
 
@@ -336,8 +336,8 @@ return st.size();
 
 **TEMPLATE:**
 
+```cpp
 int evalRPN(vector<string>& tokens) {
-```
 stack<long long> st;                                                   
 
 for (string& token : tokens) {                                         
@@ -354,9 +354,9 @@ for (string& token : tokens) {
     }                                                                  
 }                                                                      
 return st.top();                                                       
-```
 
 }
+```
 
 ### **B2. INFIX EXPRESSION CALCULATORS**
 
@@ -376,8 +376,8 @@ Process operators based on precedence
 
 ### TEMPLATE - Basic Calculator II (No Parentheses):
 
-int calculate(string s) {
 ```
+int calculate(string s) {
 stack<long long> st;                                 
 char op = '+';                                       
 long long num = 0;                                   
@@ -402,23 +402,21 @@ for (int i = 0; i <= s.size(); i++) {
 long long result = 0;                                
 while (!st.empty()) { result += st.top(); st.pop(); }
 return result;                                       
-```
 
 }
+```
 
 ### TEMPLATE - Basic Calculator III (With Parentheses):
 
+```
 // Use recursion for parentheses, or two stacks approach
 int calculate(string s) {
-```
 int i = 0;        
 return calc(s, i);
-```
 
 }
 
 int calc(string& s, int& i) {
-```
 stack<long long> st;                                       
 char op = '+';                                             
 long long num = 0;                                         
@@ -451,9 +449,9 @@ else if (op == '/') { st.top() /= num; }
 long long result = 0;                                      
 while (!st.empty()) { result += st.top(); st.pop(); }      
 return result;                                             
-```
 
 }
+```
 
 ### **B3. NESTED STRUCTURE PARSING**
 
@@ -475,8 +473,8 @@ Pop and merge when exiting nested level.
 
 ### TEMPLATE - Decode String:
 
-string decodeString(string s) {
 ```
+string decodeString(string s) {
 stack<string> strStack;                              
 stack<int> numStack;                                 
 string curr = "";                                    
@@ -500,14 +498,14 @@ for (char c : s) {
     }                                                
 }                                                    
 return curr;                                         
-```
 
 }
+```
 
 ### TEMPLATE - Parsing Boolean Expression:
 
-bool parseBoolExpr(string expression) {
 ```
+bool parseBoolExpr(string expression) {
 stack<char> st;                                                        
 
 for (char c : expression) {                                            
@@ -530,9 +528,9 @@ for (char c : expression) {
     }                                                                  
 }                                                                      
 return st.top() == 't';                                                
-```
 
 }
+```
 
 ## **SECTION C: STACK DESIGN**
 
@@ -548,8 +546,10 @@ Store (value, current_min) pairs, or use auxiliary stack for min values.
 
 ### TEMPLATE - Min Stack:
 
+```java
 class MinStack {
 stack<pair<int, int>> st;  // (value, min_so_far)
+```
 
 public:
 ```
@@ -563,7 +563,9 @@ int top() { return st.top().first; }
 int getMin() { return st.top().second; }                      
 ```
 
+```
 };
+```
 
 ### **C2-C3. IMPLEMENT STACK/QUEUE USING EACH OTHER**
 
@@ -574,8 +576,10 @@ int getMin() { return st.top().second; }
 
 ### TEMPLATE - Stack Using Queues (One Queue):
 
+```java
 class MyStack {
 queue<int> q;
+```
 
 public:
 ```
@@ -592,12 +596,14 @@ int top() { return q.front(); }
 bool empty() { return q.empty(); }                     
 ```
 
+```
 };
+```
 
 ### TEMPLATE - Queue Using Stacks (Amortized O(1)):
 
+```java
 class MyQueue {
-```
 stack<int> in, out;            
 
 void transfer() {              
@@ -611,12 +617,14 @@ void transfer() {
 ```
 
 public:
+```
 void push(int x) { in.push(x); }
 int pop() { transfer(); int val = out.top(); out.pop(); return val; }
 int peek() { transfer(); return out.top(); }
 bool empty() { return in.empty() && out.empty(); }
 
 };
+```
 
 ### **C4. FREQUENCY STACK / ITERATOR DESIGN**
 
@@ -630,10 +638,12 @@ bool empty() { return in.empty() && out.empty(); }
 
 ### TEMPLATE - Maximum Frequency Stack:
 
+```java
 class FreqStack {
 unordered_map<int, int> freq;           // value -> frequency
 unordered_map<int, stack<int>> groups;  // frequency -> stack of values
 int maxFreq = 0;
+```
 
 public:
 ```
@@ -652,7 +662,9 @@ int pop() {
 }                                          
 ```
 
+```
 };
+```
 
 ## **SECTION D: MONOTONIC STACK**
 
@@ -711,8 +723,8 @@ Assumption: Stack grows from LEFT to RIGHT (right = top)
 
 ONE template for all 4 problems! Change OPERATOR only.
 
+```cpp
 vector<int> monoStack(vector<int>& arr) {
-```
 stack<int> st;  // Store indices, not values!             
 vector<int> result(arr.size(), -1);                       
 
@@ -735,9 +747,9 @@ for (int i = 0; i < arr.size(); i++) {
 }                                                         
 
 return result;                                            
-```
 
 }
+```
 
 **KEY POINTS:**
 
@@ -753,8 +765,10 @@ return result;
 PROBLEM: For each element, find first element to the RIGHT that is GREATER
 
 **EXAMPLE:**
+```
 arr = [13, 8, 1, 5, 2, 5, 9, 7, 6, 12]
 NGE = [-1, 9, 5, 9, 5, 9, 12, 12, 12, -1]
+```
 
  **KEY INSIGHT**:
 When we see a LARGER element, all smaller elements in stack have found
@@ -772,8 +786,8 @@ When a tall person arrives, everyone shorter in front can see them!
 
 **TEMPLATE:**
 
+```cpp
 vector<int> nextGreater(vector<int>& arr) {
-```
 stack<int> st;                                       
 vector<int> result(arr.size(), -1);                  
 
@@ -788,9 +802,9 @@ for (int i = 0; i < arr.size(); i++) {
 }                                                    
 
 return result;                                       
-```
 
 }
+```
 
 STACK TYPE: Non-Increasing (Type 4)
 OPERATOR: <
@@ -806,8 +820,10 @@ TIME: O(N)  |  SPACE: O(N)
 PROBLEM: For each element, find first element to the LEFT that is GREATER
 
 **EXAMPLE:**
+```
 arr = [13, 8, 1, 5, 2, 5, 9, 7, 6, 12]
 PGE = [-1, 13, 8, 8, 5, 8, 13, 9, 7, 13]
+```
 
  **KEY INSIGHT**:
 After popping smaller/equal elements, whatever remains in stack is
@@ -825,8 +841,8 @@ What's left at the top is the answer!
 
 **TEMPLATE:**
 
+```cpp
 vector<int> previousGreater(vector<int>& arr) {
-```
 stack<int> st;                                      
 vector<int> result(arr.size(), -1);                 
 
@@ -845,9 +861,9 @@ for (int i = 0; i < arr.size(); i++) {
 }                                                   
 
 return result;                                      
-```
 
 }
+```
 
 STACK TYPE: Strictly Decreasing (Type 3)
 OPERATOR: <=
@@ -868,8 +884,8 @@ Pop elements that are LARGER (they found their next smaller).
 
 **TEMPLATE:**
 
+```cpp
 vector<int> nextSmaller(vector<int>& arr) {
-```
 stack<int> st;                                     
 vector<int> result(arr.size(), -1);                
 
@@ -884,9 +900,9 @@ for (int i = 0; i < arr.size(); i++) {
 }                                                  
 
 return result;                                     
-```
 
 }
+```
 
 STACK TYPE: Non-Decreasing (Type 2)
 OPERATOR: >
@@ -898,8 +914,8 @@ PROBLEM: For each element, find first element to the LEFT that is SMALLER
 
 **TEMPLATE:**
 
+```cpp
 vector<int> previousSmaller(vector<int>& arr) {
-```
 stack<int> st;                                      
 vector<int> result(arr.size(), -1);                 
 
@@ -918,9 +934,9 @@ for (int i = 0; i < arr.size(); i++) {
 }                                                   
 
 return result;                                      
-```
 
 }
+```
 
 STACK TYPE: Strictly Increasing (Type 1)
 OPERATOR: >=
@@ -961,8 +977,8 @@ Pass 2: Handle elements whose NGE wrapped around from the start
 
 SOLUTION: Run loop TWICE!
 
+```cpp
 vector<int> nextGreaterElements(vector<int>& nums) {
-```
 int n = nums.size();                                     
 vector<int> result(n, -1);                               
 stack<int> st;                                           
@@ -979,9 +995,9 @@ for (int j = 0; j < 2; j++) {
 }                                                        
 
 return result;                                           
-```
 
 }
+```
 
 ### **PROBLEM: Daily Temperatures (LC 739)** 
 
@@ -994,8 +1010,8 @@ Instead of returning the VALUE, return the DISTANCE (i - idx).
 "How many days/steps until..." > Next Greater/Smaller + Distance
 Always think: Can I use monotonic stack here?
 
+```cpp
 vector<int> dailyTemperatures(vector<int>& temperatures) {
-```
 int n = temperatures.size();                                         
 vector<int> result(n, 0);                                            
 stack<int> st;                                                       
@@ -1010,9 +1026,9 @@ for (int i = 0; i < n; i++) {
 }                                                                    
 
 return result;                                                       
-```
 
 }
+```
 
 TIME: O(N)  |  SPACE: O(N)
 
@@ -1035,8 +1051,8 @@ Stack at end = all buildings with ocean view!
 **CLEVER TRICK:**
 We don't need to store result separately. The stack IS the answer!
 
+```cpp
 vector<int> findBuildings(vector<int>& heights) {
-```
 stack<int> st;                                              
 
 for (int i = 0; i < heights.size(); i++) {                  
@@ -1049,9 +1065,9 @@ for (int i = 0; i < heights.size(); i++) {
 
 // Stack contains all buildings with ocean view!            
 return vector<int>(st.begin(), st.end());                   
-```
 
 }
+```
 
 ### **PROBLEM: Trapping Rain Water (LC 42)**  HARD
 
@@ -1079,8 +1095,8 @@ When at 2: Pop 0, left=1, right=2 > water fills here!
 **ALTERNATIVE APPROACH:**
 Two pointers (easier to understand): Track max_left, max_right
 
+```cpp
 int trap(vector<int>& height) {
-```
 stack<int> st;                                                     
 int water = 0;                                                     
 
@@ -1102,9 +1118,9 @@ for (int i = 0; i < height.size(); i++) {
 }                                                                  
 
 return water;                                                      
-```
 
 }
+```
 
 TIME: O(N)  |  SPACE: O(N)
 
@@ -1127,18 +1143,23 @@ We want SMALLER (not greater) because we're finding boundaries!
 Rectangle height limited by shortest bar in range.
 
 **VISUALIZATION:**
+```
 heights = [2,1,5,6,2,3]
+```
+
 ^
 
 For bar 5: prev_smaller=1(idx 1), next_smaller=2(idx 4)
+```
 Width = 4-1-1 = 2, Area = 5x2 = 10
+```
 
 **COMMON MISTAKE:**
  Using next/previous GREATER (wrong direction!)
  Using next/previous SMALLER (boundaries!)
 
+```cpp
 int largestRectangleArea(vector<int>& heights) {
-```
 int n = heights.size();                                    
 vector<int> nextSmaller(n, n);                             
 vector<int> prevSmaller(n, -1);                            
@@ -1165,9 +1186,9 @@ for (int i = 0; i < n; i++) {
 }                                                          
 
 return maxArea;                                            
-```
 
 }
+```
 
 TIME: O(N)  |  SPACE: O(N)
 
@@ -1190,14 +1211,16 @@ Pattern 1-3-2 means: small, BIG, medium
 
 **CLEVER PREPROCESSING:**
 Precompute minimum-so-far array!
+```
 minLeft[j] tells us the smallest element before index j.
+```
 
 **TRANSFORMATION:**
 "132 pattern" > Previous Greater + Min Tracking
 This shows monotonic stack's versatility!
 
+```cpp
 bool find132pattern(vector<int>& nums) {
-```
 int n = nums.size();                                  
 vector<int> minLeft(n);                               
 stack<int> st;                                        
@@ -1225,9 +1248,9 @@ for (int i = 0; i < n; i++) {
 }                                                     
 
 return false;                                         
-```
 
 }
+```
 
 ### **PROBLEM: Number of Visible People (LC 1944)**
 
@@ -1248,8 +1271,8 @@ You block everyone shorter, but first taller person can see over you!
 **BRILLIANT COUNTING:**
 Each visibility is counted exactly once from the viewer's perspective.
 
+```cpp
 vector<int> canSeePersonsCount(vector<int>& heights) {
-```
 int n = heights.size();                                     
 vector<int> result(n, 0);                                   
 stack<int> st;                                              
@@ -1270,9 +1293,9 @@ for (int i = 0; i < n; i++) {
 }                                                           
 
 return result;                                              
-```
 
 }
+```
 
 ### **D7. WHY O(N) TIME?** 
 
@@ -1367,8 +1390,10 @@ Looking for SMALLER?
 
 ### MISTAKE 1: Storing values instead of indices
 
+```
  stack.push(arr[i]);
  stack.push(i);
+```
 
 WHY: Need indices to calculate distances, handle duplicates correctly
 
@@ -1660,4 +1685,3 @@ Think: "I want greater, so I pop smaller" > decreasing stack
                                 **END**                                          
 ================================================================================ 
 ```
-

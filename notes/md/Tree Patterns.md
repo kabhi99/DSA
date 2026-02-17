@@ -19,6 +19,7 @@ Master Tree Traversals, BST, LCA, Path Problems, and Construction!
 
 ### **TREE NODE DEFINITION**
 
+```
 struct TreeNode {
 int val;
 TreeNode *left;
@@ -26,6 +27,7 @@ TreeNode *right;
 TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
 
 };
+```
 
 ### **KEY TREE PROPERTIES**
 
@@ -77,21 +79,21 @@ Postorder: 4, 5, 2, 3, 1  (Children first, then process)
 
 **RECURSIVE:**
 
+```cpp
 void preorder(TreeNode* root, vector<int>& result) {
-```
 if (!root) return;                           
 
 result.push_back(root->val);  // Process root
 preorder(root->left, result);  // Then left  
 preorder(root->right, result); // Then right 
-```
 
 }
+```
 
 **ITERATIVE:**
 
+```cpp
 vector<int> preorderIterative(TreeNode* root) {
-```
 vector<int> result;                                      
 if (!root) return result;                                
 
@@ -110,29 +112,29 @@ while (!st.empty()) {
 }                                                        
 
 return result;                                           
-```
 
 }
+```
 
 ### **INORDER TRAVERSAL (Left > Root > Right)**  BST = SORTED!
 
 **RECURSIVE:**
 
+```cpp
 void inorder(TreeNode* root, vector<int>& result) {
-```
 if (!root) return;                            
 
 inorder(root->left, result);   // Left first  
 result.push_back(root->val);   // Process root
 inorder(root->right, result);  // Then right  
-```
 
 }
+```
 
 **ITERATIVE:**
 
+```cpp
 vector<int> inorderIterative(TreeNode* root) {
-```
 vector<int> result;             
 stack<TreeNode*> st;            
 TreeNode* curr = root;          
@@ -154,29 +156,29 @@ while (curr || !st.empty()) {
 }                               
 
 return result;                  
-```
 
 }
+```
 
 ### **POSTORDER TRAVERSAL (Left > Right > Root)**
 
 **RECURSIVE:**
 
+```cpp
 void postorder(TreeNode* root, vector<int>& result) {
-```
 if (!root) return;                                  
 
 postorder(root->left, result);  // Left first       
 postorder(root->right, result); // Then right       
 result.push_back(root->val);    // Process root last
-```
 
 }
+```
 
 ### ITERATIVE (Using Two Stacks):
 
+```cpp
 vector<int> postorderIterative(TreeNode* root) {
-```
 vector<int> result;                         
 if (!root) return result;                   
 
@@ -198,16 +200,16 @@ while (!st2.empty()) {
 }                                           
 
 return result;                              
-```
 
 }
+```
 
 ### **UNIVERSAL DFS TEMPLATE** 
 
 Most tree problems follow this structure:
 
+```cpp
 int dfs(TreeNode* root) {
-```
 // Base case                                          
 if (!root) return BASE_VALUE;                         
 
@@ -222,9 +224,9 @@ int result = COMBINE(left, right, root->val);
 // globalAnswer = UPDATE(globalAnswer, ...);          
 
 return result;                                        
-```
 
 }
+```
 
 ## **PART 3: BFS TRAVERSAL (LEVEL ORDER)**
 
@@ -237,8 +239,8 @@ return result;
 
 **TEMPLATE:**
 
+```cpp
 vector<vector<int>> levelOrder(TreeNode* root) {
-```
 vector<vector<int>> result;                        
 if (!root) return result;                          
 
@@ -263,17 +265,17 @@ while (!q.empty()) {
 }                                                  
 
 return result;                                     
-```
 
 }
+```
 
 ### **PROBLEM: Binary Tree Right Side View (LC 199)** 
 
  PATTERN: Level Order, take last node of each level
  TEMPLATE: BFS, collect last node per level
 
+```cpp
 vector<int> rightSideView(TreeNode* root) {
-```
 vector<int> result;                            
 if (!root) return result;                      
 
@@ -297,17 +299,17 @@ while (!q.empty()) {
 }                                              
 
 return result;                                 
-```
 
 }
+```
 
 ### **PROBLEM: Zigzag Level Order (LC 103)**
 
  PATTERN: Level Order with alternating direction
  TEMPLATE: Use deque or reverse alternate levels
 
+```cpp
 vector<vector<int>> zigzagLevelOrder(TreeNode* root) {
-```
 vector<vector<int>> result;                      
 if (!root) return result;                        
 
@@ -336,9 +338,9 @@ while (!q.empty()) {
 }                                                
 
 return result;                                   
-```
 
 }
+```
 
 ## **PART 4: BINARY SEARCH TREE (BST)**
 
@@ -354,8 +356,8 @@ return result;
 
 ### **BST SEARCH**
 
+```cpp
 TreeNode* searchBST(TreeNode* root, int val) {
-```
 if (!root || root->val == val) return root;
 
 if (val < root->val) {                     
@@ -363,16 +365,16 @@ if (val < root->val) {
 } else {                                   
     return searchBST(root->right, val);    
 }                                          
-```
 
 }
+```
 
 TIME: O(H) where H is height (O(log N) balanced, O(N) worst)
 
 ### **BST INSERT**
 
+```cpp
 TreeNode* insertIntoBST(TreeNode* root, int val) {
-```
 if (!root) return new TreeNode(val);              
 
 if (val < root->val) {                            
@@ -382,9 +384,9 @@ if (val < root->val) {
 }                                                 
 
 return root;                                      
-```
 
 }
+```
 
 ### **BST DELETE** 
 
@@ -393,8 +395,8 @@ return root;
 2. Node has one child > replace with child
 3. Node has two children > replace with inorder successor (or predecessor)
 
+```cpp
 TreeNode* deleteNode(TreeNode* root, int key) {
-```
 if (!root) return nullptr;                                                
 
 if (key < root->val) {                                                    
@@ -420,9 +422,9 @@ if (key < root->val) {
 }                                                                         
 
 return root;                                                              
-```
 
 }
+```
 
 ### **PROBLEM: Validate BST (LC 98)** 
 
@@ -435,18 +437,19 @@ return root;
 - Solution: Pass valid range down recursively
 
 **COMMON MISTAKE:**
+```cpp
  if (root->val > root->left->val && root->val < root->right->val)
+```
+
  Must track range from all ancestors!
 
+```cpp
 bool isValidBST(TreeNode* root) {
-```
 return validate(root, LONG_MIN, LONG_MAX);
-```
 
 }
 
 bool validate(TreeNode* node, long minVal, long maxVal) {
-```
 if (!node) return true;                          
 
 if (node->val <= minVal || node->val >= maxVal) {
@@ -455,26 +458,24 @@ if (node->val <= minVal || node->val >= maxVal) {
 
 return validate(node->left, minVal, node->val) &&
        validate(node->right, node->val, maxVal); 
-```
 
 }
+```
 
 ### **PROBLEM: Kth Smallest Element in BST (LC 230)** 
 
  PATTERN: Inorder traversal = sorted order
  TEMPLATE: Inorder, count until k
 
+```cpp
 int kthSmallest(TreeNode* root, int k) {
-```
 int count = 0, result = 0;      
 inorder(root, k, count, result);
 return result;                  
-```
 
 }
 
 void inorder(TreeNode* node, int k, int& count, int& result) {
-```
 if (!node) return;                     
 
 inorder(node->left, k, count, result); 
@@ -486,24 +487,22 @@ if (count == k) {
 }                                      
 
 inorder(node->right, k, count, result);
-```
 
 }
+```
 
 ### **PROBLEM: Convert Sorted Array to BST (LC 108)** 
 
  PATTERN: Divide and conquer, middle element is root
  TEMPLATE: Recursive construction using mid point
 
+```cpp
 TreeNode* sortedArrayToBST(vector<int>& nums) {
-```
 return build(nums, 0, nums.size() - 1);
-```
 
 }
 
 TreeNode* build(vector<int>& nums, int left, int right) {
-```
 if (left > right) return nullptr;         
 
 int mid = left + (right - left) / 2;      
@@ -513,9 +512,9 @@ root->left = build(nums, left, mid - 1);
 root->right = build(nums, mid + 1, right);
 
 return root;                              
-```
 
 }
+```
 
 ## **PART 5: LOWEST COMMON ANCESTOR (LCA)**
 
@@ -529,8 +528,8 @@ return root;
 - If one is found, bubble it up
 - If current node is p or q, return it
 
+```cpp
 TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
-```
 // Base case                                              
 if (!root || root == p || root == q) {                    
     return root;                                          
@@ -545,9 +544,9 @@ if (left && right) return root;
 
 // Otherwise, return the one that was found               
 return left ? left : right;                               
-```
 
 }
+```
 
 TIME: O(N)
 SPACE: O(H)
@@ -561,8 +560,8 @@ SPACE: O(H)
 - In BST, we can use values to decide direction
 - LCA is first node where p and q split into different subtrees
 
+```cpp
 TreeNode* lowestCommonAncestorBST(TreeNode* root, TreeNode* p, TreeNode* q) {
-```
 while (root) {                                            
     if (p->val < root->val && q->val < root->val) {       
         root = root->left;  // Both in left subtree       
@@ -573,9 +572,9 @@ while (root) {
     }                                                     
 }                                                         
 return nullptr;                                           
-```
 
 }
+```
 
 TIME: O(H)
 
@@ -586,8 +585,8 @@ TIME: O(H)
  PATTERN: DFS with running sum
  TEMPLATE: Check if leaf with remaining sum = 0
 
+```cpp
 bool hasPathSum(TreeNode* root, int targetSum) {
-```
 if (!root) return false;                               
 
 // Check if leaf node with correct sum                 
@@ -598,27 +597,25 @@ if (!root->left && !root->right) {
 // Recurse with remaining sum                          
 return hasPathSum(root->left, targetSum - root->val) ||
        hasPathSum(root->right, targetSum - root->val); 
-```
 
 }
+```
 
 ### **PROBLEM: Path Sum II (LC 113)** 
 
  PATTERN: DFS with path tracking (backtracking)
  TEMPLATE: Build path, add to result at leaf, backtrack
 
+```cpp
 vector<vector<int>> pathSum(TreeNode* root, int targetSum) {
-```
 vector<vector<int>> result;        
 vector<int> path;                  
 dfs(root, targetSum, path, result);
 return result;                     
-```
 
 }
 
 void dfs(TreeNode* node, int remaining, vector<int>& path,
-```
      vector<vector<int>>& result) {                         
 if (!node) return;                                          
 
@@ -633,9 +630,9 @@ dfs(node->left, remaining - node->val, path, result);
 dfs(node->right, remaining - node->val, path, result);      
 
 path.pop_back();  // Backtrack!                             
-```
 
 }
+```
 
 ### **PROBLEM: Binary Tree Maximum Path Sum (LC 124)**  HARD
 
@@ -649,19 +646,17 @@ KEY INSIGHT (CRITICAL!):
 
 - Return vs Update is different!
 
+```cpp
 int maxSum;
 
 int maxPathSum(TreeNode* root) {
-```
 maxSum = INT_MIN;
 dfs(root);       
 return maxSum;   
-```
 
 }
 
 int dfs(TreeNode* node) {
-```
 if (!node) return 0;                                           
 
 // Get max path from children (0 if negative - don't use)      
@@ -673,9 +668,9 @@ maxSum = max(maxSum, left + right + node->val);
 
 // Return max single path from this node (can only go one way!)
 return max(left, right) + node->val;                           
-```
 
 }
+```
 
 WHY TWO VALUES?
 Complete path: can curve (left > node > right)
@@ -686,19 +681,17 @@ Return value: can only continue in one direction (for parent to use)
  PATTERN: Same as Max Path Sum concept
  TEMPLATE: Return height, update global diameter
 
+```cpp
 int diameter;
 
 int diameterOfBinaryTree(TreeNode* root) {
-```
 diameter = 0;   
 height(root);   
 return diameter;
-```
 
 }
 
 int height(TreeNode* node) {
-```
 if (!node) return 0;                       
 
 int left = height(node->left);             
@@ -709,9 +702,9 @@ diameter = max(diameter, left + right);
 
 // Return height (for parent to use)       
 return max(left, right) + 1;               
-```
 
 }
+```
 
 ## **PART 7: TREE CONSTRUCTION**
 
@@ -726,21 +719,19 @@ return max(left, right) + 1;
 - First element of preorder is always root
 - Find root in inorder > everything left is left subtree
 
+```cpp
 unordered_map<int, int> inorderIdx;
 int preIdx = 0;
 
 TreeNode* buildTree(vector<int>& preorder, vector<int>& inorder) {
-```
 for (int i = 0; i < inorder.size(); i++) {    
     inorderIdx[inorder[i]] = i;               
 }                                             
 return build(preorder, 0, inorder.size() - 1);
-```
 
 }
 
 TreeNode* build(vector<int>& preorder, int left, int right) {
-```
 if (left > right) return nullptr;                           
 
 int rootVal = preorder[preIdx++];                           
@@ -752,31 +743,29 @@ root->left = build(preorder, left, inIdx - 1);
 root->right = build(preorder, inIdx + 1, right);            
 
 return root;                                                
-```
 
 }
+```
 
 ### **PROBLEM: Construct from Inorder + Postorder (LC 106)**
 
  PATTERN: Similar, but postorder gives root at END
  TEMPLATE: Process postorder from right to left
 
+```cpp
 unordered_map<int, int> inorderIdx;
 int postIdx;
 
 TreeNode* buildTree(vector<int>& inorder, vector<int>& postorder) {
-```
 postIdx = postorder.size() - 1;                
 for (int i = 0; i < inorder.size(); i++) {     
     inorderIdx[inorder[i]] = i;                
 }                                              
 return build(postorder, 0, inorder.size() - 1);
-```
 
 }
 
 TreeNode* build(vector<int>& postorder, int left, int right) {
-```
 if (left > right) return nullptr;                                      
 
 int rootVal = postorder[postIdx--];                                    
@@ -789,16 +778,19 @@ root->right = build(postorder, inIdx + 1, right);
 root->left = build(postorder, left, inIdx - 1);                        
 
 return root;                                                           
-```
 
 }
+```
 
 ### **PROBLEM: Serialize and Deserialize Binary Tree (LC 297)** 
 
  PATTERN: Preorder traversal with null markers
  TEMPLATE: Use "null" for empty nodes, split by comma
 
+```java
 class Codec {
+```
+
 public:
 ```
 // Serialize: Preorder traversal with null markers
@@ -837,26 +829,28 @@ TreeNode* buildTree(queue<string>& nodes) {
 }                                                 
 ```
 
+```
 };
+```
 
 ## **PART 8: TREE PROPERTIES**
 
 ### **MAX DEPTH / HEIGHT (LC 104)**
 
+```cpp
 int maxDepth(TreeNode* root) {
-```
 if (!root) return 0;                                        
 return 1 + max(maxDepth(root->left), maxDepth(root->right));
-```
 
 }
+```
 
 ### **MIN DEPTH (LC 111)**
 
  TRICKY: Must be path to LEAF (not just any null)
 
+```cpp
 int minDepth(TreeNode* root) {
-```
 if (!root) return 0;                                        
 
 // If one child is null, must go to other child             
@@ -864,24 +858,22 @@ if (!root->left) return 1 + minDepth(root->right);
 if (!root->right) return 1 + minDepth(root->left);          
 
 return 1 + min(minDepth(root->left), minDepth(root->right));
-```
 
 }
+```
 
 ### **BALANCED BINARY TREE (LC 110)** 
 
  PATTERN: Return -1 if unbalanced, otherwise return height
  TEMPLATE: Check balance while computing height
 
+```cpp
 bool isBalanced(TreeNode* root) {
-```
 return checkHeight(root) != -1;
-```
 
 }
 
 int checkHeight(TreeNode* node) {
-```
 if (!node) return 0;                                             
 
 int left = checkHeight(node->left);                              
@@ -893,95 +885,91 @@ if (right == -1) return -1;  // Right subtree unbalanced
 if (abs(left - right) > 1) return -1;  // Current node unbalanced
 
 return 1 + max(left, right);                                     
-```
 
 }
+```
 
 ### **SYMMETRIC TREE (LC 101)** 
 
  PATTERN: Compare mirror images
  TEMPLATE: Compare left of left with right of right
 
+```cpp
 bool isSymmetric(TreeNode* root) {
-```
 return isMirror(root, root);
-```
 
 }
 
 bool isMirror(TreeNode* t1, TreeNode* t2) {
-```
 if (!t1 && !t2) return true;           
 if (!t1 || !t2) return false;          
 
 return t1->val == t2->val &&           
        isMirror(t1->left, t2->right) &&
        isMirror(t1->right, t2->left);  
-```
 
 }
+```
 
 ### **SAME TREE (LC 100)**
 
+```cpp
 bool isSameTree(TreeNode* p, TreeNode* q) {
-```
 if (!p && !q) return true;            
 if (!p || !q) return false;           
 
 return p->val == q->val &&            
        isSameTree(p->left, q->left) &&
        isSameTree(p->right, q->right);
-```
 
 }
+```
 
 ### **SUBTREE OF ANOTHER TREE (LC 572)** 
 
+```cpp
 bool isSubtree(TreeNode* root, TreeNode* subRoot) {
-```
 if (!root) return false;                   
 
 if (isSameTree(root, subRoot)) return true;
 
 return isSubtree(root->left, subRoot) |  |
        isSubtree(root->right, subRoot);    
-```
 
 }
+```
 
 ## **SOLVED: Symmetric Tree (LC 101)** 
 
  KEY INSIGHT: Compare left subtree with mirror of right subtree
 
+```cpp
 bool isSymmetric(TreeNode* root) {
-```
 return isMirror(root, root);
-```
 
 }
 
 bool isMirror(TreeNode* t1, TreeNode* t2) {
-```
 if (!t1 && !t2) return true;           
 if (!t1 || !t2) return false;          
 
 return t1->val == t2->val &&           
        isMirror(t1->left, t2->right) &&
        isMirror(t1->right, t2->left);  
-```
 
 }
+```
 
 ## **SOLVED: Flatten Binary Tree to Linked List (LC 114)** 
 
  KEY INSIGHT: Post-order traversal in reverse (right, left, node)
 Or: Morris-like threading
 
+```cpp
 // Method 1: Reverse post-order with prev pointer
 TreeNode* prev = nullptr;
 
 void flatten(TreeNode* root) {
-```
 if (!root) return;   
 
 flatten(root->right);
@@ -990,13 +978,11 @@ flatten(root->left);
 root->right = prev;  
 root->left = nullptr;
 prev = root;         
-```
 
 }
 
 // Method 2: Iterative
 void flattenIterative(TreeNode* root) {
-```
 while (root) {                                
     if (root->left) {                         
         // Find rightmost node in left subtree
@@ -1012,16 +998,16 @@ while (root) {
     }                                         
     root = root->right;                       
 }                                             
-```
 
 }
+```
 
 ## **SOLVED: Vertical Order Traversal (LC 987)** 
 
  KEY INSIGHT: Track (column, row, value) and sort appropriately
 
+```cpp
 vector<vector<int>> verticalTraversal(TreeNode* root) {
-```
 // {column, row, value}                                                          
 vector<tuple<int, int, int>> nodes;                                              
 
@@ -1049,17 +1035,17 @@ for (auto& [col, row, val] : nodes) {
 }                                                                                
 
 return result;                                                                   
-```
 
 }
+```
 
 ## **SOLVED: Binary Tree Top View / Bottom View** 
 
  KEY INSIGHT: BFS with column tracking, first/last node per column
 
+```cpp
 // TOP VIEW: First node encountered at each column
 vector<int> topView(TreeNode* root) {
-```
 if (!root) return {};                                
 
 map<int, int> columnMap;  // column -> node value    
@@ -1085,13 +1071,11 @@ for (auto& [col, val] : columnMap) {
     result.push_back(val);                           
 }                                                    
 return result;                                       
-```
 
 }
 
 // BOTTOM VIEW: Last node at each column
 vector<int> bottomView(TreeNode* root) {
-```
 if (!root) return {};                               
 
 map<int, int> columnMap;                            
@@ -1115,9 +1099,9 @@ for (auto& [col, val] : columnMap) {
     result.push_back(val);                          
 }                                                   
 return result;                                      
-```
 
 }
+```
 
 ## **SOLVED: Recover Binary Search Tree (LC 99)** 
 
@@ -1126,6 +1110,7 @@ PROBLEM: Two nodes swapped in BST, recover it.
  KEY INSIGHT: Inorder traversal should be sorted.
 Find two violations (prev > curr) to identify swapped nodes.
 
+```cpp
 TreeNode* first = nullptr;
 TreeNode* second = nullptr;
 TreeNode* prev = nullptr;
@@ -1137,7 +1122,6 @@ swap(first->val, second->val);
 }
 
 void inorder(TreeNode* node) {
-```
 if (!node) return;                                           
 
 inorder(node->left);                                         
@@ -1151,16 +1135,16 @@ if (prev && prev->val > node->val) {
 prev = node;                                                 
 
 inorder(node->right);                                        
-```
 
 }
+```
 
 ## **SOLVED: BST Iterator (LC 173)** 
 
  KEY INSIGHT: Controlled inorder traversal using stack
 
+```java
 class BSTIterator {
-```
 stack<TreeNode*> st;           
 
 void pushLeft(TreeNode* node) {
@@ -1189,17 +1173,19 @@ bool hasNext() {
 }                             
 ```
 
+```
 };
 
 // TIME: O(1) average for next()
 // SPACE: O(h) where h = height
+```
 
 ## **SOLVED: Convert Sorted List to BST (LC 109)** 
 
  KEY INSIGHT: Use slow/fast pointers to find middle
 
+```cpp
 TreeNode* sortedListToBST(ListNode* head) {
-```
 if (!head) return nullptr;                                  
 if (!head->next) return new TreeNode(head->val);            
 
@@ -1225,27 +1211,25 @@ root->left = sortedListToBST(head == slow ? nullptr : head);
 root->right = sortedListToBST(slow->next);                  
 
 return root;                                                
-```
 
 }
+```
 
 ## **SOLVED: Binary Tree Cameras (LC 968)** 
 
  KEY INSIGHT: Greedy post-order. States: 0=needs coverage, 1=has camera, 2=covered
 
+```cpp
 int cameras = 0;
 
 int minCameraCover(TreeNode* root) {
-```
 if (dfs(root) == 0) cameras++;  // Root needs coverage
 return cameras;                                       
-```
 
 }
 
 // Returns: 0=needs camera, 1=has camera, 2=covered by child
 int dfs(TreeNode* node) {
-```
 if (!node) return 2;  // Null is considered covered
 
 int left = dfs(node->left);                        
@@ -1264,9 +1248,9 @@ if (left == 1 || right == 1) {
 
 // Both children are covered but no camera nearby  
 return 0;  // Needs coverage from parent           
-```
 
 }
+```
 
 ## **PART 9: PATTERN RECOGNITION GUIDE**
 
@@ -1399,4 +1383,3 @@ Y 968. Binary Tree Cameras  (SOLVED - Tree DP/Greedy)
                                    END                                         
 ===============================================================================
 ```
-

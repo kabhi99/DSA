@@ -15,7 +15,9 @@ The "Crossover Zone" - Where Patterns Collide!
 
 ### **CONCEPT**
 
+```
 LRU = Least Recently Used
+```
 
 **REQUIREMENT:**
 - get(key): O(1) - return value if exists
@@ -40,8 +42,8 @@ LRU = Least Recently Used
 
 ### **LRU CACHE - FULL IMPLEMENTATION** 
 
+```java
 class LRUCache {
-```
 struct Node {                                                             
     int key, value;                                                       
     Node* prev;                                                           
@@ -113,7 +115,9 @@ void put(int key, int value) {
 }                                                 
 ```
 
+```
 };
+```
 
 TIME: O(1) for both get and put
 SPACE: O(capacity)
@@ -122,7 +126,9 @@ SPACE: O(capacity)
 
 ### **CONCEPT**
 
+```
 LFU = Least Frequently Used
+```
 
 **REQUIREMENT:**
 - get(key): O(1) - return value, increment frequency
@@ -137,8 +143,8 @@ LFU = Least Frequently Used
 
 ### **LFU CACHE - FULL IMPLEMENTATION** 
 
+```java
 class LFUCache {
-```
 struct Node {                                                                      
     int key, value, freq;                                                          
     Node* prev;                                                                    
@@ -240,7 +246,9 @@ void put(int key, int value) {
 }                                                         
 ```
 
+```
 };
+```
 
 ## **PART 3: TRIE (PREFIX TREE)** 
 
@@ -261,7 +269,10 @@ TRIE: Tree where each node represents a character, paths form words
 
 ### **TRIE - IMPLEMENTATION (LC 208)** 
 
+```java
 class TrieNode {
+```
+
 public:
 ```
 TrieNode* children[26];           
@@ -275,10 +286,12 @@ TrieNode() {
 }                                 
 ```
 
+```java
 };
 
 class Trie {
 TrieNode* root;
+```
 
 public:
 ```
@@ -319,7 +332,9 @@ bool startsWith(string prefix) {
 }                                                
 ```
 
+```
 };
+```
 
 ## **SOLVED: Word Search II (LC 212)** 
 
@@ -327,8 +342,8 @@ PROBLEM: Find all words from dictionary in a grid.
 
  KEY INSIGHT: Build Trie from words, DFS from each cell with Trie guidance
 
+```java
 class Solution {
-```
 struct TrieNode {                                                    
     TrieNode* children[26] = {};                                     
     string* word = nullptr;  // Store word at end node               
@@ -395,7 +410,9 @@ vector<string> findWords(vector<vector<char>>& board, vector<string>& words) {
 }                                                                             
 ```
 
+```
 };
+```
 
 ## **PART 4: LONGEST INCREASING PATH IN MATRIX (LC 329)** 
 
@@ -404,8 +421,8 @@ PROBLEM: Find the longest increasing path in a matrix.
  KEY INSIGHT: DFS + Memoization (Graph + DP crossover!)
 Each cell's answer depends only on strictly greater neighbors.
 
+```cpp
 int longestIncreasingPath(vector<vector<int>>& matrix) {
-```
 int m = matrix.size(), n = matrix[0].size();            
 vector<vector<int>> memo(m, vector<int>(n, 0));         
 int result = 0;                                         
@@ -434,9 +451,9 @@ for (int i = 0; i < m; i++) {
 }                                                       
 
 return result;                                          
-```
 
 }
+```
 
 TIME: O(M x N) - each cell computed once
 SPACE: O(M x N) for memoization
@@ -457,9 +474,11 @@ BALANCE: |maxHeap| = |minHeap| or |maxHeap| = |minHeap| + 1
 
 ### **IMPLEMENTATION** 
 
+```java
 class MedianFinder {
 priority_queue<int> maxHeap;  // Smaller half (max at top)
 priority_queue<int, vector<int>, greater<int>> minHeap;  // Larger half (min at top)
+```
 
 public:
 ```
@@ -486,7 +505,9 @@ double findMedian() {
 }                                                  
 ```
 
+```
 };
+```
 
 TIME: O(log n) for addNum, O(1) for findMedian
 SPACE: O(n)
@@ -497,8 +518,8 @@ SPACE: O(n)
 
  KEY INSIGHT: Trie + DFS for wildcard matching
 
+```java
 class WordDictionary {
-```
 struct TrieNode {                                                   
     TrieNode* children[26] = {};                                    
     bool isEnd = false;                                             
@@ -544,16 +565,20 @@ bool search(string word) {
 }                                                
 ```
 
+```
 };
+```
 
 ## **SOLVED: Design Twitter (LC 355)** 
 
  KEY INSIGHT: HashMap for follows, priority queue for feed merging
 
+```java
 class Twitter {
 int timestamp = 0;
 unordered_map<int, vector<pair<int, int>>> tweets;  // userId -> [(time, tweetId)]
 unordered_map<int, unordered_set<int>> following;   // userId -> set of followees
+```
 
 public:
 ```
@@ -596,7 +621,9 @@ void unfollow(int followerId, int followeeId) {
 }                                                         
 ```
 
+```
 };
+```
 
 ## **DESIGN PATTERNS SUMMARY**
 
@@ -648,4 +675,3 @@ Y 355. Design Twitter
 - 588. Design In-Memory File System 
 
 ## **END**
-

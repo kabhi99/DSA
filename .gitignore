@@ -10,6 +10,10 @@ Thumbs.db
 # Archives
 *.zip
 
+# Original txt notes (kept locally, md versions are in git)
+notes/*.txt
+Problems/**/*.txt
+
 # Python
 __pycache__/
 *.pyc

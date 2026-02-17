@@ -19,7 +19,9 @@ Master Permutations, Combinations, Subsets, and Constraint Satisfaction!
 
 ### **DEFINITION**
 
+```
 Backtracking = DFS + UNDO (make choice, explore, undo choice)
+```
 
  **MEMORY AID**: "**T**ry, **E**xplore, **U**ndo" (TEU)
 1. Try a choice (add to path)
@@ -72,8 +74,8 @@ WHY "BACKTRACKING"?
 
 ### **THE BACKTRACKING TEMPLATE**
 
-void backtrack(state, choices, result) {
 ```
+void backtrack(state, choices, result) {
 // 1. BASE CASE: Found a valid solution                        
 if (isComplete(state)) {                                       
     result.add(copy of state);                                 
@@ -95,9 +97,9 @@ for (choice : available_choices) {
     // 6. UNDO CHOICE: Remove from state (BACKTRACK!)          
     state.remove(choice);                                      
 }                                                              
-```
 
 }
+```
 
 ### **TEMPLATE BREAKDOWN**
 
@@ -140,8 +142,8 @@ for (choice : available_choices) {
 
 **TEMPLATE:**
 
-void subsetBacktrack(nums, start, path, result) {
 ```
+void subsetBacktrack(nums, start, path, result) {
 result.add(copy of path);  // Every state is valid!                   
 
 for (int i = start; i < nums.size(); i++) {                           
@@ -149,9 +151,9 @@ for (int i = start; i < nums.size(); i++) {
     subsetBacktrack(nums, i + 1, path, result);  // i+1 to avoid reuse
     path.remove_last();                                               
 }                                                                     
-```
 
 }
+```
 
 ### **PROBLEM: Subsets (LC 78)** 
 
@@ -172,18 +174,16 @@ Output: [[],[1],[2],[1,2],[3],[1,3],[2,3],[1,2,3]]
  [1,2,3]                        
 ```
 
+```cpp
 vector<vector<int>> subsets(vector<int>& nums) {
-```
 vector<vector<int>> result;      
 vector<int> path;                
 backtrack(nums, 0, path, result);
 return result;                   
-```
 
 }
 
 void backtrack(vector<int>& nums, int start,
-```
            vector<int>& path, vector<vector<int>>& result) {
 result.push_back(path);  // Add current subset              
 
@@ -192,9 +192,9 @@ for (int i = start; i < nums.size(); i++) {
     backtrack(nums, i + 1, path, result);  // Explore       
     path.pop_back();                   // Unchoose          
 }                                                           
-```
 
 }
+```
 
 TIME: O(N x 2^N) - 2^N subsets, O(N) to copy each
 SPACE: O(N) for recursion depth
@@ -212,19 +212,17 @@ SPACE: O(N) for recursion depth
 Input: nums = [1,2,2]
 Output: [[],[1],[1,2],[1,2,2],[2],[2,2]]
 
+```cpp
 vector<vector<int>> subsetsWithDup(vector<int>& nums) {
-```
 sort(nums.begin(), nums.end());  // Sort first!
 vector<vector<int>> result;                    
 vector<int> path;                              
 backtrack(nums, 0, path, result);              
 return result;                                 
-```
 
 }
 
 void backtrack(vector<int>& nums, int start,
-```
            vector<int>& path, vector<vector<int>>& result) {
 result.push_back(path);                                     
 
@@ -236,9 +234,9 @@ for (int i = start; i < nums.size(); i++) {
     backtrack(nums, i + 1, path, result);                   
     path.pop_back();                                        
 }                                                           
-```
 
 }
+```
 
  CRITICAL: i > start (not i > 0)
 We only skip duplicates at SAME decision level!
@@ -255,8 +253,8 @@ We only skip duplicates at SAME decision level!
 
 **TEMPLATE:**
 
-void combBacktrack(n, k, start, path, result) {
 ```
+void combBacktrack(n, k, start, path, result) {
 if (path.size() == k) {  // Base case: found valid combination
     result.add(copy of path);                                 
     return;                                                   
@@ -267,9 +265,9 @@ for (int i = start; i <= n; i++) {
     combBacktrack(n, k, i + 1, path, result);                 
     path.remove_last();                                       
 }                                                             
-```
 
 }
+```
 
 ### **PROBLEM: Combinations (LC 77)** 
 
@@ -279,18 +277,16 @@ for (int i = start; i <= n; i++) {
 Input: n = 4, k = 2
 Output: [[1,2],[1,3],[1,4],[2,3],[2,4],[3,4]]
 
+```cpp
 vector<vector<int>> combine(int n, int k) {
-```
 vector<vector<int>> result;      
 vector<int> path;                
 backtrack(n, k, 1, path, result);
 return result;                   
-```
 
 }
 
 void backtrack(int n, int k, int start,
-```
            vector<int>& path, vector<vector<int>>& result) {
 if (path.size() == k) {                                     
     result.push_back(path);                                 
@@ -304,9 +300,9 @@ for (int i = start; i <= n - (k - path.size()) + 1; i++) {
     backtrack(n, k, i + 1, path, result);                   
     path.pop_back();                                        
 }                                                           
-```
 
 }
+```
 
 **PRUNING EXPLANATION:**
 If path.size() = 1 and k = 3, we need 2 more elements
@@ -326,18 +322,16 @@ So we can stop early!
 Input: candidates = [2,3,6,7], target = 7
 Output: [[2,2,3],[7]]
 
+```cpp
 vector<vector<int>> combinationSum(vector<int>& candidates, int target) {
-```
 vector<vector<int>> result;                    
 vector<int> path;                              
 backtrack(candidates, target, 0, path, result);
 return result;                                 
-```
 
 }
 
 void backtrack(vector<int>& candidates, int remaining, int start,
-```
            vector<int>& path, vector<vector<int>>& result) {          
 if (remaining == 0) {                                                 
     result.push_back(path);                                           
@@ -351,9 +345,9 @@ for (int i = start; i < candidates.size(); i++) {
     //                                               ^ NOT i+1!       
     path.pop_back();                                                  
 }                                                                     
-```
 
 }
+```
 
 ### **PROBLEM: Combination Sum II (LC 40)** 
 
@@ -363,19 +357,17 @@ for (int i = start; i < candidates.size(); i++) {
 Input: candidates = [10,1,2,7,6,1,5], target = 8
 Output: [[1,1,6],[1,2,5],[1,7],[2,6]]
 
+```cpp
 vector<vector<int>> combinationSum2(vector<int>& candidates, int target) {
-```
 sort(candidates.begin(), candidates.end());  // Sort!
 vector<vector<int>> result;                          
 vector<int> path;                                    
 backtrack(candidates, target, 0, path, result);      
 return result;                                       
-```
 
 }
 
 void backtrack(vector<int>& candidates, int remaining, int start,
-```
            vector<int>& path, vector<vector<int>>& result) {              
 if (remaining == 0) {                                                     
     result.push_back(path);                                               
@@ -392,27 +384,25 @@ for (int i = start; i < candidates.size(); i++) {
     //                                               ^ i+1 (no reuse)     
     path.pop_back();                                                      
 }                                                                         
-```
 
 }
+```
 
 ### **PROBLEM: Combination Sum III (LC 216)**
 
  PATTERN: K numbers from 1-9 that sum to N
  TEMPLATE: Standard combination with sum constraint
 
+```cpp
 vector<vector<int>> combinationSum3(int k, int n) {
-```
 vector<vector<int>> result;      
 vector<int> path;                
 backtrack(k, n, 1, path, result);
 return result;                   
-```
 
 }
 
 void backtrack(int k, int remaining, int start,
-```
            vector<int>& path, vector<vector<int>>& result) {
 if (path.size() == k && remaining == 0) {                   
     result.push_back(path);                                 
@@ -425,9 +415,9 @@ for (int i = start; i <= 9; i++) {
     backtrack(k, remaining - i, i + 1, path, result);       
     path.pop_back();                                        
 }                                                           
-```
 
 }
+```
 
 ## **PART 5: PATTERN 3 - PERMUTATIONS**
 
@@ -441,8 +431,8 @@ for (int i = start; i <= 9; i++) {
 
 **TEMPLATE:**
 
-void permBacktrack(nums, path, used, result) {
 ```
+void permBacktrack(nums, path, used, result) {
 if (path.size() == nums.size()) {               
     result.add(copy of path);                   
     return;                                     
@@ -457,9 +447,9 @@ for (int i = 0; i < nums.size(); i++) {
     path.remove_last();                         
     used[i] = false;                            
 }                                               
-```
 
 }
+```
 
 ### **PROBLEM: Permutations (LC 46)** 
 
@@ -469,19 +459,17 @@ for (int i = 0; i < nums.size(); i++) {
 Input: nums = [1,2,3]
 Output: [[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]
 
+```cpp
 vector<vector<int>> permute(vector<int>& nums) {
-```
 vector<vector<int>> result;           
 vector<int> path;                     
 vector<bool> used(nums.size(), false);
 backtrack(nums, path, used, result);  
 return result;                        
-```
 
 }
 
 void backtrack(vector<int>& nums, vector<int>& path,
-```
            vector<bool>& used, vector<vector<int>>& result) {
 if (path.size() == nums.size()) {                            
     result.push_back(path);                                  
@@ -497,9 +485,9 @@ for (int i = 0; i < nums.size(); i++) {
     path.pop_back();                                         
     used[i] = false;                                         
 }                                                            
-```
 
 }
+```
 
 TIME: O(N x N!)
 SPACE: O(N)
@@ -517,20 +505,18 @@ KEY INSIGHT (TRICKY!):
 Input: nums = [1,1,2]
 Output: [[1,1,2],[1,2,1],[2,1,1]]
 
+```cpp
 vector<vector<int>> permuteUnique(vector<int>& nums) {
-```
 sort(nums.begin(), nums.end());  // Sort!
 vector<vector<int>> result;              
 vector<int> path;                        
 vector<bool> used(nums.size(), false);   
 backtrack(nums, path, used, result);     
 return result;                           
-```
 
 }
 
 void backtrack(vector<int>& nums, vector<int>& path,
-```
            vector<bool>& used, vector<vector<int>>& result) { 
 if (path.size() == nums.size()) {                             
     result.push_back(path);                                   
@@ -549,9 +535,9 @@ for (int i = 0; i < nums.size(); i++) {
     path.pop_back();                                          
     used[i] = false;                                          
 }                                                             
-```
 
 }
+```
 
 WHY !used[i-1]?
 If nums[i-1] is NOT used, we're at same decision level
@@ -565,8 +551,8 @@ If nums[i-1] IS used, it's in the path (deeper level), okay to use nums[i]
 Input: digits = "23"
 Output: ["ad","ae","af","bd","be","bf","cd","ce","cf"]
 
+```cpp
 vector<string> letterCombinations(string digits) {
-```
 if (digits.empty()) return {};                               
 
 vector<string> mapping = {"", "", "abc", "def", "ghi", "jkl",
@@ -575,12 +561,10 @@ vector<string> result;
 string path;                                                 
 backtrack(digits, 0, mapping, path, result);                 
 return result;                                               
-```
 
 }
 
 void backtrack(string& digits, int idx, vector<string>& mapping,
-```
            string& path, vector<string>& result) {    
 if (idx == digits.size()) {                           
     result.push_back(path);                           
@@ -593,9 +577,9 @@ for (char c : letters) {
     backtrack(digits, idx + 1, mapping, path, result);
     path.pop_back();                                  
 }                                                     
-```
 
 }
+```
 
 ## **PART 6: PATTERN 4 - GRID/MATRIX BACKTRACKING**
 
@@ -610,8 +594,8 @@ for (char c : letters) {
 - Explore 4 directions
 - Restore cell (backtrack)
 
+```cpp
 bool exist(vector<vector<char>>& board, string word) {
-```
 int m = board.size(), n = board[0].size();    
 
 for (int i = 0; i < m; i++) {                 
@@ -623,12 +607,10 @@ for (int i = 0; i < m; i++) {
 }                                             
 
 return false;                                 
-```
 
 }
 
 bool backtrack(vector<vector<char>>& board, string& word,
-```
            int idx, int i, int j) {                      
 // Base case: found all characters                       
 if (idx == word.size()) return true;                     
@@ -654,9 +636,9 @@ bool found = backtrack(board, word, idx + 1, i + 1, j) ||
 board[i][j] = temp;                                      
 
 return found;                                            
-```
 
 }
+```
 
 ### **PROBLEM: Word Search II (LC 212)**  HARD
 
@@ -679,8 +661,8 @@ return found;
 - Main diagonal: row - col (constant for same diagonal)
 - Anti-diagonal: row + col (constant for same diagonal)
 
+```cpp
 vector<vector<string>> solveNQueens(int n) {
-```
 vector<vector<string>> result;                     
 vector<string> board(n, string(n, '.'));           
 
@@ -690,12 +672,10 @@ set<int> diag2;      // row + col
 
 backtrack(0, n, board, cols, diag1, diag2, result);
 return result;                                     
-```
 
 }
 
 void backtrack(int row, int n, vector<string>& board,
-```
            set<int>& cols, set<int>& diag1, set<int>& diag2, 
            vector<vector<string>>& result) {                 
 // Base case: all rows filled                                
@@ -728,22 +708,22 @@ for (int col = 0; col < n; col++) {
     diag1.erase(row - col);                                  
     diag2.erase(row + col);                                  
 }                                                            
-```
 
 }
+```
 
 ### **PROBLEM: Sudoku Solver (LC 37)**  HARD
 
  PATTERN: Constraint satisfaction - rows, columns, boxes
  TEMPLATE: Try each digit 1-9, validate constraints
 
+```cpp
 void solveSudoku(vector<vector<char>>& board) {
 solve(board);
 
 }
 
 bool solve(vector<vector<char>>& board) {
-```
 for (int i = 0; i < 9; i++) {                       
     for (int j = 0; j < 9; j++) {                   
         if (board[i][j] == '.') {                   
@@ -764,12 +744,10 @@ for (int i = 0; i < 9; i++) {
     }                                               
 }                                                   
 return true;  // Board is complete                  
-```
 
 }
 
 bool isValid(vector<vector<char>>& board, int row, int col, char c) {
-```
 for (int i = 0; i < 9; i++) {                    
     // Check row                                 
     if (board[row][i] == c) return false;        
@@ -783,9 +761,9 @@ for (int i = 0; i < 9; i++) {
     if (board[boxRow][boxCol] == c) return false;
 }                                                
 return true;                                     
-```
 
 }
+```
 
 ### **PROBLEM: Generate Parentheses (LC 22)** 
 
@@ -800,18 +778,16 @@ return true;
 Input: n = 3
 Output: ["((()))","(()())","(())()","()(())","()()()"]
 
+```cpp
 vector<string> generateParenthesis(int n) {
-```
 vector<string> result;           
 string path;                     
 backtrack(n, 0, 0, path, result);
 return result;                   
-```
 
 }
 
 void backtrack(int n, int open, int close,
-```
            string& path, vector<string>& result) {
 if (path.size() == 2 * n) {                       
     result.push_back(path);                       
@@ -829,27 +805,25 @@ if (close < open) {
     backtrack(n, open, close + 1, path, result);  
     path.pop_back();                              
 }                                                 
-```
 
 }
+```
 
 ### **PROBLEM: Palindrome Partitioning (LC 131)** 
 
  PATTERN: Partitioning with constraint
  TEMPLATE: Try each partition point, check if palindrome
 
+```cpp
 vector<vector<string>> partition(string s) {
-```
 vector<vector<string>> result;
 vector<string> path;          
 backtrack(s, 0, path, result);
 return result;                
-```
 
 }
 
 void backtrack(string& s, int start,
-```
            vector<string>& path, vector<vector<string>>& result) {
 if (start == s.size()) {                                          
     result.push_back(path);                                       
@@ -863,19 +837,17 @@ for (int end = start; end < s.size(); end++) {
         path.pop_back();                                          
     }                                                             
 }                                                                 
-```
 
 }
 
 bool isPalindrome(string& s, int left, int right) {
-```
 while (left < right) {                        
     if (s[left++] != s[right--]) return false;
 }                                             
 return true;                                  
-```
 
 }
+```
 
 ## **PART 8: PRUNING TECHNIQUES**
 
@@ -905,8 +877,8 @@ return true;
 
 ### EXAMPLE - Combination Sum with Pruning:
 
+```cpp
 void backtrack(vector<int>& candidates, int remaining, int start,
-```
            vector<int>& path, vector<vector<int>>& result) {          
 if (remaining == 0) {                                                 
     result.push_back(path);                                           
@@ -921,9 +893,9 @@ for (int i = start; i < candidates.size(); i++) {
     backtrack(candidates, remaining - candidates[i], i, path, result);
     path.pop_back();                                                  
 }                                                                     
-```
 
 }
+```
 
 ## **PART 9: PATTERN RECOGNITION GUIDE**
 
@@ -1066,4 +1038,3 @@ Y 131. Palindrome Partitioning
                                    END                                         
 ===============================================================================
 ```
-

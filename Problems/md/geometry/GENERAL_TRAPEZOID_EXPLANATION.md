@@ -22,7 +22,9 @@ Example with 5 points: 10 pairs total
 
 STEP 2: Calculate Slope for Each Pair
 --------------------------------------
+```
 slope = Δy/Δx = (y2 - y1)/(x2 - x1)
+```
 
 Important Details:
 1. Reduce to lowest terms using GCD
@@ -35,15 +37,19 @@ Example: dy=-3, dx=-2 > dy=3, dx=2
 
 Examples:
 Point pair ([-3,2], [3,0]):
+```
 dy = 0-2 = -2
 dx = 3-(-3) = 6
 gcd(2,6) = 2
 slope = {-1, 3}  (after reduction)
+```
 
 Point pair ([3,0], [3,2]):
+```
 dy = 2-0 = 2
 dx = 3-3 = 0
 slope = {1, 0}  (vertical line)
+```
 
 STEP 3: Group Pairs by Slope
 -----------------------------
@@ -79,48 +85,75 @@ Index:
 ### STEP 1 & 2: Generate All Pairs and Calculate Slopes
 
 Pair (0,1): [-3,2] to [3,0]
+```
 dy = 0-2 = -2, dx = 3-(-3) = 6
 gcd(2,6) = 2
 slope = {-2/2, 6/2} = {-1, 3}
+```
 
 Pair (0,2): [-3,2] to [2,3]
+```
 dy = 3-2 = 1, dx = 2-(-3) = 5
 slope = {1, 5}
+```
 
 Pair (0,3): [-3,2] to [3,2]
+```
 dy = 2-2 = 0, dx = 3-(-3) = 6
 gcd(0,6) = 6
 slope = {0, 1}  (horizontal)
+```
 
 Pair (0,4): [-3,2] to [2,-3]
+```
 dy = -3-2 = -5, dx = 2-(-3) = 5
 gcd(5,5) = 5
 slope = {-1, 1}  < Remember this!
+```
 
 Pair (1,2): [3,0] to [2,3]
+```
 dy = 3-0 = 3, dx = 2-3 = -1
+```
+
 Normalize: dx=-1 > dx=1, dy=-3
+```
 slope = {-3, 1}
+```
 
 Pair (1,3): [3,0] to [3,2]
+```
 dy = 2-0 = 2, dx = 3-3 = 0
 slope = {1, 0}  (vertical) < Remember this!
+```
 
 Pair (1,4): [3,0] to [2,-3]
+```
 dy = -3-0 = -3, dx = 2-3 = -1
+```
+
 Normalize: dx=-1 > dx=1, dy=3
+```
 slope = {3, 1}
+```
 
 Pair (2,3): [2,3] to [3,2]
+```
 dy = 2-3 = -1, dx = 3-2 = 1
 slope = {-1, 1}  < Same as (0,4)! Parallel!
+```
 
 Pair (2,4): [2,3] to [2,-3]
+```
 dy = -3-3 = -6, dx = 2-2 = 0
 slope = {1, 0}  (vertical) < Same as (1,3)! Parallel!
+```
 
 Pair (3,4): [3,2] to [2,-3]
+```
 dy = -3-2 = -5, dx = 2-3 = -1
+```
+
 Normalize: slope = {5, 1}
 
 ### STEP 3: Grouping by Slope
@@ -234,4 +267,3 @@ Pick any 2 parallel segments with 4 distinct points
 4. **Slope Representation**
 Use reduced fraction (dy/dx) normalized with positive dx
 Handle vertical lines specially as {1, 0}
-

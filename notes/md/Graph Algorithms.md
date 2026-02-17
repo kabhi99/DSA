@@ -34,6 +34,7 @@ DENSE: Many edges (E ~ V2)
 
 BEST FOR: Sparse graphs, most interview problems
 
+```cpp
 // Unweighted graph
 vector<vector<int>> adj(n);  // adj[u] = list of neighbors
 
@@ -54,6 +55,7 @@ adj[u].push_back({v, w});
 adj[v].push_back({u, w});  // Omit for directed
 
 }
+```
 
 SPACE: O(V + E)
 ACCESS NEIGHBORS: O(degree of v)
@@ -62,11 +64,13 @@ ACCESS NEIGHBORS: O(degree of v)
 
 BEST FOR: Dense graphs, quick edge lookup, Floyd-Warshall
 
+```cpp
 vector<vector<int>> adj(n, vector<int>(n, 0));
 
 // Build
 adj[u][v] = 1;  // or weight for weighted graphs
 adj[v][u] = 1;  // Omit for directed
+```
 
 SPACE: O(V2)
 EDGE LOOKUP: O(1)
@@ -75,22 +79,20 @@ EDGE LOOKUP: O(1)
 
 BEST FOR: Matrix/grid problems (islands, mazes)
 
+```
 // 4-directional movement
 int dirs[4][2] = {{0,1}, {0,-1}, {1,0}, {-1,0}};
 
 // 8-directional movement
 int dirs[8][2] = {{0,1}, {0,-1}, {1,0}, {-1,0},
-```
               {1,1}, {1,-1}, {-1,1}, {-1,-1}};
-```
 
 // Check bounds
 bool isValid(int r, int c, int m, int n) {
-```
 return r >= 0 && r < m && c >= 0 && c < n;
-```
 
 }
+```
 
 ## **PART 2: BFS (BREADTH-FIRST SEARCH)** 
 
@@ -107,8 +109,8 @@ is guaranteed to be the shortest path (in unweighted graphs)!
 
 ### **BFS TEMPLATE** 
 
+```cpp
 void bfs(int start, vector<vector<int>>& adj) {
-```
 int n = adj.size();                                           
 vector<bool> visited(n, false);                               
 queue<int> q;                                                 
@@ -129,16 +131,16 @@ while (!q.empty()) {
         }                                                     
     }                                                         
 }                                                             
-```
 
 }
+```
 
 TIME: O(V + E)  |  SPACE: O(V)
 
 ### **BFS WITH LEVEL TRACKING** 
 
+```cpp
 int bfsWithLevels(int start, int target, vector<vector<int>>& adj) {
-```
 vector<bool> visited(adj.size(), false);         
 queue<int> q;                                    
 
@@ -166,27 +168,27 @@ while (!q.empty()) {
 }                                                
 
 return -1;  // Target not reachable              
-```
 
 }
+```
 
 ### **MULTI-SOURCE BFS** 
 
 KEY INSIGHT: Start BFS from ALL sources simultaneously!
 
+```
 // Example: Rotting Oranges - start from all rotten oranges
 queue<pair<int,int>> q;
 for (int i = 0; i < m; i++) {
-```
 for (int j = 0; j < n; j++) {               
     if (grid[i][j] == 2) {  // Rotten orange
         q.push({i, j});                     
     }                                       
 }                                           
-```
 
 }
 // Then do normal BFS...
+```
 
 ## **SOLVED: Number of Islands (LC 200)** 
 
@@ -194,8 +196,8 @@ PROBLEM: Count islands (connected 1s) in a grid.
 
  KEY INSIGHT: Each BFS/DFS from an unvisited '1' finds one island
 
+```cpp
 int numIslands(vector<vector<char>>& grid) {
-```
 int m = grid.size(), n = grid[0].size();                       
 int islands = 0;                                               
 int dirs[4][2] = {{0,1}, {0,-1}, {1,0}, {-1,0}};               
@@ -228,9 +230,9 @@ for (int i = 0; i < m; i++) {
 }                                                              
 
 return islands;                                                
-```
 
 }
+```
 
 TIME: O(M x N)  |  SPACE: O(min(M, N)) for queue
 
@@ -240,8 +242,8 @@ PROBLEM: Find minutes until all oranges rot (or -1 if impossible).
 
  KEY INSIGHT: Multi-source BFS from all rotten oranges simultaneously
 
+```cpp
 int orangesRotting(vector<vector<int>>& grid) {
-```
 int m = grid.size(), n = grid[0].size();               
 queue<pair<int,int>> q;                                
 int fresh = 0;                                         
@@ -283,9 +285,9 @@ while (!q.empty()) {
 }                                                      
 
 return fresh == 0 ? minutes : -1;                      
-```
 
 }
+```
 
 ## **SOLVED: Word Ladder (LC 127)** 
 
@@ -293,8 +295,8 @@ PROBLEM: Shortest transformation sequence from beginWord to endWord.
 
  KEY INSIGHT: BFS where neighbors are words differing by one letter
 
+```cpp
 int ladderLength(string beginWord, string endWord, vector<string>& wordList) {
-```
 unordered_set<string> dict(wordList.begin(), wordList.end());       
 if (dict.find(endWord) == dict.end()) return 0;                     
 
@@ -328,9 +330,9 @@ while (!q.empty()) {
 }                                                                   
 
 return 0;                                                           
-```
 
 }
+```
 
 ## **SOLVED: Clone Graph (LC 133)** 
 
@@ -364,7 +366,9 @@ while (!q.empty()) {
 return cloned[node];                                        
 ```
 
+```
 }
+```
 
 ## **PART 3: DFS (DEPTH-FIRST SEARCH)** 
 
@@ -382,8 +386,8 @@ Use when you need to explore ALL possibilities.
 
 ### **DFS TEMPLATE - RECURSIVE** 
 
+```cpp
 void dfs(int node, vector<vector<int>>& adj, vector<bool>& visited) {
-```
 visited[node] = true;               
 
 // Process node here                
@@ -393,13 +397,11 @@ for (int neighbor : adj[node]) {
         dfs(neighbor, adj, visited);
     }                               
 }                                   
-```
 
 }
 
 // Call for all components
 void dfsAll(vector<vector<int>>& adj) {
-```
 int n = adj.size();            
 vector<bool> visited(n, false);
 
@@ -408,14 +410,14 @@ for (int i = 0; i < n; i++) {
         dfs(i, adj, visited);  
     }                          
 }                              
-```
 
 }
+```
 
 ### **DFS TEMPLATE - ITERATIVE (Stack)**
 
+```cpp
 void dfsIterative(int start, vector<vector<int>>& adj) {
-```
 int n = adj.size();                 
 vector<bool> visited(n, false);     
 stack<int> st;                      
@@ -437,16 +439,16 @@ while (!st.empty()) {
         }                           
     }                               
 }                                   
-```
 
 }
+```
 
 ### **DFS ON GRID** 
 
+```cpp
 int dirs[4][2] = {{0,1}, {0,-1}, {1,0}, {-1,0}};
 
 void dfsGrid(vector<vector<int>>& grid, int r, int c) {
-```
 int m = grid.size(), n = grid[0].size();                    
 
 // Base case: out of bounds or already visited              
@@ -460,9 +462,9 @@ grid[r][c] = 0;  // Mark visited
 for (auto& d : dirs) {                                      
     dfsGrid(grid, r + d[0], c + d[1]);                      
 }                                                           
-```
 
 }
+```
 
 ## **SOLVED: Surrounded Regions (LC 130)** 
 
@@ -470,8 +472,8 @@ PROBLEM: Flip all 'O's surrounded by 'X's (not touching border).
 
  KEY INSIGHT: DFS from border 'O's to mark "safe" ones, then flip the rest
 
+```cpp
 void solve(vector<vector<char>>& board) {
-```
 int m = board.size(), n = board[0].size();                               
 
 // Mark border-connected 'O's as 'S' (safe)                              
@@ -496,9 +498,9 @@ for (int i = 0; i < m; i++) {
         else if (board[i][j] == 'S') board[i][j] = 'O';                  
     }                                                                    
 }                                                                        
-```
 
 }
+```
 
 ## **SOLVED: Pacific Atlantic Water Flow (LC 417)** 
 
@@ -506,8 +508,8 @@ PROBLEM: Find cells that can flow to both Pacific and Atlantic oceans.
 
  KEY INSIGHT: Reverse thinking - DFS from oceans to find reachable cells
 
+```cpp
 vector<vector<int>> pacificAtlantic(vector<vector<int>>& heights) {
-```
 int m = heights.size(), n = heights[0].size();                      
 vector<vector<bool>> pacific(m, vector<bool>(n, false));            
 vector<vector<bool>> atlantic(m, vector<bool>(n, false));           
@@ -543,9 +545,9 @@ for (int i = 0; i < m; i++) {
     }                                                               
 }                                                                   
 return result;                                                      
-```
 
 }
+```
 
 ## **PART 4: TOPOLOGICAL SORT** 
 
@@ -568,8 +570,8 @@ REQUIREMENTS: Only works on DAGs (Directed Acyclic Graphs)
 
 IDEA: Remove nodes with indegree 0, reduce neighbors' indegree, repeat
 
+```cpp
 vector<int> topoSortKahn(int n, vector<vector<int>>& adj) {
-```
 vector<int> indegree(n, 0);                        
 
 // Calculate indegrees                             
@@ -603,9 +605,9 @@ while (!q.empty()) {
 
 // If result size != n, there's a cycle!           
 return result.size() == n ? result : vector<int>{};
-```
 
 }
+```
 
 TIME: O(V + E)  |  SPACE: O(V)
 
@@ -613,8 +615,8 @@ TIME: O(V + E)  |  SPACE: O(V)
 
 IDEA: DFS, add node to result AFTER processing all neighbors (post-order)
 
+```cpp
 vector<int> topoSortDFS(int n, vector<vector<int>>& adj) {
-```
 vector<int> visited(n, 0);  // 0=unvisited, 1=visiting, 2=visited
 vector<int> result;                                              
 bool hasCycle = false;                                           
@@ -646,9 +648,9 @@ for (int i = 0; i < n; i++) {
 if (hasCycle) return {};                                         
 reverse(result.begin(), result.end());                           
 return result;                                                   
-```
 
 }
+```
 
 ## **SOLVED: Course Schedule (LC 207)** 
 
@@ -656,8 +658,8 @@ PROBLEM: Can you finish all courses given prerequisites?
 
  KEY INSIGHT: Check if topological sort exists (no cycle)
 
+```cpp
 bool canFinish(int numCourses, vector<vector<int>>& prerequisites) {
-```
 vector<vector<int>> adj(numCourses);           
 vector<int> indegree(numCourses, 0);           
 
@@ -685,16 +687,16 @@ while (!q.empty()) {
 }                                              
 
 return count == numCourses;                    
-```
 
 }
+```
 
 ## **SOLVED: Course Schedule II (LC 210)** 
 
 PROBLEM: Return order to finish all courses.
 
+```cpp
 vector<int> findOrder(int numCourses, vector<vector<int>>& prerequisites) {
-```
 vector<vector<int>> adj(numCourses);                      
 vector<int> indegree(numCourses, 0);                      
 
@@ -722,9 +724,9 @@ while (!q.empty()) {
 }                                                         
 
 return order.size() == numCourses ? order : vector<int>{};
-```
 
 }
+```
 
 ## **SOLVED: Alien Dictionary (LC 269)** 
 
@@ -732,8 +734,8 @@ PROBLEM: Derive alphabet order from sorted alien words.
 
  KEY INSIGHT: Compare adjacent words to find edges, then topo sort
 
+```cpp
 string alienOrder(vector<string>& words) {
-```
 unordered_map<char, unordered_set<char>> adj;                    
 unordered_map<char, int> indegree;                               
 
@@ -786,9 +788,9 @@ while (!q.empty()) {
 }                                                                
 
 return result.size() == indegree.size() ? result : "";           
-```
 
 }
+```
 
 ## **PART 5: UNION-FIND (DISJOINT SET UNION)** 
 
@@ -805,7 +807,10 @@ are in the same set, and merge sets.
 
 ### **UNION-FIND TEMPLATE** 
 
+```java
 class UnionFind {
+```
+
 public:
 ```
 vector<int> parent, rank;                                 
@@ -851,23 +856,25 @@ int getComponents() {
 }                                                         
 ```
 
+```
 };
+```
 
 TIME: O(α(n)) per operation ~ O(1) amortized
 SPACE: O(n)
 
 ## **SOLVED: Number of Connected Components (LC 323)** 
 
+```cpp
 int countComponents(int n, vector<vector<int>>& edges) {
-```
 UnionFind uf(n);          
 for (auto& e : edges) {   
     uf.unite(e[0], e[1]); 
 }                         
 return uf.getComponents();
-```
 
 }
+```
 
 ## **SOLVED: Redundant Connection (LC 684)** 
 
@@ -875,8 +882,8 @@ PROBLEM: Find the edge that creates a cycle.
 
  KEY INSIGHT: First edge where both nodes already connected = cycle!
 
+```cpp
 vector<int> findRedundantConnection(vector<vector<int>>& edges) {
-```
 int n = edges.size();                        
 UnionFind uf(n + 1);  // 1-indexed           
 
@@ -886,9 +893,9 @@ for (auto& e : edges) {
     }                                        
 }                                            
 return {};                                   
-```
 
 }
+```
 
 ## **SOLVED: Accounts Merge (LC 721)** 
 
@@ -896,8 +903,8 @@ PROBLEM: Merge accounts with same emails.
 
  KEY INSIGHT: Union emails, then group by representative
 
+```cpp
 vector<vector<string>> accountsMerge(vector<vector<string>>& accounts) {
-```
 unordered_map<string, int> emailToId;        
 unordered_map<string, string> emailToName;   
 int id = 0;                                  
@@ -939,9 +946,9 @@ for (auto& [root, emails] : groups) {
 }                                            
 
 return result;                               
-```
 
 }
+```
 
 ## **SOLVED: Graph Valid Tree (LC 261)** 
 
@@ -949,8 +956,8 @@ PROBLEM: Check if edges form a valid tree.
 
  KEY INSIGHT: Tree = n-1 edges + no cycle + all connected
 
+```cpp
 bool validTree(int n, vector<vector<int>>& edges) {
-```
 // Tree must have exactly n-1 edges     
 if (edges.size() != n - 1) return false;
 
@@ -962,9 +969,9 @@ for (auto& e : edges) {
 }                                       
 
 return uf.getComponents() == 1;         
-```
 
 }
+```
 
 ## **PART 6: CYCLE DETECTION** 
 
@@ -972,8 +979,8 @@ return uf.getComponents() == 1;
 
 Use 3 colors: WHITE (0) = unvisited, GRAY (1) = in progress, BLACK (2) = done
 
+```cpp
 bool hasCycleDirected(int n, vector<vector<int>>& adj) {
-```
 vector<int> color(n, 0);                                             
 
 function<bool(int)> dfs = [&](int node) -> bool {                    
@@ -993,17 +1000,17 @@ for (int i = 0; i < n; i++) {
 }                                                                    
 
 return false;                                                        
-```
 
 }
+```
 
 ### **CYCLE DETECTION - UNDIRECTED GRAPH**
 
 METHOD 1: Union-Find (check if edge connects already-connected nodes)
 METHOD 2: DFS with parent tracking
 
+```cpp
 bool hasCycleUndirected(int n, vector<vector<int>>& adj) {
-```
 vector<bool> visited(n, false);                                   
 
 function<bool(int, int)> dfs = [&](int node, int parent) -> bool {
@@ -1025,9 +1032,9 @@ for (int i = 0; i < n; i++) {
 }                                                                 
 
 return false;                                                     
-```
 
 }
+```
 
 ## **PART 7: SHORTEST PATHS** 
 
@@ -1048,8 +1055,8 @@ return false;
 
 USE WHEN: Weighted graph with NON-NEGATIVE edges
 
+```cpp
 vector<int> dijkstra(int start, vector<vector<pair<int,int>>>& adj) {
-```
 int n = adj.size();                                                
 vector<int> dist(n, INT_MAX);                                      
 priority_queue<pair<int,int>, vector<pair<int,int>>, greater<>> pq;
@@ -1072,16 +1079,16 @@ while (!pq.empty()) {
 }                                                                  
 
 return dist;                                                       
-```
 
 }
+```
 
 TIME: O(E log V)  |  SPACE: O(V)
 
 ## **SOLVED: Network Delay Time (LC 743)** 
 
+```cpp
 int networkDelayTime(vector<vector<int>>& times, int n, int k) {
-```
 vector<vector<pair<int,int>>> adj(n + 1);                          
 for (auto& t : times) {                                            
     adj[t[0]].push_back({t[1], t[2]});                             
@@ -1109,16 +1116,16 @@ while (!pq.empty()) {
 
 int maxDist = *max_element(dist.begin() + 1, dist.end());          
 return maxDist == INT_MAX ? -1 : maxDist;                          
-```
 
 }
+```
 
 ### **BELLMAN-FORD ALGORITHM**
 
 USE WHEN: Graph may have NEGATIVE edges
 
+```cpp
 vector<int> bellmanFord(int start, int n, vector<vector<int>>& edges) {
-```
 vector<int> dist(n, INT_MAX);                             
 dist[start] = 0;                                          
 
@@ -1142,9 +1149,9 @@ for (auto& e : edges) {
 }                                                         
 
 return dist;                                              
-```
 
 }
+```
 
 TIME: O(VE)  |  SPACE: O(V)
 
@@ -1152,8 +1159,8 @@ TIME: O(VE)  |  SPACE: O(V)
 
 USE WHEN: Need shortest path between ALL pairs of nodes
 
+```cpp
 void floydWarshall(vector<vector<int>>& dist) {
-```
 int n = dist.size();                                                  
 
 for (int k = 0; k < n; k++) {           // Intermediate node          
@@ -1165,9 +1172,9 @@ for (int k = 0; k < n; k++) {           // Intermediate node
         }                                                             
     }                                                                 
 }                                                                     
-```
 
 }
+```
 
 TIME: O(V3)  |  SPACE: O(V2)
 
@@ -1175,8 +1182,8 @@ TIME: O(V3)  |  SPACE: O(V2)
 
  KEY INSIGHT: Modified Bellman-Ford with k+1 iterations
 
+```cpp
 int findCheapestPrice(int n, vector<vector<int>>& flights,
-```
                   int src, int dst, int k) {    
 vector<int> dist(n, INT_MAX);                   
 dist[src] = 0;                                  
@@ -1194,9 +1201,9 @@ for (int i = 0; i <= k; i++) {
 }                                               
 
 return dist[dst] == INT_MAX ? -1 : dist[dst];   
-```
 
 }
+```
 
 ## **PART 8: MINIMUM SPANNING TREE** 
 
@@ -1204,8 +1211,8 @@ return dist[dst] == INT_MAX ? -1 : dist[dst];
 
 IDEA: Sort edges by weight, add if doesn't create cycle
 
+```cpp
 int kruskalMST(int n, vector<vector<int>>& edges) {
-```
 // Sort by weight                                             
 sort(edges.begin(), edges.end(),                              
      [](auto& a, auto& b) { return a[2] < b[2]; });           
@@ -1222,16 +1229,16 @@ for (auto& e : edges) {
 }                                                             
 
 return edgesUsed == n - 1 ? cost : -1;  // -1 if not connected
-```
 
 }
+```
 
 ### **PRIM'S ALGORITHM** (Uses Priority Queue)
 
 IDEA: Start from any node, always pick minimum weight edge to unvisited node
 
+```cpp
 int primMST(int n, vector<vector<pair<int,int>>>& adj) {
-```
 vector<bool> inMST(n, false);                                      
 priority_queue<pair<int,int>, vector<pair<int,int>>, greater<>> pq;
 
@@ -1255,14 +1262,14 @@ while (!pq.empty() && edgesUsed < n) {
 }                                                                  
 
 return edgesUsed == n ? cost : -1;                                 
-```
 
 }
+```
 
 ## **SOLVED: Min Cost to Connect All Points (LC 1584)** 
 
+```cpp
 int minCostConnectPoints(vector<vector<int>>& points) {
-```
 int n = points.size();                                             
 vector<bool> inMST(n, false);                                      
 priority_queue<pair<int,int>, vector<pair<int,int>>, greater<>> pq;
@@ -1289,9 +1296,9 @@ while (edges < n) {
 }                                                                  
 
 return cost;                                                       
-```
 
 }
+```
 
 ## **PART 9: ADVANCED - TARJAN'S ALGORITHM** 
 
@@ -1299,8 +1306,8 @@ return cost;
 
 BRIDGE: Edge whose removal disconnects the graph
 
+```cpp
 vector<vector<int>> criticalConnections(int n, vector<vector<int>>& connections) {
-```
 vector<vector<int>> adj(n);                                 
 for (auto& c : connections) {                               
     adj[c[0]].push_back(c[1]);                              
@@ -1330,9 +1337,9 @@ function<void(int, int)> dfs = [&](int u, int parent) {
 
 dfs(0, -1);                                                 
 return bridges;                                             
-```
 
 }
+```
 
 ## **PART 10: PATTERN RECOGNITION** 
 
@@ -1442,4 +1449,3 @@ BELLMAN: negative edges OK, relax V-1 times
 FLOYD:  all pairs, O(V3), dp[i][j] = min(dp[i][j], dp[i][k] + dp[k][j])
 
 ## **END**
-

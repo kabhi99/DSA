@@ -55,11 +55,17 @@ Example Trace: n=6 points
 Total combinations: C(6,4) = 15
 
 Test {0,1,2,3}: points (1,1), (2,1), (3,1), (1,2)
+```
 y=1: 3 points, y=2: 1 point
+```
+
 Only 1 level has >2 points > NOT a trapezoid X
 
 Test {0,1,3,4}: points (1,1), (2,1), (1,2), (2,2)
+```
 y=1: 2 points, y=2: 2 points
+```
+
 Two levels with >2 points > IS a trapezoid Y
 
 ... check all 15 combinations ...
@@ -86,38 +92,53 @@ Observation:
 
 Algorithm:
 ----------
+```
 // Step 1: Group points by y-coordinate
+```
+
 Map<Integer, Integer> yCount
 for each point:
+```
 yCount[point.y]++
 
 // Step 2: For each pair of y-levels, count combinations
 count = 0
 yLevels = list of (y-coordinate, point_count) pairs
+```
 
 for i in 0..yLevels.size():
 for j in i+1..yLevels.size():
+```
 count1 = yLevels[i].count
 count2 = yLevels[j].count
+```
 
 if count1 >= 2 and count2 >= 2:
+```
 edge1 = C(count1, 2)  // Ways to pick 2 from level i
 edge2 = C(count2, 2)  // Ways to pick 2 from level j
 count += edge1 * edge2
 
 return count
+```
 
 Example Trace:
 --------------
+```
 points = [[1,1], [2,1], [3,1], [1,2], [2,2], [3,2]]
+```
 
 Step 1: Group by y
+```
 y=1: 3 points > C(3,2) = 3 edges
 y=2: 3 points > C(3,2) = 3 edges
+```
 
 Step 2: Nested loops
+```
 i=0 (y=1), j=1 (y=2):
 count += 3 * 3 = 9
+```
 
 Final: 9 trapezoids Y
 
@@ -134,7 +155,9 @@ o-o-o  (3 points > 3 ways to pick 2)
 ^                                                          
 ```
 
+```
 y=1 level
+```
 
 Combinations: 3 x 3 = 9
 
@@ -157,11 +180,13 @@ Verdict: BETTER, but can still TLE for large k!
 points with y-levels: y=1 (3 pts), y=2 (2 pts), y=3 (2 pts)
 
 Visual:
+```
 y=3  o----o         C(2,2) = 1
 
 y=2  o----o         C(2,2) = 1
 
 y=1  o-o--o         C(3,2) = 3
+```
 
 Nested Loop Execution:
 ----------------------
@@ -242,27 +267,36 @@ Multiply edge_i by SUM of all previous edges!
 
 Algorithm:
 ----------
+```
 // Step 1: Group points by y-coordinate (same as before)
+```
+
 Map<Integer, Integer> yCount
 for each point:
+```
 yCount[point.y]++
 
 // Step 2: Running sum (ONE loop, not nested!)
 count = 0
 sum = 0
+```
 
 for each y-level in yCount:
+```
 edge = C(pointCount, 2)
 count += edge * sum      // Multiply with all previous
 sum += edge              // Add current to sum
 
 return count
+```
 
 Example Trace with 3 y-levels:
 -------------------------------
+```
 y=1: 3 points > e1 = C(3,2) = 3
 y=2: 2 points > e2 = C(2,2) = 1
 y=3: 2 points > e3 = C(2,2) = 1
+```
 
 Goal: e1*e2 + e1*e3 + e2*e3 = 3*1 + 3*1 + 1*1 = 7
 
@@ -366,19 +400,26 @@ Goal: 3*1 + 3*1 + 1*1 = 7
 NESTED LOOPS (O(k2)):                RUNNING SUM (O(k)):
 ---------------------                --------------------
 
+```
 i=0, j=1:                            sum=0
 ans += 3*1 = 3                     Process e1=3:
 ans += 3*0 = 0
 
 i=0, j=2:                              sum = 3
 ans += 3*1 = 3
+```
+
 Process e2=1:
 
+```
 i=1, j=2:                              ans += 1*3 = 3
 ans += 1*1 = 1                       sum = 4
+```
 
 Final: 3+3+1 = 7 Y                   Process e3=1:
+```
 ans += 1*4 = 4
+```
 
 Iterations: 3                          sum = 5
 
@@ -394,6 +435,7 @@ Both give same answer, but:
 
 ### APPROACH 2: Nested Loops - O(k2)
 
+```
 Map<Integer, Integer> yCount = new HashMap<>();
 for (int[] point : points) {
 yCount.put(point[1], yCount.getOrDefault(point[1], 0) + 1);
@@ -405,20 +447,20 @@ long ans = 0;
 
 // NESTED LOOPS
 for (int i = 0; i < counts.size(); i++) {
-```
 for (int j = i + 1; j < counts.size(); j++) {            
     long edge1 = counts.get(i) * (counts.get(i) - 1) / 2;
     long edge2 = counts.get(j) * (counts.get(j) - 1) / 2;
     ans += edge1 * edge2;                                
 }                                                        
-```
 
 }
 
 return (int)(ans % MOD);
+```
 
 ### APPROACH 3: Running Sum - O(k)
 
+```
 Map<Integer, Integer> yCount = new HashMap<>();
 for (int[] point : points) {
 yCount.put(point[1], yCount.getOrDefault(point[1], 0) + 1);
@@ -436,6 +478,7 @@ sum += edge;         // < Key: add to running sum
 }
 
 return (int)(ans % MOD);
+```
 
 ## PERFORMANCE COMPARISON
 
@@ -470,8 +513,8 @@ Running sum: 1,000 iterations > Accepted!
 
 ## FINAL OPTIMIZED SOLUTION
 
-class Solution {
 ```java
+class Solution {
 private static final int MOD = 1_000_000_007;                      
 
 public int countTrapezoids(int[][] points) {                       
@@ -491,11 +534,10 @@ public int countTrapezoids(int[][] points) {
 
     return (int)(ans % MOD);                                       
 }                                                                  
-```
 
 }
+```
 
 Time: O(n + k) where k = unique y-coordinates
 Space: O(k)
 Result: OPTIMAL! 
-

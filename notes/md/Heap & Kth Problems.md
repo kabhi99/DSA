@@ -74,39 +74,39 @@ Keep the K smallest elements in heap. The top (maximum) is the Kth smallest!
 
 ### TEMPLATE - Kth Smallest:
 
+```
 priority_queue<int> maxHeap;  // max heap
 
 for (int num : arr) {
-```
 maxHeap.push(num);                   
 
 if (maxHeap.size() > k) {            
     maxHeap.pop();  // Remove largest
 }                                    
-```
 
 }
 
 return maxHeap.top();  // Kth smallest
+```
 
 TIME: O(N log K)  |  SPACE: O(K)
 
 ### TEMPLATE - Kth Largest:
 
+```cpp
 priority_queue<int, vector<int>, greater<int>> minHeap;  // min heap
 
 for (int num : arr) {
-```
 minHeap.push(num);                    
 
 if (minHeap.size() > k) {             
     minHeap.pop();  // Remove smallest
 }                                     
-```
 
 }
 
 return minHeap.top();  // Kth largest
+```
 
 TIME: O(N log K)  |  SPACE: O(K)
 
@@ -119,6 +119,7 @@ TIME: O(N log K)  |  SPACE: O(K)
 
 **TEMPLATE:**
 
+```cpp
 unordered_map<int, int> freq;
 for (int num : nums) {
 freq[num]++;
@@ -129,13 +130,11 @@ freq[num]++;
 priority_queue<pair<int,int>, vector<pair<int,int>>, greater<pair<int,int>>> minHeap;
 
 for (auto& [num, count] : freq) {
-```
 minHeap.push({count, num});
 
 if (minHeap.size() > k) {  
     minHeap.pop();         
 }                          
-```
 
 }
 
@@ -145,11 +144,13 @@ result.push_back(minHeap.top().second);
 minHeap.pop();
 
 }
+```
 
 TIME: O(N log K)  |  SPACE: O(N) for hashmap + O(K) for heap
 
 ### ALTERNATIVE: Bucket Sort O(N)
 
+```cpp
 // Create buckets where index = frequency
 vector<vector<int>> buckets(n + 1);
 for (auto& [num, count] : freq) {
@@ -160,14 +161,13 @@ buckets[count].push_back(num);
 // Collect from highest frequency
 vector<int> result;
 for (int i = n; i >= 0 && result.size() < k; i--) {
-```
 for (int num : buckets[i]) {      
     result.push_back(num);        
     if (result.size() == k) break;
 }                                 
-```
 
 }
+```
 
 ### **PATTERN 3: K PAIRS WITH SMALLEST/LARGEST SUMS**
 
@@ -175,6 +175,7 @@ PROBLEM: Find K pairs (i, j) from two arrays with smallest sums
 
 ### APPROACH 1: Min Heap (Optimal when we need actual pairs)
 
+```cpp
 // Min heap: {sum, i, j}
 priority_queue<tuple<int,int,int>, vector<tuple<int,int,int>>, greater<>> minHeap;
 
@@ -186,7 +187,6 @@ minHeap.push({nums1[0] + nums2[j], 0, j});
 
 vector<vector<int>> result;
 while (k-- > 0 && !minHeap.empty()) {
-```
 auto [sum, i, j] = minHeap.top();                 
 minHeap.pop();                                    
 
@@ -196,9 +196,9 @@ result.push_back({nums1[i], nums2[j]});
 if (i + 1 < nums1.size()) {                       
     minHeap.push({nums1[i+1] + nums2[j], i+1, j});
 }                                                 
-```
 
 }
+```
 
 TIME: O(K log K)  |  SPACE: O(K)
 
@@ -213,22 +213,20 @@ APPROACH: Min heap tracking head of each list
 
 **TEMPLATE:**
 
+```cpp
 // Min heap: {value, list_index, element_index}
 priority_queue<tuple<int,int,int>, vector<tuple<int,int,int>>, greater<>> minHeap;
 
 // Add first element from each list
 for (int i = 0; i < lists.size(); i++) {
-```
 if (!lists[i].empty()) {              
     minHeap.push({lists[i][0], i, 0});
 }                                     
-```
 
 }
 
 vector<int> result;
 while (!minHeap.empty()) {
-```
 auto [val, listIdx, elemIdx] = minHeap.top();                     
 minHeap.pop();                                                    
 
@@ -238,9 +236,9 @@ result.push_back(val);
 if (elemIdx + 1 < lists[listIdx].size()) {                        
     minHeap.push({lists[listIdx][elemIdx+1], listIdx, elemIdx+1});
 }                                                                 
-```
 
 }
+```
 
 TIME: O(N log K) where N = total elements, K = number of lists
 SPACE: O(K)
@@ -249,18 +247,17 @@ SPACE: O(K)
 
 ### APPROACH 1: Max Heap (General Case)
 
+```cpp
 // Max heap: {distance, value}
 priority_queue<pair<int,int>> maxHeap;
 
 for (int num : arr) {
-```
 int dist = abs(num - x);  
 maxHeap.push({dist, num});
 
 if (maxHeap.size() > k) { 
     maxHeap.pop();        
 }                         
-```
 
 }
 
@@ -271,19 +268,19 @@ maxHeap.pop();
 
 }
 sort(result.begin(), result.end());
+```
 
 TIME: O(N log K)
 
 ### APPROACH 2: Binary Search + Two Pointers (If Sorted)
 
+```cpp
 // Find closest index to x
 int left = 0, right = n - 1;
 while (left < right) {
-```
 int mid = left + (right - left) / 2;
 if (arr[mid] >= x) right = mid;     
 else left = mid + 1;                
-```
 
 }
 
@@ -292,7 +289,6 @@ left = left - 1;
 right = left + 1;
 
 while (right - left - 1 != k) {
-```
 if (left < 0) {                                        
     right++;                                           
 } else if (right == n) {                               
@@ -302,12 +298,12 @@ if (left < 0) {
 } else {                                               
     right++;                                           
 }                                                      
-```
 
 }
 
 // Elements are in [left+1, right-1]
 vector<int> result(arr.begin() + left + 1, arr.begin() + right);
+```
 
 TIME: O(log N + K)  |  SPACE: O(1)
 
@@ -330,9 +326,11 @@ Max Heap               Min Heap
 
 **TEMPLATE:**
 
+```java
 class MedianFinder {
 priority_queue<int> maxHeap;  // Left half (smaller elements)
 priority_queue<int, vector<int>, greater<int>> minHeap;  // Right half (larger)
+```
 
 public:
 ```
@@ -359,7 +357,9 @@ double findMedian() {
 }                                                   
 ```
 
+```
 };
+```
 
 TIME: O(log N) per add, O(1) per median  |  SPACE: O(N)
 
@@ -393,8 +393,8 @@ room becomes available for next guest. Heap tracks checkout times!
 
 ### TEMPLATE - Meeting Rooms II:
 
+```cpp
 int minMeetingRooms(vector<vector<int>>& intervals) {
-```
 sort(intervals.begin(), intervals.end());                            
 
 priority_queue<int, vector<int>, greater<int>> minHeap;  // End times
@@ -410,9 +410,9 @@ for (auto& interval : intervals) {
 }                                                                    
 
 return minHeap.size();  // Max simultaneous meetings                 
-```
 
 }
+```
 
 TIME: O(N log N)  |  SPACE: O(N)
 
@@ -422,9 +422,9 @@ TIME: O(N log N)  |  SPACE: O(N)
 
 ### TEMPLATE - Course Schedule III (Choose K Intervals):
 
+```cpp
 // Take courses with earliest deadlines, drop longest if needed
 int scheduleCourse(vector<vector<int>>& courses) {
-```
 // Sort by deadline                                
 sort(courses.begin(), courses.end(),               
      [](auto& a, auto& b) { return a[1] < b[1]; });
@@ -447,9 +447,9 @@ for (auto& course : courses) {
 }                                                  
 
 return maxHeap.size();                             
-```
 
 }
+```
 
 KEY INSIGHT - Course Schedule III:
 Greedy strategy: Take courses with earliest deadlines first.
@@ -482,8 +482,8 @@ After using element, reduce count and put back if count > 0.
 
 ### TEMPLATE - Reorganize String:
 
+```cpp
 string reorganizeString(string s) {
-```
 unordered_map<char, int> freq;                       
 for (char c : s) freq[c]++;                          
 
@@ -511,9 +511,9 @@ while (!maxHeap.empty()) {
 }                                                    
 
 return result.size() == s.size() ? result : "";      
-```
 
 }
+```
 
 TIME: O(N log 26) = O(N)  |  SPACE: O(1) (only 26 letters)
 
@@ -527,8 +527,8 @@ we alternate A-B-A-B-A. Can't start with all A's or we're stuck!
 
 ### TEMPLATE - Task Scheduler with Cooldown:
 
+```cpp
 int leastInterval(vector<char>& tasks, int n) {
-```
 unordered_map<char, int> freq;                                
 for (char task : tasks) freq[task]++;                         
 
@@ -564,9 +564,9 @@ while (!maxHeap.empty()) {
 }                                                             
 
 return time;                                                  
-```
 
 }
+```
 
 KEY INSIGHT - Task Scheduler:
 Process tasks in cycles of size (n+1). In each cycle, pick n+1 different tasks.
@@ -578,7 +578,10 @@ This greedy approach minimizes total time.
 
 **MATHEMATICAL INSIGHT:**
 Alternative O(1) approach: Most frequent task determines minimum time.
+```
 time = (maxFreq - 1) * (n + 1) + (number of tasks with maxFreq)
+```
+
 But heap approach is more intuitive!
 
 **SIMILAR PROBLEMS:**
@@ -600,8 +603,8 @@ APPROACH: Min heap + tracking current range
 
 **TEMPLATE:**
 
+```cpp
 vector<int> smallestRange(vector<vector<int>>& nums) {
-```
 // Min heap: {value, list_index, element_index}                                   
 priority_queue<tuple<int,int,int>, vector<tuple<int,int,int>>, greater<>> minHeap;
 
@@ -634,9 +637,9 @@ while (minHeap.size() == nums.size()) {
 }                                                                                 
 
 return {rangeStart, rangeEnd};                                                    
-```
 
 }
+```
 
 TIME: O(N log K) where N = total elements  |  SPACE: O(K)
 
@@ -670,8 +673,8 @@ PROBLEM: Have bricks and ladders. Ladders cover any height, bricks limited.
 
  **INSIGHT**: Use ladders for K largest climbs, bricks for rest
 
+```cpp
 int furthestBuilding(vector<int>& heights, int bricks, int ladders) {
-```
 priority_queue<int, vector<int>, greater<int>> minHeap;  // Climbs using ladders
 
 for (int i = 0; i < heights.size() - 1; i++) {                                  
@@ -692,9 +695,9 @@ for (int i = 0; i < heights.size() - 1; i++) {
 }                                                                               
 
 return heights.size() - 1;                                                      
-```
 
 }
+```
 
 TIME: O(N log L)  |  SPACE: O(L) where L = ladders
 
@@ -709,8 +712,8 @@ PROBLEM TYPE: Repeatedly pick max/min, apply operation, put back
 
 ## **SOLVED: Last Stone Weight (LC 1046)**
 
+```cpp
 int lastStoneWeight(vector<int>& stones) {
-```
 priority_queue<int> maxHeap(stones.begin(), stones.end());
 
 while (maxHeap.size() > 1) {                              
@@ -723,16 +726,16 @@ while (maxHeap.size() > 1) {
 }                                                         
 
 return maxHeap.empty() ? 0 : maxHeap.top();               
-```
 
 }
+```
 
 TIME: O(N log N)  |  SPACE: O(N)
 
 ## **SOLVED: Take Gifts From the Richest Pile (LC 2558)**
 
+```cpp
 long long pickGifts(vector<int>& gifts, int k) {
-```
 priority_queue<int> maxHeap(gifts.begin(), gifts.end());
 
 while (k-- > 0) {                                       
@@ -747,16 +750,16 @@ while (!maxHeap.empty()) {
     maxHeap.pop();                                      
 }                                                       
 return sum;                                             
-```
 
 }
+```
 
 TIME: O((N + K) log N)  |  SPACE: O(N)
 
 ## **SOLVED: Final Array State After K Multiplication Operations I (LC 3264)**
 
+```cpp
 vector<int> getFinalState(vector<int>& nums, int k, int multiplier) {
-```
 // Min heap: {value, index}                                             
 priority_queue<pair<int,int>, vector<pair<int,int>>, greater<>> minHeap;
 
@@ -772,9 +775,9 @@ while (k-- > 0) {
 }                                                                       
 
 return nums;                                                            
-```
 
 }
+```
 
 TIME: O((N + K) log N)  |  SPACE: O(N)
 
@@ -790,8 +793,8 @@ PROBLEM: Select k indices. Score = sum(nums1[selected]) x min(nums2[selected])
 
  **INSIGHT**: Sort by nums2 descending. As we go, min is fixed, maximize sum.
 
+```cpp
 long long maxScore(vector<int>& nums1, vector<int>& nums2, int k) {
-```
 int n = nums1.size();                                                           
 vector<pair<int, int>> pairs(n);                                                
 
@@ -820,9 +823,9 @@ for (auto& [minVal, num1Val] : pairs) {
 }                                                                               
 
 return maxScore;                                                                
-```
 
 }
+```
 
 TIME: O(N log N)  |  SPACE: O(N)
 
@@ -830,8 +833,8 @@ TIME: O(N log N)  |  SPACE: O(N)
 
 PROBLEM: Select at most k engineers. Performance = sum(speed) x min(efficiency)
 
+```cpp
 long long maxPerformance(int n, vector<int>& speed, vector<int>& efficiency, int k) {
-```
 vector<pair<int, int>> engineers(n);                   
 for (int i = 0; i < n; i++) {                          
     engineers[i] = {efficiency[i], speed[i]};          
@@ -856,9 +859,9 @@ for (auto& [eff, spd] : engineers) {
 }                                                      
 
 return maxPerf;                                        
-```
 
 }
+```
 
 TIME: O(N log N)  |  SPACE: O(K)
 
@@ -869,8 +872,8 @@ Pay ratio must be same, at least minimum wage.
 
  **INSIGHT**: Sort by wage/quality ratio. Use heap to track k smallest qualities.
 
+```cpp
 double mincostToHireWorkers(vector<int>& quality, vector<int>& wage, int k) {
-```
 int n = quality.size();                                     
 vector<pair<double, int>> workers(n);                       
 
@@ -900,9 +903,9 @@ for (auto& [ratio, q] : workers) {
 }                                                           
 
 return minCost;                                             
-```
 
 }
+```
 
 TIME: O(N log N)  |  SPACE: O(N)
 
@@ -918,8 +921,8 @@ Minimize max - min.
  **INSIGHT**: First make all odd numbers even (double them).
 Then only operation is halving (decreasing max).
 
+```cpp
 int minimumDeviation(vector<int>& nums) {
-```
 priority_queue<int> maxHeap;                         
 int minVal = INT_MAX;                                
 
@@ -945,9 +948,9 @@ while (maxHeap.top() % 2 == 0) {
 }                                                    
 
 return minDev;                                       
-```
 
 }
+```
 
 TIME: O(N log N log M)  |  SPACE: O(N)
 
@@ -955,10 +958,12 @@ TIME: O(N log N log M)  |  SPACE: O(N)
 
 ## **SOLVED: Design Twitter (LC 355)**
 
+```java
 class Twitter {
 int timestamp = 0;
 unordered_map<int, vector<pair<int, int>>> tweets;  // userId -> [(time, tweetId)]
 unordered_map<int, unordered_set<int>> following;   // userId -> set of followees
+```
 
 public:
 ```
@@ -1008,12 +1013,16 @@ void unfollow(int followerId, int followeeId) {
 }                                                                                           
 ```
 
+```
 };
+```
 
 ## **SOLVED: Seat Reservation Manager (LC 1845)**
 
+```java
 class SeatManager {
 priority_queue<int, vector<int>, greater<int>> available;
+```
 
 public:
 ```
@@ -1034,7 +1043,9 @@ void unreserve(int seatNumber) {
 }                                 
 ```
 
+```
 };
+```
 
 TIME: O(log N) per operation  |  SPACE: O(N)
 
@@ -1046,8 +1057,8 @@ KEY INSIGHT: Always merge smallest two (Huffman coding!)
 
 ### TEMPLATE - Minimum Cost to Connect Sticks:
 
+```cpp
 int connectSticks(vector<int>& sticks) {
-```
 priority_queue<int, vector<int>, greater<int>> minHeap(sticks.begin(), sticks.end());
 
 int totalCost = 0;                                                                   
@@ -1063,9 +1074,9 @@ while (minHeap.size() > 1) {
 }                                                                                    
 
 return totalCost;                                                                    
-```
 
 }
+```
 
 TIME: O(N log N)  |  SPACE: O(N)
 
@@ -1103,8 +1114,8 @@ PROBLEM: Find nth number whose only prime factors are 2, 3, 5
 
 ### APPROACH 1: Min Heap
 
+```cpp
 int nthUglyNumber(int n) {
-```
 priority_queue<long, vector<long>, greater<long>> minHeap;
 unordered_set<long> seen;                                 
 
@@ -1128,16 +1139,16 @@ for (int i = 0; i < n; i++) {
 }                                                         
 
 return (int)ugly;                                         
-```
 
 }
+```
 
 TIME: O(N log N)  |  SPACE: O(N)
 
 ### APPROACH 2: Three Pointers (DP) - BETTER!
 
+```cpp
 int nthUglyNumber(int n) {
-```
 vector<int> ugly(n);                     
 ugly[0] = 1;                             
 
@@ -1156,9 +1167,9 @@ for (int i = 1; i < n; i++) {
 }                                        
 
 return ugly[n-1];                        
-```
 
 }
+```
 
 TIME: O(N)  |  SPACE: O(N)
 
@@ -1200,9 +1211,9 @@ STEP 1: Establish bounds (lo, hi)
 STEP 2: Write count function: "How many elements < guess?"
 STEP 3: Binary search until lo == hi
 
+```
 // For "Find Kth smallest"
 while (lo < hi) {
-```
 int mid = lo + (hi - lo) / 2;          
 
 if (count(mid) >= k) {                 
@@ -1210,14 +1221,12 @@ if (count(mid) >= k) {
 } else {                               
     lo = mid + 1;    // Answer is > mid
 }                                      
-```
 
 }
 return lo;
 
 // For "Find maximum value such that constraint satisfied"
 while (lo < hi) {
-```
 int mid = lo + (hi - lo + 1) / 2;  // Note: +1 to avoid infinite loop
 
 if (isPossible(mid)) {                                               
@@ -1225,10 +1234,10 @@ if (isPossible(mid)) {
 } else {                                                             
     hi = mid - 1;    // Too big, try smaller                         
 }                                                                    
-```
 
 }
 return lo;
+```
 
 **KEY POINTS:**
 
@@ -1242,8 +1251,8 @@ PROBLEM: Matrix with sorted rows and columns. Find kth smallest.
 
 ### APPROACH: Binary Search + Staircase Count
 
+```cpp
 int kthSmallest(vector<vector<int>>& matrix, int k) {
-```
 int n = matrix.size();                     
 int lo = matrix[0][0];                     
 int hi = matrix[n-1][n-1];                 
@@ -1258,13 +1267,11 @@ while (lo < hi) {
     }                                      
 }                                          
 return lo;                                 
-```
 
 }
 
 // Count elements < target using staircase method
 int countLessEqual(vector<vector<int>>& matrix, int target) {
-```
 int n = matrix.size();                                            
 int row = 0, col = n - 1;                                         
 int count = 0;                                                    
@@ -1278,9 +1285,9 @@ while (row < n && col >= 0) {
     }                                                             
 }                                                                 
 return count;                                                     
-```
 
 }
+```
 
 TIME: O(N log(max - min))  |  SPACE: O(1)
 
@@ -1294,8 +1301,8 @@ PROBLEM: Array of numbers. Find kth smallest distance between any two elements.
 
 ### APPROACH: Binary Search + Sliding Window Count
 
+```cpp
 int smallestDistancePair(vector<int>& nums, int k) {
-```
 sort(nums.begin(), nums.end());      
 
 int lo = 0;                          
@@ -1311,13 +1318,11 @@ while (lo < hi) {
     }                                
 }                                    
 return lo;                           
-```
 
 }
 
 // Count pairs with distance < target
 int countPairs(vector<int>& nums, int target) {
-```
 int count = 0;                                                   
 int left = 0;                                                    
 
@@ -1328,9 +1333,9 @@ for (int right = 0; right < nums.size(); right++) {
     count += (right - left);  // All pairs [left..right-1, right]
 }                                                                
 return count;                                                    
-```
 
 }
+```
 
 TIME: O(N log N + N log(max_dist))  |  SPACE: O(1)
 
@@ -1344,8 +1349,8 @@ PROBLEM: Split array into k subarrays, minimize the largest sum
 
 ### APPROACH: Binary Search on Answer
 
+```cpp
 int splitArray(vector<int>& nums, int k) {
-```
 int lo = *max_element(nums.begin(), nums.end());  // Min possible max 
 int hi = accumulate(nums.begin(), nums.end(), 0);  // Max possible max
 
@@ -1359,13 +1364,11 @@ while (lo < hi) {
     }                                                                 
 }                                                                     
 return lo;                                                            
-```
 
 }
 
 // Can we split into < k subarrays with max sum < maxSum?
 bool canSplit(vector<int>& nums, int k, int maxSum) {
-```
 int subarrays = 1;                      
 int currentSum = 0;                     
 
@@ -1379,9 +1382,9 @@ for (int num : nums) {
     }                                   
 }                                       
 return true;                            
-```
 
 }
+```
 
 TIME: O(N log(sum))  |  SPACE: O(1)
 
@@ -1403,8 +1406,8 @@ IDEA: Binary search on running time. Can we run all N computers for T minutes?
 
 FORMULA: sum(min(battery[i], T)) >= N x T
 
+```cpp
 bool canRun(vector<int>& batteries, int n, long long time) {
-```
 long long totalPower = 0;                       
 
 for (int battery : batteries) {                 
@@ -1412,12 +1415,10 @@ for (int battery : batteries) {
 }                                               
 
 return totalPower >= (long long)n * time;       
-```
 
 }
 
 long long maxRunTime(int n, vector<int>& batteries) {
-```
 long long lo = 0;                                             
 long long hi = 0;                                             
 for (int b : batteries) hi += b;                              
@@ -1433,28 +1434,26 @@ while (lo < hi) {
     }                                                         
 }                                                             
 return lo;                                                    
-```
 
 }
+```
 
 ### **PROBLEM: Koko Eating Bananas (LC 875)**
 
 IDEA: Find minimum eating speed K such that all bananas eaten within H hours
 
+```cpp
 bool canEatAll(vector<int>& piles, int k, int h) {
-```
 int hours = 0;                                       
 for (int pile : piles) {                             
     hours += (pile + k - 1) / k;  // Ceiling division
     if (hours > h) return false;                     
 }                                                    
 return true;                                         
-```
 
 }
 
 int minEatingSpeed(vector<int>& piles, int h) {
-```
 int lo = 1;                                       
 int hi = *max_element(piles.begin(), piles.end());
 
@@ -1468,9 +1467,9 @@ while (lo < hi) {
     }                                             
 }                                                 
 return lo;                                        
-```
 
 }
+```
 
 ### **PROBLEM: Nth Magical Number (LC 878)**
 
@@ -1478,8 +1477,8 @@ IDEA: Number divisible by A or B. Use Inclusion-Exclusion Principle.
 
 KEY FORMULA: count(x) = x/A + x/B - x/LCM(A,B)
 
+```
 int nthMagicalNumber(int n, int a, int b) {
-```javascript
 const long MOD = 1e9 + 7;                
 long lcm = (long)a * b / __gcd(a, b);    
 
@@ -1498,9 +1497,9 @@ while (lo < hi) {
     }                                    
 }                                        
 return lo % MOD;                         
-```
 
 }
+```
 
 ### **PROBLEM: Kth Smallest Amount With Single Denomination (LC 3116)**
 
@@ -1511,8 +1510,8 @@ WHY POWER SET?
 - Two coins: avoid double counting using LCM
 - Multiple coins: alternate add/subtract based on subset size
 
+```cpp
 long long findKthSmallest(vector<int>& coins, int k) {
-```
 long long left = 1;                           
 long long right = 1e11;                       
 
@@ -1526,12 +1525,10 @@ while (left < right) {
     }                                         
 }                                             
 return left;                                  
-```
 
 }
 
 long long countAmount(long long n, vector<int>& coins) {
-```
 int m = coins.size();                                              
 long long total = 0;                                               
 
@@ -1557,16 +1554,16 @@ for (int mask = 1; mask < (1 << m); mask++) {
     }                                                              
 }                                                                  
 return total;                                                      
-```
 
 }
+```
 
 ### **PROBLEM: Longest Repeating Substring (LC 1062)**
 
 IDEA: Binary search on substring length. Check if any substring of length L repeats.
 
-int longestRepeatingSubstring(string s) {
 ```
+int longestRepeatingSubstring(string s) {
 int lo = 0;                             
 int hi = s.size() - 1;                  
 
@@ -1580,12 +1577,10 @@ while (lo < hi) {
     }                                   
 }                                       
 return lo;                              
-```
 
 }
 
 bool hasRepeatingSubstring(string& s, int len) {
-```
 unordered_set<string> seen;                
 
 for (int i = 0; i <= s.size() - len; i++) {
@@ -1594,9 +1589,9 @@ for (int i = 0; i <= s.size() - len; i++) {
     seen.insert(sub);                      
 }                                          
 return false;                              
-```
 
 }
+```
 
 TIME: O(N2 log N)  |  Can optimize to O(N log2 N) using rolling hash
 
@@ -1610,10 +1605,14 @@ TRICKY: Arrays can have negative numbers!
 - Count differently based on guess sign
 
 If guess > 0:
+```
 count = pos1xpos2 + neg1_revxneg2_rev + neg1.size()xpos2.size() + pos1.size()xneg2.size()
+```
 
 If guess < 0:
+```
 count = pos1_revxneg2 + neg1xpos2_rev
+```
 
 WHY REVERSE?
 For negative arrays, kth smallest is actually (n-k+1)th from end.
@@ -1623,8 +1622,8 @@ Reversing makes indexing consistent!
 
 IDEA: Maximize minimum sweetness when dividing into K+1 pieces
 
+```cpp
 int maximizeSweetness(vector<int>& sweetness, int k) {
-```
 k++;  // K+1 pieces (you keep one)                         
 
 int lo = *min_element(sweetness.begin(), sweetness.end()); 
@@ -1640,12 +1639,10 @@ while (lo < hi) {
     }                                                      
 }                                                          
 return lo;                                                 
-```
 
 }
 
 bool canDivide(vector<int>& arr, int k, int minSweet) {
-```
 int pieces = 0;                    
 int currentSweet = 0;              
 
@@ -1657,9 +1654,9 @@ for (int sweet : arr) {
     }                              
 }                                  
 return pieces >= k;                
-```
 
 }
+```
 
 ### **PROBLEM: Trapping Rain Water II (LC 407)**  HARD
 
@@ -1678,8 +1675,8 @@ Water fills to height of lowest surrounding wall
 
 **TEMPLATE:**
 
+```cpp
 int trapRainWater(vector<vector<int>>& heightMap) {
-```
 if (heightMap.empty()) return 0;                                                  
 
 int m = heightMap.size(), n = heightMap[0].size();                                
@@ -1729,9 +1726,9 @@ while (!minHeap.empty()) {
 }                                                                                 
 
 return water;                                                                     
-```
 
 }
+```
 
 TIME: O(MxN log(MxN))  |  SPACE: O(MxN)
 
@@ -1780,8 +1777,8 @@ STRATEGY: At each step, pick highest profit among affordable projects
 
 **TEMPLATE:**
 
+```cpp
 int findMaximizedCapital(int k, int w, vector<int>& profits, vector<int>& capital) {
-```
 int n = profits.size();                                      
 vector<pair<int, int>> projects;  // {capital, profit}       
 
@@ -1811,9 +1808,9 @@ for (int i = 0; i < k; i++) {
 }                                                            
 
 return w;                                                    
-```
 
 }
+```
 
 TIME: O(N log N)  |  SPACE: O(N)
 
@@ -1833,7 +1830,9 @@ Strategy:
 Why greedy works? More capital now = more options later!
 
 **EXAMPLE:**
+```
 W=0, profits=[1,2,3], capital=[0,1,1]
+```
 
 Step 1: Affordable=[project0], pick it, W=0+1=1
 Step 2: Affordable=[project1,project2], pick project2 (max profit), W=1+3=4
@@ -1862,8 +1861,8 @@ APPROACH: Sort queries + intervals, use min heap
 
 **TEMPLATE:**
 
+```cpp
 vector<int> minInterval(vector<vector<int>>& intervals, vector<int>& queries) {
-```
 int n = queries.size();                                                 
 vector<pair<int, int>> sortedQueries;                                   
 
@@ -1901,9 +1900,9 @@ for (auto& [query, originalIdx] : sortedQueries) {
 }                                                                       
 
 return result;                                                          
-```
 
 }
+```
 
 TIME: O((N+M) log N)  |  SPACE: O(N)
 
@@ -1943,8 +1942,8 @@ PROBLEM: Array sorted in ascending order. Find kth smallest fraction arr[i]/arr[
 
 ### APPROACH 1: Min Heap (Similar to K Pairs)
 
+```cpp
 vector<int> kthSmallestPrimeFraction(vector<int>& arr, int k) {
-```
 int n = arr.size();                                                                     
 
 // Min heap: {fraction_value, numerator_idx, denominator_idx}                           
@@ -1968,9 +1967,9 @@ for (int i = 0; i < k - 1; i++) {
 
 auto [val, numIdx, denIdx] = minHeap.top();                                             
 return {arr[numIdx], arr[denIdx]};                                                      
-```
 
 }
+```
 
 TIME: O(K log N)  |  SPACE: O(N)
 
@@ -1986,8 +1985,8 @@ Similar to merging K sorted lists!
 
 ### APPROACH 2: Binary Search on Fraction Value (MORE EFFICIENT!)
 
+```cpp
 vector<int> kthSmallestPrimeFraction(vector<int>& arr, int k) {
-```
 int n = arr.size();                                         
 double lo = 0.0, hi = 1.0;                                  
 
@@ -2007,11 +2006,12 @@ while (hi - lo > 1e-9) {
 
 auto [count, numIdx, denIdx] = countFractions(arr, lo);     
 return {arr[numIdx], arr[denIdx]};                          
-```
 
 }
 
 // Count fractions < target, also track largest such fraction
+```
+
 tuple<int, int, int> countFractions(vector<int>& arr, double target) {
 ```
 int n = arr.size();                                             
@@ -2037,7 +2037,9 @@ for (int j = 1; j < n; j++) {
 return {count, numIdx, denIdx};                                 
 ```
 
+```
 }
+```
 
 TIME: O(N log(max/min))  |  SPACE: O(1)
 
@@ -2077,8 +2079,8 @@ APPROACH: Two heaps!
 
 **TEMPLATE:**
 
+```cpp
 vector<int> assignTasks(vector<int>& servers, vector<int>& tasks) {
-```
 int n = servers.size(), m = tasks.size();                                      
 
 // Min heap for available: {weight, index}                                     
@@ -2122,9 +2124,9 @@ for (int i = 0; i < m; i++) {
 }                                                                              
 
 return result;                                                                 
-```
 
 }
+```
 
 TIME: O((M+N) log N)  |  SPACE: O(N)
 
@@ -2376,54 +2378,62 @@ QuickSelect                 O(N) avg, O(N2) worst   O(1)        Kth element in a
 
 **TIP 1: Avoid Integer Overflow**
 
+```
 // BAD
 int mid = (lo + hi) / 2;  // Can overflow!
 
 // GOOD
 int mid = lo + (hi - lo) / 2;
+```
 
 **TIP 2: The +1 Trick for Maximum Problems**
 
+```
 // For MAXIMUM problems to avoid infinite loop
 while (lo < hi) {
-```
 int mid = lo + (hi - lo + 1) / 2;  // +1 here!
 if (isPossible(mid)) {                        
     lo = mid;    // Not mid + 1               
 } else {                                      
     hi = mid - 1;                             
 }                                             
-```
 
 }
+```
 
 **TIP 3: Ceiling Division Trick**
 
+```
 // Calculate ceil(a / b) without floating point
 int ceilDiv = (a + b - 1) / b;
+```
 
 **TIP 4: LCM from GCD**
 
+```
 long long lcm = (long long)a * b / __gcd(a, b);
+```
 
 **TIP 5: Comparing Fractions Without Division**
 
+```
 // To check if a/b < c/d without division
 if (a * d < b * c) { ... }  // Cross multiply
+```
 
 **TIP 6: Optimization - Early Exit in Count**
 
+```cpp
 int count(vector<int>& arr, int target, int k) {
-```
 int cnt = 0;                                
 for (int num : arr) {                       
     cnt += ...;                             
     if (cnt > k) return cnt;  // Early exit!
 }                                           
 return cnt;                                 
-```
 
 }
+```
 
 ## **PART 8: UNIQUE PATTERNS SUMMARY** 
 
@@ -2620,4 +2630,3 @@ Key: Compare fractions without division (cross multiply)
                                 **END**                                                 
 ================================================================================        
 ```
-

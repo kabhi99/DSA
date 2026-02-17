@@ -46,22 +46,20 @@ WHY: Leaves maximum room for future intervals
 
 **TEMPLATE:**
 
+```
 // Sort by end time, greedily pick non-overlapping
 sort(intervals.begin(), intervals.end(),
-```
  [](auto& a, auto& b) { return a[1] < b[1]; });
-```
 
 int count = 0, lastEnd = INT_MIN;
 for (auto& interval : intervals) {
-```
 if (interval[0] >= lastEnd) {
     count++;                 
     lastEnd = interval[1];   
 }                            
-```
 
 }
+```
 
 ## **SOLVED PROBLEM 1.1: Non-overlapping Intervals (LC 435)** 
 
@@ -74,7 +72,10 @@ Output: 1 (remove [1,3])
 **APPROACH:**
 Find max non-overlapping intervals. Answer = total - max.
 
+```java
 class Solution {
+```
+
 public:
 ```
 int eraseOverlapIntervals(vector<vector<int>>& intervals) {  
@@ -98,7 +99,9 @@ int eraseOverlapIntervals(vector<vector<int>>& intervals) {
 }                                                            
 ```
 
+```
 };
+```
 
 TIME: O(N log N)  |  SPACE: O(1)
 
@@ -113,7 +116,10 @@ Output: [[1,6],[8,10],[15,18]]
 **APPROACH:**
 Sort by start time. Extend current interval or start new one.
 
+```java
 class Solution {
+```
+
 public:
 ```
 vector<vector<int>> merge(vector<vector<int>>& intervals) {           
@@ -138,7 +144,9 @@ vector<vector<int>> merge(vector<vector<int>>& intervals) {
 }                                                                     
 ```
 
+```
 };
+```
 
 TIME: O(N log N)  |  SPACE: O(N)
 
@@ -153,7 +161,10 @@ Output: 2
 **APPROACH:**
 Track start/end events. Max concurrent meetings = answer.
 
+```java
 class Solution {
+```
+
 public:
 ```
 int minMeetingRooms(vector<vector<int>>& intervals) {
@@ -185,10 +196,13 @@ int minMeetingRooms(vector<vector<int>>& intervals) {
 }                                                    
 ```
 
+```java
 };
 
 // Alternative: Min Heap approach
 class Solution2 {
+```
+
 public:
 ```
 int minMeetingRooms(vector<vector<int>>& intervals) {               
@@ -207,7 +221,9 @@ int minMeetingRooms(vector<vector<int>>& intervals) {
 }                                                                   
 ```
 
+```
 };
+```
 
 TIME: O(N log N)  |  SPACE: O(N)
 
@@ -218,13 +234,13 @@ KEY: Figure out WHAT to sort by!
 
 **TEMPLATE:**
 
+```
 sort(items.begin(), items.end(), [](auto& a, auto& b) {
-```
 return /* sorting criterion */;
-```
 
 });
 // Then make greedy choices
+```
 
 ## **SOLVED PROBLEM 2.1: Assign Cookies (LC 455)**
 
@@ -238,7 +254,10 @@ Output: 1
 **APPROACH:**
 Sort both. Give smallest sufficient cookie to smallest-greed child.
 
+```java
 class Solution {
+```
+
 public:
 ```
 int findContentChildren(vector<int>& g, vector<int>& s) {
@@ -258,7 +277,9 @@ int findContentChildren(vector<int>& g, vector<int>& s) {
 }                                                        
 ```
 
+```
 };
+```
 
 TIME: O(N log N)  |  SPACE: O(1)
 
@@ -275,7 +296,10 @@ Output: [[5,0],[7,0],[5,2],[6,1],[4,4],[7,1]]
 Sort tallest first (k ascending for same height).
 Insert at position k - shorter people don't affect taller ones!
 
+```java
 class Solution {
+```
+
 public:
 ```
 vector<vector<int>> reconstructQueue(vector<vector<int>>& people) {
@@ -295,7 +319,9 @@ vector<vector<int>> reconstructQueue(vector<vector<int>>& people) {
 }                                                                  
 ```
 
+```
 };
+```
 
 TIME: O(N2) due to insertions  |  SPACE: O(N)
 
@@ -311,7 +337,10 @@ Output: 110 (person 0,1 to A, person 2,3 to B)
 **APPROACH:**
 Sort by (costA - costB). Send first N to A (they save most by going to A).
 
+```java
 class Solution {
+```
+
 public:
 ```
 int twoCitySchedCost(vector<vector<int>>& costs) {         
@@ -333,7 +362,9 @@ int twoCitySchedCost(vector<vector<int>>& costs) {
 }                                                          
 ```
 
+```
 };
+```
 
 TIME: O(N log N)  |  SPACE: O(1)
 
@@ -353,7 +384,10 @@ Output: 4 (buy bars at index 0,1,2,4)
 **APPROACH:**
 Sort by cost. Buy cheapest first (maximize count with limited budget).
 
+```java
 class Solution {
+```
+
 public:
 ```
 int maxIceCream(vector<int>& costs, int coins) {
@@ -373,7 +407,9 @@ int maxIceCream(vector<int>& costs, int coins) {
 }                                               
 ```
 
+```
 };
+```
 
 TIME: O(N log N)  |  SPACE: O(1)
 
@@ -388,7 +424,10 @@ Output: 3
 **APPROACH:**
 Calculate space needed for each bag. Sort. Fill bags needing least first.
 
+```java
 class Solution {
+```
+
 public:
 ```
 int maximumBags(vector<int>& capacity, vector<int>& rocks, int additionalRocks) {
@@ -415,7 +454,9 @@ int maximumBags(vector<int>& capacity, vector<int>& rocks, int additionalRocks) 
 }                                                                                
 ```
 
+```
 };
+```
 
 TIME: O(N log N)  |  SPACE: O(N)
 
@@ -431,7 +472,10 @@ Output: 8 (1 box of 3 units + 2 boxes of 2 units + 1 box of 1 unit)
 **APPROACH:**
 Sort by units per box DESC. Pick boxes with most units first.
 
+```java
 class Solution {
+```
+
 public:
 ```
 int maximumUnits(vector<vector<int>>& boxTypes, int truckSize) {
@@ -453,7 +497,9 @@ int maximumUnits(vector<vector<int>>& boxTypes, int truckSize) {
 }                                                               
 ```
 
+```
 };
+```
 
 TIME: O(N log N)  |  SPACE: O(1)
 
@@ -473,7 +519,10 @@ Output: 3
 **APPROACH:**
 Sort by deadline. If can take, take it. If not, replace longest course if shorter.
 
+```java
 class Solution {
+```
+
 public:
 ```
 int scheduleCourse(vector<vector<int>>& courses) {                
@@ -503,7 +552,9 @@ int scheduleCourse(vector<vector<int>>& courses) {
 }                                                                 
 ```
 
+```
 };
+```
 
 TIME: O(N log N)  |  SPACE: O(N)
 
@@ -519,7 +570,10 @@ Output: 8 (A -> B -> idle -> A -> B -> idle -> A -> B)
 Most frequent task determines frame size.
 Formula: (maxFreq - 1) * (n + 1) + tasksWithMaxFreq
 
+```java
 class Solution {
+```
+
 public:
 ```
 int leastInterval(vector<char>& tasks, int n) {                     
@@ -539,7 +593,9 @@ int leastInterval(vector<char>& tasks, int n) {
 }                                                                   
 ```
 
+```
 };
+```
 
 TIME: O(N)  |  SPACE: O(1)
 
@@ -555,7 +611,10 @@ Output: 9
 **APPROACH:**
 Sort by growTime DESC. Plant longest-growing flowers first!
 
+```java
 class Solution {
+```
+
 public:
 ```
 int earliestFullBloom(vector<int>& plantTime, vector<int>& growTime) {
@@ -580,7 +639,9 @@ int earliestFullBloom(vector<int>& plantTime, vector<int>& growTime) {
 }                                                                     
 ```
 
+```
 };
+```
 
 TIME: O(N log N)  |  SPACE: O(N)
 
@@ -600,7 +661,10 @@ Output: 14 (2+3=5, cost=5; 5+4=9, cost=9; total=14)
 **APPROACH:**
 Min heap. Always merge two smallest.
 
+```java
 class Solution {
+```
+
 public:
 ```
 int connectSticks(vector<int>& sticks) {                   
@@ -622,7 +686,9 @@ int connectSticks(vector<int>& sticks) {
 }                                                          
 ```
 
+```
 };
+```
 
 TIME: O(N log N)  |  SPACE: O(N)
 
@@ -637,7 +703,10 @@ Output: "aba"
 **APPROACH:**
 Always pick most frequent char that isn't same as previous.
 
+```java
 class Solution {
+```
+
 public:
 ```
 string reorganizeString(string s) {                
@@ -670,7 +739,9 @@ string reorganizeString(string s) {
 }                                                  
 ```
 
+```
 };
+```
 
 TIME: O(N log 26) = O(N)  |  SPACE: O(26) = O(1)
 
@@ -685,7 +756,10 @@ Output: 2 (remove 3s and 5s)
 **APPROACH:**
 Remove most frequent numbers first.
 
+```java
 class Solution {
+```
+
 public:
 ```
 int minSetSize(vector<int>& arr) {                           
@@ -712,7 +786,9 @@ int minSetSize(vector<int>& arr) {
 }                                                            
 ```
 
+```
 };
+```
 
 TIME: O(N log N)  |  SPACE: O(N)
 
@@ -732,7 +808,10 @@ Output: true
 **APPROACH:**
 Track $5 and $10 bills. For $20, prefer $10+$5 over $5+$5+$5.
 
+```java
 class Solution {
+```
+
 public:
 ```
 bool lemonadeChange(vector<int>& bills) {
@@ -763,7 +842,9 @@ bool lemonadeChange(vector<int>& bills) {
 }                                        
 ```
 
+```
 };
+```
 
 TIME: O(N)  |  SPACE: O(1)
 
@@ -778,7 +859,10 @@ Output: 2 (delete 2 b's > "aaabcc" with freq a=3, b=1, c=2)
 **APPROACH:**
 Sort frequencies descending. Greedily reduce if duplicate exists.
 
+```java
 class Solution {
+```
+
 public:
 ```
 int minDeletions(string s) {                                
@@ -802,7 +886,9 @@ int minDeletions(string s) {
 }                                                           
 ```
 
+```
 };
+```
 
 TIME: O(N + 26 log 26) = O(N)  |  SPACE: O(26) = O(1)
 
@@ -818,7 +904,10 @@ Output: 2 (move from 3 to 1 twice)
 **APPROACH:**
 Target is middle value. Pair smallest with largest.
 
+```java
 class Solution {
+```
+
 public:
 ```
 int minMoves(int n) {                                
@@ -829,7 +918,9 @@ int minMoves(int n) {
 }                                                    
 ```
 
+```
 };
+```
 
 TIME: O(1)  |  SPACE: O(1)
 
@@ -846,7 +937,10 @@ PROBLEM: Can you reach the last index?
 Input: [2,3,1,1,4]
 Output: true
 
+```java
 class Solution {
+```
+
 public:
 ```
 bool canJump(vector<int>& nums) {                           
@@ -864,7 +958,9 @@ bool canJump(vector<int>& nums) {
 }                                                           
 ```
 
+```
 };
+```
 
 TIME: O(N)  |  SPACE: O(1)
 
@@ -879,7 +975,10 @@ Output: 2 (jump 1 step to index 1, then 3 steps to end)
 **APPROACH:**
 Track current jump's end. When reached, we must jump.
 
+```java
 class Solution {
+```
+
 public:
 ```
 int jump(vector<int>& nums) {                   
@@ -900,7 +999,9 @@ int jump(vector<int>& nums) {
 }                                               
 ```
 
+```
 };
+```
 
 TIME: O(N)  |  SPACE: O(1)
 
@@ -915,7 +1016,10 @@ Output: 6 (subarray [4,-1,2,1])
 APPROACH (Kadane's Algorithm):
 If current sum < 0, start fresh. Negative prefix hurts more than helps.
 
+```java
 class Solution {
+```
+
 public:
 ```
 int maxSubArray(vector<int>& nums) {                    
@@ -931,7 +1035,9 @@ int maxSubArray(vector<int>& nums) {
 }                                                       
 ```
 
+```
 };
+```
 
 TIME: O(N)  |  SPACE: O(1)
 
@@ -949,7 +1055,10 @@ Maximize final capital.
 Input: k = 2, w = 0, profits = [1,2,3], capital = [0,1,1]
 Output: 4 (project 0 > w=1, project 2 > w=4)
 
+```java
 class Solution {
+```
+
 public:
 ```
 int findMaximizedCapital(int k, int w, vector<int>& profits, vector<int>& capital) {
@@ -981,7 +1090,9 @@ int findMaximizedCapital(int k, int w, vector<int>& profits, vector<int>& capita
 }                                                                                   
 ```
 
+```
 };
+```
 
 TIME: O(N log N)  |  SPACE: O(N)
 
@@ -996,7 +1107,10 @@ Output: 12 (9>5, 5>3 > [5,4,5])
 **APPROACH:**
 Always reduce largest pile (saves most stones).
 
+```java
 class Solution {
+```
+
 public:
 ```
 int minStoneSum(vector<int>& piles, int k) {                
@@ -1018,7 +1132,9 @@ int minStoneSum(vector<int>& piles, int k) {
 }                                                           
 ```
 
+```
 };
+```
 
 TIME: O(N + K log N)  |  SPACE: O(N)
 
@@ -1030,7 +1146,10 @@ PROBLEM: Process tasks. Pick available task with shortest processing time.
 Input: tasks = [[1,2],[2,4],[3,2],[4,1]]
 Output: [0,2,3,1]
 
+```java
 class Solution {
+```
+
 public:
 ```
 vector<int> getOrder(vector<vector<int>>& tasks) {                     
@@ -1069,7 +1188,9 @@ vector<int> getOrder(vector<vector<int>>& tasks) {
 }                                                                      
 ```
 
+```
 };
+```
 
 TIME: O(N log N)  |  SPACE: O(N)
 
@@ -1086,7 +1207,10 @@ PROBLEM: Time for signal to reach all nodes from source k.
 Input: times = [[2,1,1],[2,3,1],[3,4,1]], n = 4, k = 2
 Output: 2
 
+```java
 class Solution {
+```
+
 public:
 ```
 int networkDelayTime(vector<vector<int>>& times, int n, int k) {       
@@ -1125,7 +1249,9 @@ int networkDelayTime(vector<vector<int>>& times, int n, int k) {
 }                                                                      
 ```
 
+```
 };
+```
 
 TIME: O((V + E) log V)  |  SPACE: O(V + E)
 
@@ -1140,7 +1266,10 @@ Output: 2
 **APPROACH:**
 Modified Dijkstra. Effort = max diff along path.
 
+```java
 class Solution {
+```
+
 public:
 ```
 int minimumEffortPath(vector<vector<int>>& heights) {                            
@@ -1177,7 +1306,9 @@ int minimumEffortPath(vector<vector<int>>& heights) {
 }                                                                                
 ```
 
+```
 };
+```
 
 TIME: O(MN log MN)  |  SPACE: O(MN)
 
@@ -1191,7 +1322,10 @@ Output: 20
 
 APPROACH: Prim's MST
 
+```java
 class Solution {
+```
+
 public:
 ```
 int minCostConnectPoints(vector<vector<int>>& points) {             
@@ -1228,7 +1362,9 @@ int minCostConnectPoints(vector<vector<int>>& points) {
 }                                                                   
 ```
 
+```
 };
+```
 
 TIME: O(N2)  |  SPACE: O(N)
 
@@ -1247,7 +1383,10 @@ Output: 3
 
 PROOF: If you can't reach j from i, you can't from any station between either!
 
+```java
 class Solution {
+```
+
 public:
 ```
 int canCompleteCircuit(vector<int>& gas, vector<int>& cost) {
@@ -1269,7 +1408,9 @@ int canCompleteCircuit(vector<int>& gas, vector<int>& cost) {
 }                                                            
 ```
 
+```
 };
+```
 
 TIME: O(N)  |  SPACE: O(1)
 
@@ -1283,7 +1424,10 @@ Output: 5 (candies: [2,1,2])
 
 APPROACH: Two passes - satisfy left neighbor, then right neighbor.
 
+```java
 class Solution {
+```
+
 public:
 ```
 int candy(vector<int>& ratings) {                          
@@ -1308,7 +1452,9 @@ int candy(vector<int>& ratings) {
 }                                                          
 ```
 
+```
 };
+```
 
 TIME: O(N)  |  SPACE: O(N)
 
@@ -1322,7 +1468,10 @@ Output: true
 
 APPROACH: Track range of possible open counts [low, high].
 
+```java
 class Solution {
+```
+
 public:
 ```
 bool checkValidString(string s) {                          
@@ -1348,7 +1497,9 @@ bool checkValidString(string s) {
 }                                                          
 ```
 
+```
 };
+```
 
 TIME: O(N)  |  SPACE: O(1)
 
@@ -1365,7 +1516,10 @@ PROBLEM: Remove k digits to get smallest number.
 Input: num = "1432219", k = 3
 Output: "1219"
 
+```java
 class Solution {
+```
+
 public:
 ```
 string removeKdigits(string num, int k) {                          
@@ -1394,7 +1548,9 @@ string removeKdigits(string num, int k) {
 }                                                                  
 ```
 
+```
 };
+```
 
 TIME: O(N)  |  SPACE: O(N)
 
@@ -1408,7 +1564,10 @@ Output: 7236
 
 APPROACH: Find leftmost digit smaller than a digit to its right.
 
+```java
 class Solution {
+```
+
 public:
 ```
 int maximumSwap(int num) {                                     
@@ -1439,7 +1598,9 @@ int maximumSwap(int num) {
 }                                                              
 ```
 
+```
 };
+```
 
 TIME: O(N)  |  SPACE: O(N)
 
@@ -1451,7 +1612,10 @@ PROBLEM: Largest number < n with monotone increasing digits.
 Input: 332
 Output: 299
 
+```java
 class Solution {
+```
+
 public:
 ```
 int monotoneIncreasingDigits(int n) {       
@@ -1473,7 +1637,9 @@ int monotoneIncreasingDigits(int n) {
 }                                           
 ```
 
+```
 };
+```
 
 TIME: O(N)  |  SPACE: O(N)
 
@@ -1490,7 +1656,10 @@ PROBLEM: Remove duplicates to get lexicographically smallest result.
 Input: "bcabc"
 Output: "abc"
 
+```java
 class Solution {
+```
+
 public:
 ```
 string removeDuplicateLetters(string s) {                 
@@ -1522,7 +1691,9 @@ string removeDuplicateLetters(string s) {
 }                                                         
 ```
 
+```
 };
+```
 
 TIME: O(N)  |  SPACE: O(1)
 
@@ -1535,7 +1706,10 @@ No 3 consecutive same chars.
 Input: a = 1, b = 1, c = 7
 Output: "ccaccbcc" or similar
 
+```java
 class Solution {
+```
+
 public:
 ```
 string longestDiverseString(int a, int b, int c) {                  
@@ -1567,7 +1741,9 @@ string longestDiverseString(int a, int b, int c) {
 }                                                                   
 ```
 
+```
 };
+```
 
 TIME: O(a + b + c)  |  SPACE: O(1)
 
@@ -1579,7 +1755,10 @@ PROBLEM: Replace one char to make it not a palindrome. Return lex smallest.
 Input: "abccba"
 Output: "aaccba"
 
+```java
 class Solution {
+```
+
 public:
 ```
 string breakPalindrome(string palindrome) {           
@@ -1600,7 +1779,9 @@ string breakPalindrome(string palindrome) {
 }                                                     
 ```
 
+```
 };
+```
 
 TIME: O(N)  |  SPACE: O(1)
 
@@ -1617,7 +1798,10 @@ PROBLEM: Partition string so each letter appears in at most one part.
 Input: "ababcbacadefegdehijhklij"
 Output: [9,7,8]
 
+```java
 class Solution {
+```
+
 public:
 ```
 vector<int> partitionLabels(string s) {       
@@ -1642,7 +1826,9 @@ vector<int> partitionLabels(string s) {
 }                                             
 ```
 
+```
 };
+```
 
 TIME: O(N)  |  SPACE: O(1)
 
@@ -1656,7 +1842,10 @@ Output: 18 (split: [7,2,5] and [10,8])
 
 APPROACH: Binary search on answer + greedy validation.
 
+```java
 class Solution {
+```
+
 public:
 ```
 int splitArray(vector<int>& nums, int k) {                   
@@ -1693,7 +1882,9 @@ bool canSplit(vector<int>& nums, int k, long long maxSum) {
 }                                                            
 ```
 
+```
 };
+```
 
 TIME: O(N log sum)  |  SPACE: O(1)
 
@@ -1707,7 +1898,10 @@ Output: 3 (remove 'a' with time 1 and 'a' with time 3)
 
 APPROACH: For consecutive same colors, keep max time, remove others.
 
+```java
 class Solution {
+```
+
 public:
 ```
 int minCost(string colors, vector<int>& neededTime) {            
@@ -1732,7 +1926,9 @@ int minCost(string colors, vector<int>& neededTime) {
 }                                                                
 ```
 
+```
 };
+```
 
 TIME: O(N)  |  SPACE: O(1)
 
@@ -1749,7 +1945,10 @@ PROBLEM: Negate elements k times. Maximize sum.
 Input: nums = [4,2,3], k = 1
 Output: 5 (negate 2)
 
+```java
 class Solution {
+```
+
 public:
 ```
 int largestSumAfterKNegations(vector<int>& nums, int k) {
@@ -1773,7 +1972,9 @@ int largestSumAfterKNegations(vector<int>& nums, int k) {
 }                                                        
 ```
 
+```
 };
+```
 
 TIME: O(N log N)  |  SPACE: O(1)
 
@@ -1787,7 +1988,10 @@ Output: 7 (pairs: (2,5), (3,3))
 
 APPROACH: Pair smallest with largest.
 
+```java
 class Solution {
+```
+
 public:
 ```
 int minPairSum(vector<int>& nums) {                    
@@ -1806,7 +2010,9 @@ int minPairSum(vector<int>& nums) {
 }                                                      
 ```
 
+```
 };
+```
 
 TIME: O(N log N)  |  SPACE: O(1)
 
@@ -1820,7 +2026,10 @@ Output: 4
 
 KEY INSIGHT: Parity of negatives is invariant! If odd, one negative remains.
 
+```java
 class Solution {
+```
+
 public:
 ```
 long long maxMatrixSum(vector<vector<int>>& matrix) { 
@@ -1845,7 +2054,9 @@ long long maxMatrixSum(vector<vector<int>>& matrix) {
 }                                                     
 ```
 
+```
 };
+```
 
 TIME: O(MN)  |  SPACE: O(1)
 
@@ -1862,7 +2073,10 @@ PROBLEM: Each boat fits 2 people with weight limit. Minimize boats.
 Input: people = [3,2,2,1], limit = 3
 Output: 3
 
+```java
 class Solution {
+```
+
 public:
 ```
 int numRescueBoats(vector<int>& people, int limit) {
@@ -1883,7 +2097,9 @@ int numRescueBoats(vector<int>& people, int limit) {
 }                                                   
 ```
 
+```
 };
+```
 
 TIME: O(N log N)  |  SPACE: O(1)
 
@@ -1896,7 +2112,10 @@ Maximize score.
 Input: tokens = [100,200,300,400], power = 200
 Output: 2
 
+```java
 class Solution {
+```
+
 public:
 ```
 int bagOfTokensScore(vector<int>& tokens, int power) {
@@ -1922,7 +2141,9 @@ int bagOfTokensScore(vector<int>& tokens, int power) {
 }                                                     
 ```
 
+```
 };
+```
 
 TIME: O(N log N)  |  SPACE: O(1)
 
@@ -1934,7 +2155,10 @@ PROBLEM: Balloons as intervals. Arrow at x bursts all containing x. Min arrows?
 Input: [[10,16],[2,8],[1,6],[7,12]]
 Output: 2
 
+```java
 class Solution {
+```
+
 public:
 ```
 int findMinArrowShots(vector<vector<int>>& points) {   
@@ -1957,7 +2181,9 @@ int findMinArrowShots(vector<vector<int>>& points) {
 }                                                      
 ```
 
+```
 };
+```
 
 TIME: O(N log N)  |  SPACE: O(1)
 
@@ -2026,4 +2252,3 @@ Assume greedy isn't optimal, derive contradiction.
 15. Selection + Constraint > Two pointers with state
 
 ## **END**
-

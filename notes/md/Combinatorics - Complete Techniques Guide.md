@@ -1,6 +1,9 @@
 # COMBINATORICS: COMPLETE TECHNIQUES GUIDE
 
+```
 Combinatorics = Math of counting, arranging, and selecting objects
+```
+
 Essential for: DP, probability, optimization, counting problems
 
 ## TABLE OF CONTENTS
@@ -39,52 +42,68 @@ Example: Choose outfit
 - Total: 5 x 3 = 15 outfits
 
 Code Pattern:
+```
 total = ways_A * ways_B * ways_C * ...
+```
 
 ## 2. PERMUTATIONS & COMBINATIONS
 
 PERMUTATIONS (Order Matters):
 ------------------------------
+```
 P(n, r) = n! / (n-r)!
+```
+
 = Number of ways to arrange r items from n items
 
 Example: Choose 3 winners from 5 contestants
+```
 P(5, 3) = 5!/(5-3)! = 5x4x3 = 60
+```
+
 (1st place, 2nd place, 3rd place are different)
 
 Special Case: P(n, n) = n! (arrange all n items)
 
 Code:
-long permutation(int n, int r) {
 ```
+long permutation(int n, int r) {
   long result = 1;             
   for (int i = 0; i < r; i++) {
       result *= (n - i);       
   }                            
   return result;               
-```
 
 }
+```
 
 COMBINATIONS (Order Doesn't Matter):
 -------------------------------------
+```
 C(n, r) = n! / (r! x (n-r)!)
+```
+
 = Number of ways to choose r items from n items
 
 Example: Choose 3 team members from 5 people
+```
 C(5, 3) = 5!/(3!x2!) = 10
+```
+
 (ABC is same as BAC, CBA, etc.)
 
 Common formulas:
+```
 C(n, 0) = 1
 C(n, 1) = n
 C(n, 2) = nx(n-1)/2
 C(n, n) = 1
 C(n, r) = C(n, n-r)
+```
 
 Code:
-long combination(int n, int r) {
 ```
+long combination(int n, int r) {
   if (r > n - r) r = n - r;  // Optimize
   long result = 1;                      
   for (int i = 0; i < r; i++) {         
@@ -92,9 +111,9 @@ long combination(int n, int r) {
       result /= (i + 1);                
   }                                     
   return result;                        
-```
 
 }
+```
 
 Problems:
 - Choose k items from n items
@@ -110,10 +129,14 @@ Example: 4-digit PIN from 10 digits
 
 **COMBINATIONS WITH REPETITION:**
 ------------------------------
+```
 C(n+r-1, r) = ways to choose r items from n types (with replacement)
+```
 
 Example: Buy 3 fruits from 4 types
+```
 C(4+3-1, 3) = C(6, 3) = 20
+```
 
 ## 3. STARS AND BARS
 
@@ -132,12 +155,12 @@ Applications:
 - Partition problems
 
 Code:
+```
 long starsAndBars(int n, int k) {
-```
   return combination(n + k - 1, k - 1);
-```
 
 }
+```
 
 Variation: Each bin must have at least 1 item
 Formula: C(n-1, k-1)
@@ -163,12 +186,12 @@ Visual Example: Count multiples of 2 or 3 in [1,100]
 |A ∪ B| = 50 + 33 - 16 = 67
 
 Code Pattern (3 sets):
+```
 int inclusionExclusion(int A, int B, int C, int AB, int AC, int BC, int ABC) {
-```
   return A + B + C - AB - AC - BC + ABC;
-```
 
 }
+```
 
 Applications:
 - Count elements with at least one property
@@ -215,8 +238,8 @@ PASCAL'S TRIANGLE:
 Property: C(n,r) = C(n-1,r-1) + C(n-1,r)
 
 Code (DP):
+```cpp
 vector<vector<long>> pascalTriangle(int n) {
-```
   vector<vector<long>> dp(n + 1, vector<long>(n + 1));
   for (int i = 0; i <= n; i++) {                      
       dp[i][0] = dp[i][i] = 1;                        
@@ -225,9 +248,9 @@ vector<vector<long>> pascalTriangle(int n) {
       }                                               
   }                                                   
   return dp;                                          
-```
 
 }
+```
 
 **BINOMIAL THEOREM:**
 -----------------
@@ -237,8 +260,10 @@ Example: (x + 1)3 = 1x3 + 3x2 + 3x + 1
 Coefficients: 1, 3, 3, 1 (from Pascal's triangle)
 
 Properties:
+```
 C(n,0) + C(n,1) + ... + C(n,n) = 2ⁿ
 C(n,0) - C(n,1) + C(n,2) - ... = 0
+```
 
 Problems:
 - Subset counting
@@ -254,8 +279,8 @@ Formula: C(n) = C(2n,n)/(n+1) = (2n)!/(n!(n+1)!)
 Recursive: C(n) = Σ C(i)xC(n-1-i) for i=0 to n-1
 
 Code:
+```cpp
 long catalan(int n) {
-```
   if (n <= 1) return 1;              
   vector<long> dp(n + 1);            
   dp[0] = dp[1] = 1;                 
@@ -265,9 +290,9 @@ long catalan(int n) {
       }                              
   }                                  
   return dp[n];                      
-```
 
 }
+```
 
 Applications:
 - Valid parentheses sequences
@@ -293,8 +318,8 @@ Recursive: D(n) = (n-1) x [D(n-1) + D(n-2)]
 Values: D(0)=1, D(1)=0, D(2)=1, D(3)=2, D(4)=9, D(5)=44
 
 Code:
+```cpp
 long derangement(int n) {
-```
   if (n == 0) return 1;                     
   if (n == 1) return 0;                     
   vector<long> dp(n + 1);                   
@@ -304,12 +329,14 @@ long derangement(int n) {
       dp[i] = (i - 1) * (dp[i-1] + dp[i-2]);
   }                                         
   return dp[n];                             
-```
 
 }
+```
 
 Uses Inclusion-Exclusion:
+```
 D(n) = n! - (ways with at least 1 fixed point)
+```
 
 Applications:
 - Secret Santa (no one gets own name)
@@ -328,8 +355,8 @@ Ways to write n as sum of positive integers (order doesn't matter)
 Example: 4 = 4 = 3+1 = 2+2 = 2+1+1 = 1+1+1+1 > 5 partitions
 
 Code (DP):
+```cpp
 int partition(int n) {
-```
   vector<int> dp(n + 1);            
   dp[0] = 1;                        
   for (int i = 1; i <= n; i++) {    
@@ -338,25 +365,35 @@ int partition(int n) {
       }                             
   }                                 
   return dp[n];                     
-```
 
 }
+```
 
 SET PARTITION (Bell Numbers):
 ------------------------------
+```
 B(n) = ways to partition set of n elements
+```
+
 Example: {1,2,3} > {{1,2,3}}, {{1,2},{3}}, {{1,3},{2}}, {{2,3},{1}}, {{1},{2},{3}}
+```
 B(3) = 5
+```
 
 Stirling Numbers of Second Kind:
+```
 S(n,k) = ways to partition n elements into exactly k non-empty subsets
+```
 
 ## 10. GENERATING FUNCTIONS
 
 Technique: Encode sequence as coefficients of polynomial/series
 
 Example: Count ways to make change with coins {1,2,5}
+```
 G(x) = (1 + x + x2 + ...) x (1 + x2 + x⁴ + ...) x (1 + x⁵ + x¹⁰ + ...)
+```
+
 Coefficient of xⁿ = ways to make n cents
 
 Applications:
@@ -463,7 +500,10 @@ Used in: modular combinatorics
 
 **HOCKEY STICK IDENTITY:**
 ----------------------
+```
 C(r,r) + C(r+1,r) + ... + C(n,r) = C(n+1,r+1)
+```
+
 Used in: sum of binomial coefficients
 
 ## 14. IMPLEMENTATION TIPS
@@ -482,11 +522,11 @@ For multiple queries:
 - Use Pascal's triangle
 
 Code:
+```cpp
 const int MOD = 1e9 + 7;
 vector<long> fact, inv_fact;
 
 void precompute(int n) {
-```
   fact.resize(n + 1);                             
   inv_fact.resize(n + 1);                         
   fact[0] = 1;                                    
@@ -498,17 +538,15 @@ void precompute(int n) {
   for (int i = n - 1; i >= 0; i--) {              
       inv_fact[i] = (inv_fact[i+1] * (i+1)) % MOD;
   }                                               
-```
 
 }
 
 long nCr(int n, int r) {
-```
   if (r > n) return 0;                                       
   return (fact[n] * inv_fact[r] % MOD) * inv_fact[n-r] % MOD;
-```
 
 }
+```
 
 ## 15. PRACTICE PROBLEMS BY TECHNIQUE
 
@@ -557,4 +595,3 @@ Most Common in Interviews:
 5. Catalan Numbers
 
 Master these 5 and you'll handle 90% of combinatorics problems!
-

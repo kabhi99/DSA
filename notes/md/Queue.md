@@ -54,11 +54,15 @@ dequeue                    enqueue
 
 #include <queue>
 
+```
 queue<int> q;
 
 // Basic operations
+```
+
 q.push(5);           // enqueue - add to rear
 q.pop();             // dequeue - remove from front
+```
 int x = q.front();   // peek front element
 int y = q.back();    // peek rear element
 bool empty = q.empty();
@@ -71,6 +75,7 @@ q.pop();
 // process val
 
 }
+```
 
 ### **WHEN TO USE QUEUE?** 
 
@@ -122,9 +127,11 @@ Rear and Front move circularly!
 
 ### IMPLEMENTATION (LC 622):
 
+```java
 class MyCircularQueue {
 vector<int> data;
 int front, rear, size, capacity;
+```
 
 public:
 ```
@@ -157,10 +164,14 @@ bool isEmpty() { return size == 0; }
 bool isFull() { return size == capacity; }                                   
 ```
 
+```
 };
+```
 
  **KEY TRICK**: Use modulo (%) for circular wrapping!
+```
 next_index = (current_index + 1) % capacity
+```
 
 ### **3. DEQUE (Double-Ended Queue)** 
 
@@ -170,22 +181,30 @@ CONCEPT: Can add/remove from BOTH ends!
 
 #include <deque>
 
+```
 deque<int> dq;
 
 // Add to both ends
+```
+
 dq.push_back(5);    // Add to rear
 dq.push_front(3);   // Add to front
 
+```
 // Remove from both ends
+```
+
 dq.pop_back();      // Remove from rear
 dq.pop_front();     // Remove from front
 
+```
 // Access both ends
 int f = dq.front();
 int r = dq.back();
 
 // Random access (unlike queue!)
 int x = dq[2];      // Access by index
+```
 
 **USE CASES:**
  Sliding Window Maximum/Minimum (monotonic deque!)
@@ -203,6 +222,7 @@ CONCEPT: Elements served by PRIORITY, not FIFO order.
 
 #include <queue>
 
+```cpp
 // Max-heap (largest first)
 priority_queue<int> maxPQ;
 maxPQ.push(5);
@@ -217,6 +237,7 @@ minPQ.push(5);
 minPQ.push(10);
 minPQ.push(3);
 int min_val = minPQ.top();  // 3
+```
 
 **TIME COMPLEXITY:**
 Insert: O(log N)
@@ -231,8 +252,8 @@ This is THE primary use of queues in coding interviews!
 
 ### **BFS TEMPLATE 1: Basic BFS (Single Source)**
 
+```cpp
 void BFS(Node* start) {
-```
 queue<Node*> q;                             
 unordered_set<Node*> visited;               
 
@@ -254,9 +275,9 @@ while (!q.empty()) {
         }                                   
     }                                       
 }                                           
-```
 
 }
+```
 
  **KEY INSIGHT**: Mark visited WHEN ADDING to queue, not when processing!
 Why? Prevents adding same node multiple times.
@@ -269,8 +290,8 @@ All nodes at distance d are processed before distance d+1.
 
 Use when you need to track levels separately.
 
+```cpp
 vector<vector<int>> levelOrder(TreeNode* root) {
-```
 vector<vector<int>> result;                                           
 if (!root) return result;                                             
 
@@ -295,9 +316,9 @@ while (!q.empty()) {
 }                                                                     
 
 return result;                                                        
-```
 
 }
+```
 
  **CRITICAL TRICK**: `int levelSize = q.size()`
 Captures current level size BEFORE adding next level!
@@ -309,8 +330,8 @@ Captures current level size BEFORE adding next level!
 
 ### **BFS TEMPLATE 3: Shortest Path (Unweighted Graph)**
 
+```cpp
 int shortestPath(Node* start, Node* target) {
-```
 queue<Node*> q;                                        
 unordered_map<Node*, int> distance;                    
 
@@ -334,9 +355,9 @@ while (!q.empty()) {
 }                                                      
 
 return -1;  // No path found                           
-```
 
 }
+```
 
  **WHY BFS for shortest path?**
 BFS explores nodes in order of distance from start.
@@ -346,8 +367,8 @@ First time we reach target = shortest path!
 
 START from multiple sources simultaneously!
 
+```cpp
 void multiSourceBFS(vector<Node*>& sources) {
-```
 queue<Node*> q;                             
 unordered_set<Node*> visited;               
 
@@ -370,9 +391,9 @@ while (!q.empty()) {
         }                                   
     }                                       
 }                                           
-```
 
 }
+```
 
 **CLASSIC PROBLEMS:**
 - Rotting Oranges (LC 994): All rotten oranges are sources
@@ -393,8 +414,8 @@ PROBLEM: Implement FIFO queue using only LIFO stacks.
 Reversing twice = original order!
 Stack1 (LIFO) > Stack2 (reverses) > FIFO
 
+```java
 class MyQueue {
-```
 stack<int> input, output;        
 
 void transfer() {                
@@ -428,7 +449,9 @@ bool empty() {
 }                                          
 ```
 
+```
 };
+```
 
 **AMORTIZED ANALYSIS:**
 Each element transferred at most once: O(1) amortized!
@@ -437,8 +460,10 @@ Each element transferred at most once: O(1) amortized!
 
 APPROACH 1: Make push() expensive
 
+```java
 class MyStack {
 queue<int> q;
+```
 
 public:
 ```
@@ -463,7 +488,9 @@ int top() { return q.front(); }
 bool empty() { return q.empty(); }                   
 ```
 
+```
 };
+```
 
  **CLEVER TRICK**: Rotate queue after each push!
 New element ends up at front (LIFO behavior).
@@ -481,8 +508,8 @@ Return minimum time until no fresh oranges remain.
 
  **KEY INSIGHT**: Multi-source BFS! All rotten oranges start together.
 
+```cpp
 int orangesRotting(vector<vector<int>>& grid) {
-```
 int m = grid.size(), n = grid[0].size();                                      
 queue<pair<int, int>> q;                                                      
 int fresh = 0;                                                                
@@ -524,9 +551,9 @@ while (!q.empty()) {
 }                                                                             
 
 return fresh == 0 ? minutes : -1;                                             
-```
 
 }
+```
 
 TIME: O(M x N)  |  SPACE: O(M x N)
 
@@ -537,8 +564,8 @@ PROBLEM: Find max in each sliding window of size k.
  **KEY INSIGHT**: Use DEQUE to maintain decreasing sequence!
 (This is actually Monotonic Deque, not simple queue)
 
+```cpp
 vector<int> maxSlidingWindow(vector<int>& nums, int k) {
-```
 deque<int> dq;  // Stores indices                     
 vector<int> result;                                   
 
@@ -562,9 +589,9 @@ for (int i = 0; i < nums.size(); i++) {
 }                                                     
 
 return result;                                        
-```
 
 }
+```
 
 TIME: O(N)  |  SPACE: O(K)
 
@@ -579,8 +606,8 @@ PROBLEM: Count number of islands (connected 1s) in a grid.
 
 APPROACH: BFS from each unvisited land cell.
 
+```cpp
 int numIslands(vector<vector<char>>& grid) {
-```
 if (grid.empty()) return 0;                                                     
 int m = grid.size(), n = grid[0].size();                                        
 int count = 0;                                                                  
@@ -617,9 +644,9 @@ for (int i = 0; i < m; i++) {
 }                                                                               
 
 return count;                                                                   
-```
 
 }
+```
 
 TIME: O(M x N)  |  SPACE: O(min(M, N))
 
@@ -631,8 +658,8 @@ PROBLEM: Shortest transformation sequence from beginWord to endWord.
 
  **KEY INSIGHT**: BFS for shortest path! Each word = node, 1-diff = edge.
 
+```cpp
 int ladderLength(string beginWord, string endWord, vector<string>& wordList) {
-```
 unordered_set<string> dict(wordList.begin(), wordList.end());
 if (!dict.count(endWord)) return 0;                          
 
@@ -670,9 +697,9 @@ while (!q.empty()) {
 }                                                            
 
 return 0;                                                    
-```
 
 }
+```
 
 TIME: O(M2 x N) where M = word length, N = dict size
 SPACE: O(N)
@@ -741,26 +768,36 @@ Need shortest path in UNWEIGHTED graph?
 
 ### MISTAKE 1: Marking visited when processing (not when adding)
 
+```cpp
  while (!q.empty()) {
 auto node = q.front(); q.pop();
+```
+
 visited.insert(node);  // TOO LATE!
 
+```
 }
 
  if (!visited.count(neighbor)) {
+```
+
 visited.insert(neighbor);  // Mark NOW!
+```
 q.push(neighbor);
 
 }
+```
 
 WHY: Same node can be added multiple times > infinite loop!
 
 ### MISTAKE 2: Not capturing level size in level-order
 
+```
  for (int i = 0; i < q.size(); i++)  // q.size() changes in loop!
 
  int size = q.size();  // Capture first!
 for (int i = 0; i < size; i++)
+```
 
 ### MISTAKE 3: Using queue for DFS-type problems
 
@@ -768,18 +805,23 @@ Finding ALL paths > Use DFS (stack/recursion), not BFS!
 
 ### MISTAKE 4: Forgetting to check empty queue
 
+```
  int val = q.front(); q.pop();  // Crash if empty!
 
  if (!q.empty()) {
 int val = q.front(); q.pop();
 
 }
+```
 
 ## **QUICK REFERENCE CHEAT SHEET** 
 
 **BASIC QUEUE:**
 
+```
 queue<int> q;
+```
+
 q.push(x);       // enqueue
 q.pop();         // dequeue
 q.front();       // peek front
@@ -789,14 +831,17 @@ q.size();        // get size
 
 **DEQUE:**
 
+```cpp
 deque<int> dq;
 dq.push_back(x);   dq.push_front(x);
 dq.pop_back();     dq.pop_front();
 dq.front();        dq.back();
 dq[i];             // random access!
+```
 
 **BFS TEMPLATE:**
 
+```cpp
 queue<Node*> q;
 unordered_set<Node*> visited;
 
@@ -804,7 +849,6 @@ q.push(start);
 visited.insert(start);
 
 while (!q.empty()) {
-```
 int size = q.size();  // For level tracking
 for (int i = 0; i < size; i++) {           
     auto curr = q.front(); q.pop();        
@@ -817,9 +861,8 @@ for (int i = 0; i < size; i++) {
         }                                  
     }                                      
 }                                          
-```
 
 }
+```
 
 ## **END**
-

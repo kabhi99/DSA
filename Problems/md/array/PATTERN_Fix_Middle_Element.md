@@ -54,11 +54,15 @@ This reduces complexity from O(n3) to O(n2) or O(n)!
 1. RUNNING SUM PATTERN
 ----------------------
 Running Sum: For pairs, accumulate as you go
+```
 result += element x sum
 sum += element
+```
 
 Fix Middle: For triplets, multiply left x right
+```
 result += leftCount x rightCount
+```
 
 Similar Idea: Use prefix information to avoid nested loops
 
@@ -174,6 +178,7 @@ Template for "Fix Middle" problems:
 ```cpp
 int countTriplets(vector<int>& nums) {
 ```
+```
 // Step 1: Precompute right frequencies
 map<int, int> rightFreq;
 for (int val : nums) rightFreq[val]++;
@@ -201,7 +206,6 @@ for (int j = 0; j < nums.size(); j++) {
 }
 
 return result;
-```
 
 }
 ```
@@ -219,15 +223,19 @@ Key Steps:
 RUNNING SUM PATTERN (from trapezoid problem):
 ---------------------------------------------
 For pairs (i, j):
+```
 result += edge[j] x sum
 sum += edge[j]
+```
 
 Accumulates as we go, O(n)
 
 FIX MIDDLE PATTERN (this problem):
 ----------------------------------
 For triplets (i, j, k):
+```
 result += leftCount[j] x rightCount[j]
+```
 
 Maintains left and right state, O(n)
 
@@ -304,4 +312,3 @@ File Location Suggestion:
 
 Or create:
 /Counting Problems/ - collection of all counting patterns
-

@@ -36,15 +36,19 @@
 **CORE IDEA:**
 If prefix sum up to index i is X, and
 prefix sum up to index j is Y, and
+```
 Y = X + K
+```
 
 Then: subarray [i+1...j] has sum = K
 
 **MATHEMATICAL PROOF:**
+```
 psum[j] = arr[0] + arr[1] + ... + arr[j]
 psum[i] = arr[0] + arr[1] + ... + arr[i]
 
 psum[j] - psum[i] = arr[i+1] + arr[i+2] + ... + arr[j] = K
+```
 
 Therefore: psum[j] = psum[i] + K
 Rearranged: psum[i] = psum[j] - K
@@ -78,8 +82,8 @@ Sliding window can't handle this non-monotonic behavior!
 
 ### TEMPLATE 1: COUNT SUBARRAYS
 
+```cpp
 int countSubarrays(vector<int>& arr, int K) {
-```
 int count = 0;                                  
 int psum = 0;                                   
 unordered_map<int, int> mp;                     
@@ -97,9 +101,9 @@ for (int num : arr) {
 }                                               
 
 return count;                                   
-```
 
 }
+```
 
 **KEY POINTS:**
 - mp[0] = 1: Handles case where full prefix equals K
@@ -108,8 +112,8 @@ return count;
 
 ### TEMPLATE 2: MAXIMUM LENGTH
 
+```cpp
 int maxLengthSubarray(vector<int>& arr, int K) {
-```
 int maxLen = 0;                                
 int psum = 0;                                  
 unordered_map<int, int> mp;                    
@@ -130,9 +134,9 @@ for (int i = 0; i < arr.size(); i++) {
 }                                              
 
 return maxLen;                                 
-```
 
 }
+```
 
 **KEY POINTS:**
 - mp[0] = -1: Handles full array case (length = i - (-1) = i + 1)
@@ -141,8 +145,8 @@ return maxLen;
 
 ### TEMPLATE 3: CHECK EXISTENCE
 
+```cpp
 bool existsSubarray(vector<int>& arr, int K) {
-```
 int psum = 0;                                                       
 unordered_map<int, int> mp;                                         
 mp[0] = -1;  // For index tracking                                  
@@ -163,9 +167,9 @@ for (int i = 0; i < arr.size(); i++) {
 }                                                                   
 
 return false;                                                       
-```
 
 }
+```
 
 ###  MAP INITIALIZATION - CRITICAL!
 
@@ -175,10 +179,15 @@ We need to COUNT this occurrence, so initialize to 1
 
 FOR LENGTH: mp[0] = -1
 WHY? If psum - K = 0, entire prefix is valid
+```
 Length = i - (-1) = i + 1 (correct!)
+```
 
 **EXAMPLE:**
+```
 arr = [1, 2, 3], K = 6
+```
+
 At i=2: psum=6, look for psum-K=0
 
 Counting: mp[0]=1 > count += 1 Y
@@ -200,11 +209,13 @@ Length: mp[0]=-1 > length = 2 - (-1) = 3 Y
 **WHY IT WORKS:**
 [1, -1, 1, 1, 1], K = 2
 
+```
 i=0: psum=1, check mp[1-2]=-1 (not found), mp[1]=1
 i=1: psum=0, check mp[0-2]=-2 (not found), mp[0]=1
 i=2: psum=1, check mp[1-2]=-1 (not found), mp[1]=2
 i=3: psum=2, check mp[2-2]=0 (found! count+=1), mp[2]=1
 i=4: psum=3, check mp[3-2]=1 (found 2 times! count+=2), mp[3]=1
+```
 
 Result: 3 subarrays
 
@@ -213,8 +224,8 @@ Result: 3 subarrays
  Updating map before checking
  Check first, then update
 
+```cpp
 int subarraySum(vector<int>& arr, int k) {
-```
 int count = 0;                             
 int sum = 0;                               
 unordered_map<int, int> mp;                
@@ -227,10 +238,10 @@ for (int num : arr) {
 }                                          
 
 return count;                              
-```
 
 }
 // Time: O(N), Space: O(N)
+```
 
 ### 2. Subarray Sums Divisible by K (LC 974)
 
@@ -257,8 +268,8 @@ If two positions have same remainder, their difference is divisible by K
 Example: psum[i] % 5 = 2, psum[j] % 5 = 2
 > (psum[j] - psum[i]) % 5 = 0 Y
 
+```cpp
 int subarraysDivByK(vector<int>& nums, int k) {
-```
 int count = 0;                  
 int sum = 0;                    
 unordered_map<int, int> mp;     
@@ -277,10 +288,10 @@ for (int num : nums) {
 }                               
 
 return count;                   
-```
 
 }
 // Time: O(N), Space: O(K)
+```
 
 ### 3. Binary Subarrays With Sum (LC 930)
 
@@ -297,8 +308,8 @@ return count;
 This problem demonstrates that Prefix Sum + Hashmap works even when
 Sliding Window is applicable. But Sliding Window is more efficient here.
 
+```cpp
 int numSubarraysWithSum(vector<int>& nums, int goal) {
-```
 int count = 0;              
 int sum = 0;                
 unordered_map<int, int> mp; 
@@ -311,10 +322,10 @@ for (int num : nums) {
 }                           
 
 return count;               
-```
 
 }
 // Time: O(N), Space: O(N)
+```
 
 ### 4. Count Number of Nice Subarrays (LC 1248)
 
@@ -332,8 +343,8 @@ return count;
 > [1,1,0,1,1] (mark odds as 1)
 > Count subarrays with sum = 3
 
+```cpp
 int numberOfSubarrays(vector<int>& nums, int k) {
-```
 int count = 0;                                  
 int sum = 0;                                    
 unordered_map<int, int> mp;                     
@@ -346,10 +357,10 @@ for (int num : nums) {
 }                                               
 
 return count;                                   
-```
 
 }
 // Time: O(N), Space: O(N)
+```
 
 ## **PART 3: CATEGORY 2 - MAXIMUM LENGTH SUBARRAYS**
 
@@ -379,8 +390,8 @@ ALTERNATIVE APPROACH (Same idea):
 - When difference repeats, we have equal counts
 - Length = current_index - first_occurrence
 
+```cpp
 int findMaxLength(vector<int>& nums) {
-```
 int maxLen = 0;                            
 unordered_map<int, int> mp;                
 mp[0] = -1;  // For full array case        
@@ -401,10 +412,10 @@ for (int i = 0; i < nums.size(); i++) {
 }                                          
 
 return maxLen;                             
-```
 
 }
 // Time: O(N), Space: O(N)
+```
 
 ### 6. Maximum Size Subarray Sum Equals K (LC 325) 
 
@@ -426,8 +437,8 @@ At i=4: psum=6, check mp[6-3]=mp[3] (not found)
 
 If psum=3 appears at i=1 and i=4, keep i=1 for maximum length
 
+```cpp
 int maxSubArrayLen(vector<int>& nums, int k) {
-```
 int maxLen = 0;                                
 int psum = 0;                                  
 unordered_map<int, int> mp;                    
@@ -447,10 +458,10 @@ for (int i = 0; i < nums.size(); i++) {
 }                                              
 
 return maxLen;                                 
-```
 
 }
 // Time: O(N), Space: O(N)
+```
 
 ### 7. Minimum Operations to Reduce X to Zero (LC 1658) 
 
@@ -465,14 +476,16 @@ KEY INSIGHT (GENIUS!):
 - Use LC 325 (Maximum Size Subarray Sum Equals K)!
 
 **TRANSFORMATION:**
+```
 nums = [1,1,4,2,3], x = 5, total = 11
+```
 
 Find: max length subarray with sum = 11 - 5 = 6
 > [4,2] has sum 6, length 2
 > Minimum operations = 5 - 2 = 3
 
+```cpp
 int minOperations(vector<int>& nums, int x) {
-```
 int total = accumulate(nums.begin(), nums.end(), 0);
 int target = total - x;                             
 
@@ -497,10 +510,10 @@ for (int i = 0; i < nums.size(); i++) {
 }                                                   
 
 return maxLen == 0 ? -1 : nums.size() - maxLen;     
-```
 
 }
 // Time: O(N), Space: O(N)
+```
 
 ### 8. Longest Subarray with Sum < K (Pattern Extension)
 
@@ -541,8 +554,8 @@ WHY LENGTH > 2?
 [0], k = 1
 Single zero is multiple of k, but length < 2 > false
 
+```cpp
 bool checkSubarraySum(vector<int>& nums, int k) {
-```
 unordered_map<int, int> mp;            
 mp[0] = -1;  // For full array case    
 
@@ -562,10 +575,10 @@ for (int i = 0; i < nums.size(); i++) {
 }                                      
 
 return false;                          
-```
 
 }
 // Time: O(N), Space: O(K)
+```
 
 ### 10. Subarray Sum Divisible by K with Min Length (Extension)
 
@@ -575,8 +588,8 @@ return false;
 **PATTERN:**
 Same as above, but check: i - mp[remainder] >= L
 
+```cpp
 bool checkSubarraySumMinLen(vector<int>& nums, int k, int minLen) {
-```
 unordered_map<int, int> mp;            
 mp[0] = -1;                            
 
@@ -596,9 +609,9 @@ for (int i = 0; i < nums.size(); i++) {
 }                                      
 
 return false;                          
-```
 
 }
+```
 
 ## **PART 5: QUICK REVISION TABLE**
 
@@ -785,4 +798,3 @@ Brute Force: 10¹⁰ operations (TLE)
 Our approach: 10⁵ operations (AC!)
 
 ## END
-

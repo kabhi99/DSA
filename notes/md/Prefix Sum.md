@@ -44,10 +44,12 @@ If psum[i] - psum[j] = K
 Then subarray [j+1...i] has sum = K
 
 **MATHEMATICAL FOUNDATION:**
+```
 psum[i] = arr[0] + arr[1] + ... + arr[i]
 psum[j] = arr[0] + arr[1] + ... + arr[j]
 
 psum[i] - psum[j] = arr[j+1] + arr[j+2] + ... + arr[i] = K
+```
 
 **THEREFORE:**
 We look for: psum[j] = psum[i] - K
@@ -62,13 +64,13 @@ At index i, check if (psum[i] - K) exists in hashmap!
 
 **FOR COUNTING PROBLEMS:**
 
+```
 int psum = 0;
 unordered_map<int, int> countMap;
 countMap[0] = 1;  //  Count: Initialize with 1
 int ans = 0;
 
 for (int i = 0; i < n; i++) {
-```
 psum += arr[i];  // or psum ^= arr[i] for XOR
 
 // Check if (psum - K) exists                
@@ -77,21 +79,21 @@ if (countMap.count(psum - K)) {
 }                                            
 
 countMap[psum]++;  // Record current psum    
-```
 
 }
 
 return ans;
+```
 
 **FOR LENGTH PROBLEMS:**
 
+```
 int psum = 0;
 unordered_map<int, int> indexMap;
 indexMap[0] = -1;  //  Length: Initialize with -1 (before start)
 int maxLen = 0;
 
 for (int i = 0; i < n; i++) {
-```
 psum += arr[i];                                   
 
 // Check if (psum - K) exists                     
@@ -103,11 +105,11 @@ if (indexMap.count(psum - K)) {
 if (!indexMap.count(psum)) {                      
     indexMap[psum] = i;                           
 }                                                 
-```
 
 }
 
 return maxLen;
+```
 
 ###  WHY Initialize map[0]?
 
@@ -150,7 +152,9 @@ Converts "count odds" to "subarray sum" problem
 Minimum operations = n - maximum_middle_length
 
  Divisible by K > Store remainders, same remainder = divisible diff
+```
 psum[i] % K = psum[j] % K > (psum[j] - psum[i]) % K = 0
+```
 
 ### 1. Subarray Sum Equals K (LC 560)  FUNDAMENTAL
 
@@ -173,8 +177,8 @@ psum[i] % K = psum[j] % K > (psum[j] - psum[i]) % K = 0
  Updating map before checking
  Check first, then update map
 
+```cpp
 int subarraySum(vector<int>& nums, int k) {
-```
 unordered_map<int, int> countMap;      
 countMap[0] = 1;  // Important!        
 
@@ -192,10 +196,10 @@ for (int i = 0; i < nums.size(); i++) {
 }                                      
 
 return ans;                            
-```
 
 }
 // Time: O(N), Space: O(N)
+```
 
 ### 2. Maximum Size Subarray Sum Equals K (LC 325)
 
@@ -212,8 +216,8 @@ WHY KEEP EARLIEST?
 - Earlier index gives longer subarray
 - Example: If psum=5 at i=2 and i=7, keep i=2
 
+```cpp
 int maxSubArrayLen(vector<int>& nums, int k) {
-```
 unordered_map<int, int> indexMap;                    
 indexMap[0] = -1;  // For full array case            
 
@@ -233,10 +237,10 @@ for (int i = 0; i < nums.size(); i++) {
 }                                                    
 
 return maxLen;                                       
-```
 
 }
 // Time: O(N), Space: O(N)
+```
 
 ### 3. Range Sum Query - Immutable (LC 303)
 
@@ -248,8 +252,10 @@ return maxLen;
 - Answer queries in O(1)
 - sum[i..j] = psum[j+1] - psum[i]
 
+```java
 class NumArray {
 vector<int> psum;
+```
 
 public:
 ```
@@ -267,8 +273,10 @@ int sumRange(int left, int right) {
 }                                       
 ```
 
+```
 };
 // Constructor: O(N), Query: O(1)
+```
 
 ### 4. Count Number of Nice Subarrays (LC 1248)
 
@@ -280,8 +288,8 @@ int sumRange(int left, int right) {
 - Now it's "subarray sum equals K"
 - Same template as LC 560!
 
+```cpp
 int numberOfSubarrays(vector<int>& nums, int k) {
-```
 unordered_map<int, int> countMap;                
 countMap[0] = 1;                                 
 
@@ -298,10 +306,10 @@ for (int num : nums) {
 }                                                
 
 return ans;                                      
-```
 
 }
 // Time: O(N), Space: O(N)
+```
 
 ### 5. Contiguous Array (LC 525)  BRILLIANT TRANSFORMATION
 
@@ -317,11 +325,14 @@ KEY INSIGHT (GENIUS!):
 **WHY THIS WORKS:**
 [0,1,0,1] with 2 zeros and 2 ones
 diffs: [1,0,1,0] (count 0s minus 1s)
+```
 diff=0 at index 1 and 3 > subarray [2,3] has equal
+```
+
 But we want max, so diff=0 at -1 and 3 > length 4
 
+```cpp
 int findMaxLength(vector<int>& nums) {
-```
 int maxLen = 0;                                       
 unordered_map<int, int> mp;                           
 mp[0] = -1;  // For full array case                   
@@ -342,10 +353,10 @@ for (int i = 0; i < nums.size(); i++) {
 }                                                     
 
 return maxLen;                                        
-```
 
 }
 // Time: O(N), Space: O(N)
+```
 
 ### 6. Minimum Operations to Reduce X to Zero (LC 1658) 
 
@@ -363,8 +374,8 @@ KEY INSIGHT (BRILLIANT!):
 - Find longest subarray with sum 6: [4,2] length 2
 - Answer = 5 - 2 = 3 operations
 
+```cpp
 int minOperations(vector<int>& nums, int x) {
-```
 int total = accumulate(nums.begin(), nums.end(), 0);      
 int target = total - x;                                   
 
@@ -389,10 +400,10 @@ for (int i = 0; i < nums.size(); i++) {
 }                                                         
 
 return maxLen == -1 ? -1 : nums.size() - maxLen;          
-```
 
 }
 // Time: O(N), Space: O(N)
+```
 
 ## **PART 4: SECTION 2 - PREFIX SUM WITH MODULO/DIVISIBILITY**
 
@@ -401,7 +412,9 @@ return maxLen == -1 ? -1 : nums.size() - maxLen;
 **DIVISIBILITY RULE:**
 If (psum[i] - psum[j]) is divisible by K, then:
 (psum[i] - psum[j]) % K = 0
+```
 psum[i] % K = psum[j] % K
+```
 
 So we look for same remainder!
 
@@ -430,8 +443,8 @@ WHY HANDLE NEGATIVES?
 - At i=0: psum=-1, -1%2=-1 in C++ (wrong!)
 - Fix: ((-1%2) + 2) % 2 = 1
 
+```cpp
 int subarraysDivByK(vector<int>& nums, int k) {
-```
 unordered_map<int, int> countMap;                          
 countMap[0] = 1;                                           
 
@@ -448,10 +461,10 @@ for (int num : nums) {
 }                                                          
 
 return ans;                                                
-```
 
 }
 // Time: O(N), Space: O(K)
+```
 
 ### 7. Continuous Subarray Sum (LC 523)
 
@@ -462,8 +475,8 @@ return ans;
 - Same as above, but length must be > 2
 - Store indices, check: i - map[remainder] > 1
 
+```cpp
 bool checkSubarraySum(vector<int>& nums, int k) {
-```
 unordered_map<int, int> indexMap;      
 indexMap[0] = -1;                      
 
@@ -482,10 +495,10 @@ for (int i = 0; i < nums.size(); i++) {
 }                                      
 
 return false;                          
-```
 
 }
 // Time: O(N), Space: O(K)
+```
 
 ### 8. Make Sum Divisible by P (LC 1590)  HARD
 
@@ -502,8 +515,8 @@ KEY INSIGHT (BRILLIANT!):
 - Remove subarray = remainder
 - Left = X * p (divisible!)
 
+```cpp
 int minSubarray(vector<int>& nums, int p) {
-```
 long long total = accumulate(nums.begin(), nums.end(), 0LL);
 int remainder = total % p;                                  
 
@@ -526,10 +539,10 @@ for (int i = 0; i < nums.size(); i++) {
 }                                                           
 
 return minLen == nums.size() ? -1 : minLen;                 
-```
 
 }
 // Time: O(N), Space: O(P)
+```
 
 ### 9. Count of Interesting Subarrays (LC 2845)
 
@@ -541,8 +554,8 @@ return minLen == nums.size() ? -1 : minLen;
 - Then apply modulo prefix sum technique
 - Count subarrays where (count of 1s) % modulo == k
 
+```cpp
 long long countInterestingSubarrays(vector<int>& nums, int modulo, int k) {
-```
 // Step 1: Convert to binary                                   
 int n = nums.size();                                           
 for (int i = 0; i < n; i++) {                                  
@@ -567,10 +580,10 @@ for (int num : nums) {
 }                                                              
 
 return ans;                                                    
-```
 
 }
 // Time: O(N), Space: O(modulo)
+```
 
 ## **PART 5: SECTION 3 - PREFIX SUM WITH XOR**
 
@@ -615,8 +628,8 @@ WHY BITMASK?
 - Check mask (all even)
 - Check mask ^ (1<<i) for each i (toggle one bit for "1 odd")
 
-long long wonderfulSubstrings(string word) {
 ```
+long long wonderfulSubstrings(string word) {
 unordered_map<int, int> countMap;              
 countMap[0] = 1;                               
 
@@ -643,10 +656,10 @@ for (char c : word) {
 }                                              
 
 return ans;                                    
-```
 
 }
 // Time: O(N * 10), Space: O(2^10) = O(1024)
+```
 
 ### 11. Find Longest Awesome Substring (LC 1542)  HARD
 
@@ -658,8 +671,8 @@ return ans;
 - Same approach as above but track LENGTH
 - Keep earliest index for maximum length
 
-int longestAwesome(string s) {
 ```
+int longestAwesome(string s) {
 unordered_map<int, int> indexMap;                           
 indexMap[0] = -1;                                           
 
@@ -688,10 +701,10 @@ for (int i = 0; i < s.size(); i++) {
 }                                                           
 
 return maxLen;                                              
-```
 
 }
 // Time: O(N * 10), Space: O(2^10)
+```
 
 ### 12. Longest Substring with Vowels in Even Counts (LC 1371)
 
@@ -703,8 +716,8 @@ return maxLen;
 - All must be even > check same mask
 - Ignore consonants
 
-int findTheLongestSubstring(string s) {
 ```
+int findTheLongestSubstring(string s) {
 unordered_map<int, int> indexMap;                   
 indexMap[0] = -1;                                   
 
@@ -726,22 +739,27 @@ for (int i = 0; i < s.size(); i++) {
 }                                                   
 
 return maxLen;                                      
-```
 
 }
 // Time: O(N), Space: O(2^5) = O(32)
+```
 
 ## **PART 6: SECTION 4 - 2D PREFIX SUM**
 
 ###  2D PREFIX SUM FORMULAS
 
 COMPUTE FORMULA (Inclusion-Exclusion):
+```
 psum[i+1][j+1] = psum[i][j+1] + psum[i+1][j] - psum[i][j] + grid[i][j]
+```
 
 Why -psum[i][j]? Because it's counted twice!
 
 QUERY FORMULA (Extract Rectangle):
+```
 sum(r1,c1 to r2,c2) = psum[r2+1][c2+1]
+```
+
 - psum[r1][c2+1]
 - psum[r2+1][c1]
 + psum[r1][c1]
@@ -765,8 +783,10 @@ Why +psum[r1][c1]? Because it's subtracted twice!
  PATTERN: Precompute 2D prefix sum
  TEMPLATE: Build once, query in O(1)
 
+```java
 class NumMatrix {
 vector<vector<int>> psum;
+```
 
 public:
 ```
@@ -789,8 +809,10 @@ int sumRegion(int r1, int c1, int r2, int c2) {
 }                                                        
 ```
 
+```
 };
 // Constructor: O(M*N), Query: O(1)
+```
 
 ### 14. Matrix Block Sum (LC 1314)
 
@@ -802,8 +824,8 @@ int sumRegion(int r1, int c1, int r2, int c2) {
 - Use 2D prefix sum for O(1) queries
 - Handle boundaries with max/min
 
+```cpp
 vector<vector<int>> matrixBlockSum(vector<vector<int>>& mat, int k) {
-```
 int m = mat.size(), n = mat[0].size();                 
 vector<vector<int>> psum(m + 1, vector<int>(n + 1, 0));
 
@@ -829,10 +851,10 @@ for (int i = 0; i < m; i++) {
 }                                                      
 
 return mat;                                            
-```
 
 }
 // Time: O(M*N), Space: O(M*N)
+```
 
 ### 15. Maximal Square (LC 221)
 
@@ -844,8 +866,8 @@ return mat;
 - dp[i][j] = min(top, left, diagonal) + 1
 - This is like prefix sum but using min
 
+```cpp
 int maximalSquare(vector<vector<char>>& matrix) {
-```
 int m = matrix.size(), n = matrix[0].size();                           
 vector<vector<int>> dp(m + 1, vector<int>(n + 1, 0));                  
 int maxSide = 0;                                                       
@@ -860,10 +882,10 @@ for (int i = 0; i < m; i++) {
 }                                                                      
 
 return maxSide * maxSide;                                              
-```
 
 }
 // Time: O(M*N), Space: O(M*N)
+```
 
 ### 16. Maximum Difference Score in a Grid (LC 3148) 
 
@@ -881,8 +903,8 @@ KEY INSIGHT (BRILLIANT!):
 - Only first and last matter
 - Find minimum predecessor for each cell
 
+```cpp
 int maxScore(vector<vector<int>>& grid) {
-```
 int m = grid.size(), n = grid[0].size();                               
 vector<vector<int>> pmin(m + 1, vector<int>(n + 1, INT_MAX));          
 int maxScore = INT_MIN;                                                
@@ -905,10 +927,10 @@ for (int i = 1; i <= m; i++) {
 }                                                                      
 
 return maxScore;                                                       
-```
 
 }
 // Time: O(M*N), Space: O(M*N)
+```
 
 ## **PART 7: QUICK REVISION TABLE**
 
@@ -1080,4 +1102,3 @@ Y 3148. Maximum Difference Score in Grid
 - 2201. Count Artifacts That Can Be Extracted
 
 ## END
-

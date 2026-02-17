@@ -23,7 +23,10 @@ A square has:
 - 2 vertical parallel sides
 = parallelogram (2 pairs of parallel sides)
 
+```
 Trapezoid = EXACTLY 1 pair of parallel sides
+```
+
 We're counting parallelograms when we shouldn't! X
 
 ##  CORRECT APPROACH: Track Intercept + Midpoint
@@ -82,7 +85,9 @@ Algorithm:
 
 PART 3: Final Answer
 ---------------------
+```
 Trapezoids = (All with parallel sides) - (Parallelograms)
+```
 
 ## DETAILED EXAMPLE: points = [[-3,2],[3,0],[2,3],[3,2],[2,-3]]
 
@@ -96,61 +101,81 @@ Let's label points:
 ### STEP 1: Generate All Segments with (Slope, Intercept, Midpoint)
 
 Segment (0,1): [-3,2] > [3,0]
+```
 dy = 0-2 = -2, dx = 3-(-3) = 6
 gcd(2,6) = 2 > slope = {-1, 3}
 intercept = (-1)*(-3) - 3*2 = 3 - 6 = -3
 midpoint = (-3+3, 2+0) = (0, 2)
+```
 
 Segment (0,2): [-3,2] > [2,3]
+```
 dy = 1, dx = 5
 slope = {1, 5}
 intercept = 1*(-3) - 5*2 = -13
 midpoint = (-1, 5)
+```
 
 Segment (0,3): [-3,2] > [3,2]
+```
 dy = 0, dx = 6
 slope = {0, 1} (horizontal)
 intercept = 0*(-3) - 1*2 = -2
 midpoint = (0, 4)
+```
 
 Segment (0,4): [-3,2] > [2,-3]
+```
 dy = -5, dx = 5
 gcd = 5 > slope = {-1, 1}
 intercept = (-1)*(-3) - 1*2 = 3 - 2 = 1  *
 midpoint = (-1, -1)
+```
 
 Segment (1,2): [3,0] > [2,3]
+```
 dy = 3, dx = -1 > normalized: dy = -3, dx = 1 > slope = {-3, 1}
 intercept = (-3)*3 - 1*0 = -9
 midpoint = (5, 3)
+```
 
 Segment (1,3): [3,0] > [3,2]
+```
 dy = 2, dx = 0
 slope = {1, 0} (vertical)
 intercept = 1*3 - 0*0 = 3  *
 midpoint = (6, 2)
+```
 
 Segment (1,4): [3,0] > [2,-3]
+```
 dy = -3, dx = -1 > normalized: slope = {3, 1}
 intercept = 3*3 - 1*0 = 9
 midpoint = (5, -3)
+```
 
 Segment (2,3): [2,3] > [3,2]
+```
 dy = -1, dx = 1
 slope = {-1, 1}
 intercept = (-1)*2 - 1*3 = -5  *
 midpoint = (5, 5)
+```
 
 Segment (2,4): [2,3] > [2,-3]
+```
 dy = -6, dx = 0
 slope = {1, 0} (vertical)
 intercept = 1*2 - 0*3 = 2  *
 midpoint = (4, 0)
+```
 
 Segment (3,4): [3,2] > [2,-3]
+```
 dy = -5, dx = -1 > normalized: slope = {5, 1}
 intercept = 5*3 - 1*2 = 13
 midpoint = (5, -1)
+```
 
 ### STEP 2: Group by (Slope, Intercept)
 
@@ -168,7 +193,9 @@ intercept 1:  1 segment (0,4)
 intercept -5: 1 segment (2,3)
 
 Running sum: count=1, sum=0 > add 1*0 = 0, sum=1
+```
 count=1, sum=1 > add 1*1 = 1, sum=2
+```
 
 Trapezoids from this slope: 1
 
@@ -180,7 +207,9 @@ intercept 3: 1 segment (1,3)
 intercept 2: 1 segment (2,4)
 
 Running sum: count=1, sum=0 > add 1*0 = 0, sum=1
+```
 count=1, sum=1 > add 1*1 = 1, sum=2
+```
 
 Trapezoids from this slope: 1
 
@@ -230,7 +259,10 @@ PARALLELOGRAMS: 0
 
 ### FINAL ANSWER
 
+```
 Trapezoids = All_with_parallel_sides - Parallelograms
+```
+
 = 2 - 0
 = 2 Y
 
@@ -271,7 +303,8 @@ Process c1: add c1*0 = 0,     sum = c1
 Process c2: add c2*c1,        sum = c1+c2
 Process c3: add c3*(c1+c2),   sum = c1+c2+c3
 
+```
 Total = c2*c1 + c3*c1 + c3*c2 = c1*c2 + c1*c3 + c2*c3 Y
+```
 
 This is the SAME technique used in the horizontal trapezoid problem!
-

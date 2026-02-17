@@ -109,21 +109,25 @@ Examples:
 Array: [1, -1, 1, 1, 1]  (has negative number!)
 
 **SLIDING WINDOW FAILS:**
+```
 i=0, j=0: sum=1, sum<K, expand
 i=0, j=1: sum=0, sum<K, expand   Problem! Sum DECREASED
 i=0, j=2: sum=1, sum<K, expand
 i=0, j=3: sum=2, sum<K, expand
 i=0, j=4: sum=3, sum=K Y Found one
+```
 
 But wait! When sum decreased from 1>0, we might have missed valid windows
 starting after i=0. Sliding window can't handle this non-monotonic behavior!
 
 PREFIX SUM + HASHMAP WORKS:
+```
 i=0: psum=1, check psum-K=-2 (not found), map[1]=1
 i=1: psum=0, check psum-K=-3 (not found), map[0]=1
 i=2: psum=1, check psum-K=-2 (not found), map[1]=2
 i=3: psum=2, check psum-K=-1 (not found), map[2]=1
 i=4: psum=3, check psum-K=0 (found! count+=1), map[3]=1
+```
 
 Found: [1,-1,1,1,1] Y Correct!
 
@@ -132,6 +136,7 @@ Found: [1,-1,1,1,1] Y Correct!
 Array: [1, 2, 3, 4]  (all positive!)
 
 **SLIDING WINDOW WORKS:**
+```
 i=0, j=0: sum=1, valid, len=1
 i=0, j=1: sum=3, valid, len=2
 i=0, j=2: sum=6, invalid! shrink
@@ -139,6 +144,7 @@ i=1, j=2: sum=5, valid, len=2
 i=1, j=3: sum=9, invalid! shrink
 i=2, j=3: sum=7, invalid! shrink
 i=3, j=3: sum=4, valid, len=1
+```
 
 Maximum length = 2 Y Works perfectly!
 
@@ -154,9 +160,11 @@ Sliding Window is superior here!
 Array: [10, 5, 2, 6], K = 100
 
 SLIDING WINDOW WORKS (counting pattern):
+```
 j=0: prod=10, valid, count+=1 [10]
 j=1: prod=50, valid, count+=2 [5], [10,5]
 j=2: prod=100, invalid! shrink, prod=10, count+=3 [2], [5,2], [10,5,2]
+```
 
 Y Handles multiplication perfectly with shrinking!
 
@@ -397,4 +405,3 @@ If all POSITIVE with "AT MOST/LEAST" > Sliding Window
 When in doubt, ask: "Is my state monotonic?"
 
 ## END
-

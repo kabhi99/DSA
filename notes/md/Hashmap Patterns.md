@@ -77,6 +77,7 @@ Count how many times each element appears using a hashmap
 
 **TEMPLATE:**
 
+```
 unordered_map<T, int> freq;
 
 for (auto element : collection) {
@@ -88,6 +89,7 @@ freq[element]++;
 // - Find most/least frequent element
 // - Check if element appears K times
 // - Count elements with frequency > K
+```
 
 **WHEN TO USE:**
 - "Find the most/least frequent element"
@@ -112,8 +114,8 @@ APPROACH 2: Frequency + Cumulative Sum (O(N + range))
 - Build cumulative count from smallest to largest
 - For each number, cumulative[num-1] = count of smaller numbers
 
+```cpp
 vector<int> smallerNumbersThanCurrent(vector<int>& nums) {
-```
 // Find range                                       
 int maxNum = *max_element(nums.begin(), nums.end());
 
@@ -136,11 +138,11 @@ for (int num : nums) {
 }                                                   
 
 return result;                                      
-```
 
 }
 // Time: O(N + M) where M is range
 // Space: O(M)
+```
 
 ### 2. First Unique Character in a String (LC 387)
 
@@ -151,8 +153,8 @@ return result;
 - Need TWO passes: count, then find
 - First unique = first character with frequency 1
 
-int firstUniqChar(string s) {
 ```
+int firstUniqChar(string s) {
 unordered_map<char, int> freq;      
 
 // Count frequencies                
@@ -168,10 +170,10 @@ for (int i = 0; i < s.size(); i++) {
 }                                   
 
 return -1;                          
-```
 
 }
 // Time: O(N), Space: O(1) - at most 26 chars
+```
 
 ### 3. Sort Characters By Frequency (LC 451)
 
@@ -183,8 +185,8 @@ return -1;
 - Sort by frequency (can use vector of pairs or priority queue)
 - Build result string
 
+```cpp
 string frequencySort(string s) {
-```
 unordered_map<char, int> freq;                 
 
 // Count frequencies                           
@@ -206,10 +208,10 @@ for (auto& [count, ch] : freqPairs) {
 }                                              
 
 return result;                                 
-```
 
 }
 // Time: O(N log N), Space: O(N)
+```
 
 ## **PART 3: PATTERN 2 - PAIR/COMPLEMENT LOOKUP**
 
@@ -220,10 +222,10 @@ For each element X, check if complement (target - X) exists in hashmap
 
 **TEMPLATE:**
 
+```
 unordered_map<int, int> seen;
 
 for (int i = 0; i < nums.size(); i++) {
-```
 int complement = target - nums[i];
 
 if (seen.count(complement)) {     
@@ -232,9 +234,9 @@ if (seen.count(complement)) {
 }                                 
 
 seen[nums[i]] = i;                
-```
 
 }
+```
 
 **GOLDEN RULE:**
 > Check BEFORE inserting (to avoid using same element twice)
@@ -259,8 +261,8 @@ seen[nums[i]] = i;
  Not handling duplicates correctly
  Check before inserting
 
+```cpp
 vector<int> twoSum(vector<int>& nums, int target) {
-```
 unordered_map<int, int> numToIndex;        
 
 for (int i = 0; i < nums.size(); i++) {    
@@ -274,10 +276,10 @@ for (int i = 0; i < nums.size(); i++) {
 }                                          
 
 return {};                                 
-```
 
 }
 // Time: O(N), Space: O(N)
+```
 
 **VARIATIONS:**
 - Two Sum II (sorted array) > Use two pointers
@@ -320,8 +322,8 @@ KEY INSIGHT (BRILLIANT!):
 - O(N2) to check all C+D sums
 - Total: O(N2)!
 
+```cpp
 int fourSumCount(vector<int>& A, vector<int>& B,
-```
              vector<int>& C, vector<int>& D) {
 unordered_map<int, int> sumCount;             
 
@@ -345,10 +347,10 @@ for (int c : C) {
 }                                             
 
 return count;                                 
-```
 
 }
 // Time: O(N2), Space: O(N2)
+```
 
 ## **PART 4: PATTERN 3 - ANAGRAM DETECTION**
 
@@ -359,6 +361,7 @@ Anagrams have same character frequency > use sorted string or frequency as key
 
 **TEMPLATE:**
 
+```cpp
 unordered_map<string, vector<string>> groups;
 
 for (string word : words) {
@@ -367,11 +370,12 @@ sort(key.begin(), key.end());  // Canonical form
 groups[key].push_back(word);
 
 }
+```
 
 ### ALTERNATIVE (Frequency as Key):
 
-string getKey(string s) {
 ```
+string getKey(string s) {
 int freq[26] = {};                                     
 for (char c : s) freq[c - 'a']++;                      
 
@@ -382,9 +386,9 @@ for (int i = 0; i < 26; i++) {
     }                                                  
 }                                                      
 return key;                                            
-```
 
 }
+```
 
 ### 7. Valid Anagram (LC 242)
 
@@ -393,8 +397,8 @@ return key;
 
 ### APPROACH 1: Frequency Count (O(N))
 
-bool isAnagram(string s, string t) {
 ```
+bool isAnagram(string s, string t) {
 if (s.size() != t.size()) return false;
 
 int freq[26] = {};                     
@@ -409,21 +413,21 @@ for (int i = 0; i < 26; i++) {
 }                                      
 
 return true;                           
-```
 
 }
 // Time: O(N), Space: O(1)
+```
 
 ### APPROACH 2: Sort and Compare (O(N log N))
 
-bool isAnagram(string s, string t) {
 ```
+bool isAnagram(string s, string t) {
 sort(s.begin(), s.end());
 sort(t.begin(), t.end());
 return s == t;           
-```
 
 }
+```
 
 ### 8. Group Anagrams (LC 49) 
 
@@ -439,8 +443,8 @@ WHY SORTED STRING AS KEY?
 - "eat", "tea", "ate" all sort to "aet"
 - Canonical representation ensures grouping
 
+```cpp
 vector<vector<string>> groupAnagrams(vector<string>& strs) {
-```
 unordered_map<string, vector<string>> groups;
 
 for (string str : strs) {                    
@@ -455,11 +459,11 @@ for (auto& [key, group] : groups) {
 }                                            
 
 return result;                               
-```
 
 }
 // Time: O(N * K log K) where K is max string length
 // Space: O(N * K)
+```
 
 ### 9. Find All Anagrams in a String (LC 438) > See Sliding Window.txt
 
@@ -488,6 +492,7 @@ Use hashset for O(1) existence checks, uniqueness, and sequence building
 
 **TEMPLATE:**
 
+```
 unordered_set<int> seen(nums.begin(), nums.end());
 
 // Check existence
@@ -495,20 +500,19 @@ if (seen.count(target)) { ... }
 
 // Check duplicates
 for (int num : nums) {
-```
 if (seen.count(num)) return true;  // Duplicate!
 seen.insert(num);                               
-```
 
 }
+```
 
 ### 10. Contains Duplicate (LC 217)
 
  PATTERN: Set for uniqueness check
  TEMPLATE: Simplest hashset application
 
+```cpp
 bool containsDuplicate(vector<int>& nums) {
-```
 unordered_set<int> seen;  
 
 for (int num : nums) {    
@@ -519,10 +523,10 @@ for (int num : nums) {
 }                         
 
 return false;             
-```
 
 }
 // Time: O(N), Space: O(N)
+```
 
 ### 11. Contains Duplicate II (LC 219)
 
@@ -534,8 +538,8 @@ return false;
 - Maintain sliding window of size K
 - Use set to check duplicates in window
 
+```cpp
 bool containsNearbyDuplicate(vector<int>& nums, int k) {
-```
 unordered_set<int> window;             
 
 for (int i = 0; i < nums.size(); i++) {
@@ -553,10 +557,10 @@ for (int i = 0; i < nums.size(); i++) {
 }                                      
 
 return false;                          
-```
 
 }
 // Time: O(N), Space: O(K)
+```
 
 ### 12. Longest Consecutive Sequence (LC 128) 
 
@@ -577,11 +581,14 @@ KEY INSIGHT (GENIUS!):
 - Key: Only count from sequence start!
 
 **BRILLIANT TRICK:**
+```
 if (!numSet.count(num - 1)) > This is sequence start!
+```
+
 Then count how long the sequence is
 
+```cpp
 int longestConsecutive(vector<int>& nums) {
-```
 unordered_set<int> numSet(nums.begin(), nums.end());
 int maxLen = 0;                                     
 
@@ -602,12 +609,13 @@ for (int num : nums) {
 }                                                   
 
 return maxLen;                                      
-```
 
 }
 // Time: O(N), Space: O(N)
+```
 
 **EXAMPLE WALKTHROUGH:**
+```
 nums = [100, 4, 200, 1, 3, 2]
 set = {1, 2, 3, 4, 100, 200}
 
@@ -615,6 +623,7 @@ num=100: 99 not in set > sequence start! Count: 100 (length 1)
 num=4: 3 in set > not sequence start, skip
 num=200: 199 not in set > sequence start! Count: 200 (length 1)
 num=1: 0 not in set > sequence start! Count: 1,2,3,4 (length 4) Y
+```
 
 Result: 4
 
@@ -623,8 +632,8 @@ Result: 4
  PATTERN: Set intersection
  TEMPLATE: Convert to sets and intersect
 
+```cpp
 vector<int> intersection(vector<int>& nums1, vector<int>& nums2) {
-```
 unordered_set<int> set1(nums1.begin(), nums1.end());
 unordered_set<int> result;                          
 
@@ -635,10 +644,10 @@ for (int num : nums2) {
 }                                                   
 
 return vector<int>(result.begin(), result.end());   
-```
 
 }
 // Time: O(N + M), Space: O(N + M)
+```
 
 ## **PART 6: PATTERN 5 - STATE ENCODING**
 
@@ -662,8 +671,8 @@ WHY STRING ENCODING?
 - box_index = (row / 3) * 3 + (col / 3)
 - OR: "b" + to_string(row/3) + to_string(col/3)
 
+```cpp
 bool isValidSudoku(vector<vector<char>>& board) {
-```
 unordered_set<string> seen;                                             
 
 for (int i = 0; i < 9; i++) {                                           
@@ -689,14 +698,17 @@ for (int i = 0; i < 9; i++) {
 }                                                                       
 
 return true;                                                            
-```
 
 }
 // Time: O(1) - board is fixed 9x9
 // Space: O(1) - at most 81 cells
+```
 
 **EXAMPLE:**
+```
 board[0][0] = '5'
+```
+
 > Encodes as:
 "r05" (row 0, digit 5)
 "c05" (col 0, digit 5)
@@ -715,8 +727,8 @@ board[0][0] = '5'
 
 ### APPROACH 1: Max Heap (O(N log K))
 
+```cpp
 vector<int> topKFrequent(vector<int>& nums, int k) {
-```
 unordered_map<int, int> freq;              
 for (int num : nums) {                     
     freq[num]++;                           
@@ -735,15 +747,15 @@ for (int i = 0; i < k; i++) {
 }                                          
 
 return result;                             
-```
 
 }
 // Time: O(N log N), Space: O(N)
+```
 
 ### APPROACH 2: Min Heap (O(N log K)) - BETTER!
 
+```cpp
 vector<int> topKFrequent(vector<int>& nums, int k) {
-```
 unordered_map<int, int> freq;                          
 for (int num : nums) {                                 
     freq[num]++;                                       
@@ -767,15 +779,15 @@ while (!minHeap.empty()) {
 }                                                      
 
 return result;                                         
-```
 
 }
 // Time: O(N log K), Space: O(N)
+```
 
 ### APPROACH 3: Bucket Sort (O(N)) - OPTIMAL!
 
+```cpp
 vector<int> topKFrequent(vector<int>& nums, int k) {
-```
 unordered_map<int, int> freq;                                      
 for (int num : nums) {                                             
     freq[num]++;                                                   
@@ -797,10 +809,10 @@ for (int i = bucket.size() - 1; i >= 0 && result.size() < k; i--) {
 }                                                                  
 
 return result;                                                     
-```
 
 }
 // Time: O(N), Space: O(N)
+```
 
 ## **PART 8: PATTERN 7 - DESIGN PROBLEMS**
 
@@ -830,7 +842,10 @@ WHY DOUBLY LINKED LIST?
 - get(key): Move to front, return value
 - put(key, value): Update or insert at front, evict if needed
 
+```java
 class LRUCache {
+```
+
 private:
 ```
 int capacity;                                          
@@ -884,17 +899,21 @@ void put(int key, int value) {
 }                                           
 ```
 
+```
 };
 // Time: O(1) for both get and put
 // Space: O(capacity)
+```
 
 **VISUALIZATION:**
+```
 Capacity = 2
 
 put(1, 1): [1:1]
 put(2, 2): [2:2, 1:1]
 get(1):    [1:1, 2:2] (1 moved to front)
 put(3, 3): [3:3, 1:1] (2 evicted)
+```
 
 ### 17. Insert Delete GetRandom O(1) (LC 380)
 
@@ -913,10 +932,15 @@ put(3, 3): [3:3, 1:1] (2 evicted)
 - Pop last element (O(1))
 - Update map for swapped element
 
+```java
 class RandomizedSet {
+```
+
 private:
+```cpp
 vector<int> nums;
 unordered_map<int, int> valToIndex;
+```
 
 public:
 ```
@@ -951,9 +975,11 @@ int getRandom() {
 }                                            
 ```
 
+```
 };
 // Time: O(1) for all operations
 // Space: O(N)
+```
 
 ## **PART 9: QUICK REVISION TABLE**
 
@@ -1130,4 +1156,3 @@ RELATED (Advanced):
 - 895. Maximum Frequency Stack
 
 ## END
-

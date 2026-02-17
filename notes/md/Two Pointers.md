@@ -18,10 +18,10 @@
 
 **TEMPLATE:**
 
+```
 int left = 0, right = n - 1;
 
 while (left < right) {
-```
 // Process arr[left] and arr[right]
 
 if (condition) {                   
@@ -30,9 +30,9 @@ if (condition) {
 } else {                           
     right--;                       
 }                                  
-```
 
-### }
+}
+```
 
 **COMMON VARIATIONS:**
 - Two Sum (sorted array)
@@ -52,10 +52,10 @@ KEY INSIGHT: Array must be sorted OR you're checking symmetry
 
 **TEMPLATE:**
 
+```
 int slow = 0, fast = 0;
 
 while (fast < n) {
-```
 // Fast pointer explores ahead         
 fast++;                                
 
@@ -63,9 +63,9 @@ fast++;
 if (condition) {                       
     slow++;                            
 }                                      
-```
 
-### }
+}
+```
 
 **COMMON VARIATIONS:**
 - Remove Duplicates
@@ -84,10 +84,10 @@ KEY INSIGHT: Fast pointer scouts, slow pointer builds result
 
 **TEMPLATE:**
 
+```
 int i = 0, j = 0;
 
 while (i < m && j < n) {
-```
 if (arr1[i] < arr2[j]) {       
     // Process arr1[i]         
     i++;                       
@@ -99,9 +99,9 @@ if (arr1[i] < arr2[j]) {
     i++;                       
     j++;                       
 }                              
-```
 
-### }
+}
+```
 
 **COMMON VARIATIONS:**
 - Merge Sorted Arrays
@@ -118,6 +118,7 @@ KEY INSIGHT: Usually involves sorted arrays or pattern matching
 
 **TEMPLATE:**
 
+```
 // Split phase
 mid = (left + right) / 2;
 split(left, mid);
@@ -126,15 +127,14 @@ split(mid + 1, right);
 // Merge phase
 int i = left, j = mid + 1, k = 0;
 while (i <= mid && j <= right) {
-```
 if (arr[i] <= arr[j]) {  
     temp[k++] = arr[i++];
 } else {                 
     temp[k++] = arr[j++];
 }                        
-```
 
-### }
+}
+```
 
 **COMMON VARIATIONS:**
 - Merge Sort
@@ -255,8 +255,8 @@ NOTE: This is different from Two Sum (LC 1)!
 **GOLDEN RULE:**
 > For sorted array + target problems, always consider opposite ends!
 
+```cpp
 vector<int> twoSum(vector<int>& numbers, int target) {
-```
 int left = 0, right = numbers.size() - 1;          
 
 while (left < right) {                             
@@ -272,10 +272,10 @@ while (left < right) {
 }                                                  
 
 return {};  // No solution                         
-```
 
 }
 // Time: O(N), Space: O(1)
+```
 
 ### 2. Container With Most Water (LC 11) 
 
@@ -297,8 +297,8 @@ WHY MOVE SMALLER HEIGHT?
  Moving larger height pointer
  Always move the pointer with smaller height
 
+```cpp
 int maxArea(vector<int>& height) {
-```
 int left = 0, right = height.size() - 1;     
 int maxWater = 0;                            
 
@@ -316,10 +316,10 @@ while (left < right) {
 }                                            
 
 return maxWater;                             
-```
 
 }
 // Time: O(N), Space: O(1)
+```
 
 ### 3. Trapping Rain Water (LC 42)  HARD
 
@@ -339,8 +339,8 @@ KEY INSIGHT (BRILLIANT!):
 **GOLDEN RULE:**
 > Always process the side with smaller boundary
 
+```cpp
 int trap(vector<int>& height) {
-```
 int left = 0, right = height.size() - 1;           
 int leftMax = 0, rightMax = 0;                     
 int water = 0;                                     
@@ -366,10 +366,10 @@ while (left < right) {
 }                                                  
 
 return water;                                      
-```
 
 }
 // Time: O(N), Space: O(1)
+```
 
 ### 4. Valid Palindrome (LC 125)
 
@@ -381,8 +381,8 @@ return water;
 - Compare characters moving inward
 - Skip non-alphanumeric characters
 
-bool isPalindrome(string s) {
 ```
+bool isPalindrome(string s) {
 int left = 0, right = s.size() - 1;                    
 
 while (left < right) {                                 
@@ -400,10 +400,10 @@ while (left < right) {
 }                                                      
 
 return true;                                           
-```
 
 }
 // Time: O(N), Space: O(1)
+```
 
 ### 5. 3Sum (LC 15)
 
@@ -425,8 +425,8 @@ return true;
  Checking duplicates incorrectly
  Skip after processing, not before
 
+```cpp
 vector<vector<int>> threeSum(vector<int>& nums) {
-```
 vector<vector<int>> result;                                              
 sort(nums.begin(), nums.end());                                          
 
@@ -459,10 +459,10 @@ for (int i = 0; i < nums.size(); i++) {
 }                                                                        
 
 return result;                                                           
-```
 
 }
 // Time: O(N2), Space: O(1) excluding output
+```
 
 ### CATEGORY 2: SLOW & FAST
 
@@ -484,8 +484,8 @@ return result;
 **GOLDEN RULE:**
 > slow tracks "good" elements, fast explores
 
+```cpp
 int removeDuplicates(vector<int>& nums) {
-```
 if (nums.empty()) return 0;                            
 
 int slow = 0;  // Position to write next unique element
@@ -498,10 +498,10 @@ for (int fast = 1; fast < nums.size(); fast++) {
 }                                                      
 
 return slow + 1;  // Length of unique array            
-```
 
 }
 // Time: O(N), Space: O(1)
+```
 
 ### 7. Linked List Cycle (LC 141) 
 
@@ -521,8 +521,8 @@ return slow + 1;  // Length of unique array
 **GOLDEN RULE:**
 > slow = 1 step, fast = 2 steps
 
+```cpp
 bool hasCycle(ListNode *head) {
-```
 ListNode *slow = head, *fast = head;        
 
 while (fast && fast->next) {                
@@ -535,10 +535,10 @@ while (fast && fast->next) {
 }                                           
 
 return false;  // No cycle                  
-```
 
 }
 // Time: O(N), Space: O(1)
+```
 
 ### 8. Linked List Cycle II (LC 142) - Find Cycle Start
 
@@ -552,9 +552,11 @@ return false;  // No cycle
 
 **WHY IT WORKS:**
 Let:
+```
 L = distance from head to cycle start
 C = cycle length
 k = distance from cycle start to meeting point
+```
 
 When they meet:
 Slow traveled: L + k
@@ -562,12 +564,14 @@ Fast traveled: L + k + nC (n = number of cycles)
 
 Since fast = 2 x slow:
 L + k + nC = 2(L + k)
+```
 L = nC - k
+```
 
 This means distance from head to start = distance from meeting to start!
 
+```cpp
 ListNode *detectCycle(ListNode *head) {
-```
 ListNode *slow = head, *fast = head;
 
 // Phase 1: Detect cycle            
@@ -587,18 +591,18 @@ while (fast && fast->next) {
 }                                   
 
 return nullptr;  // No cycle        
-```
 
 }
 // Time: O(N), Space: O(1)
+```
 
 ### 9. Remove Element (LC 27)
 
  PATTERN: Slow & Fast (Filter Elements)
  TEMPLATE: Keep elements != val
 
+```cpp
 int removeElement(vector<int>& nums, int val) {
-```
 int slow = 0;                                   
 
 for (int fast = 0; fast < nums.size(); fast++) {
@@ -609,18 +613,18 @@ for (int fast = 0; fast < nums.size(); fast++) {
 }                                               
 
 return slow;                                    
-```
 
 }
 // Time: O(N), Space: O(1)
+```
 
 ### 10. Move Zeroes (LC 283)
 
  PATTERN: Slow & Fast (Partition)
  TEMPLATE: Move non-zeros to front
 
+```cpp
 void moveZeroes(vector<int>& nums) {
-```
 int slow = 0;  // Position for next non-zero    
 
 for (int fast = 0; fast < nums.size(); fast++) {
@@ -629,10 +633,10 @@ for (int fast = 0; fast < nums.size(); fast++) {
         slow++;                                 
     }                                           
 }                                               
-```
 
 }
 // Time: O(N), Space: O(1)
+```
 
 ### CATEGORY 3: PARALLEL (Two Arrays)
 
@@ -651,8 +655,8 @@ WHY BACKWARD?
 - Backward uses the empty space first
 - Elegant in-place solution
 
+```cpp
 void merge(vector<int>& nums1, int m, vector<int>& nums2, int n) {
-```
 int i = m - 1;  // Last element of nums1            
 int j = n - 1;  // Last element of nums2            
 int k = m + n - 1;  // Last position in merged array
@@ -670,18 +674,18 @@ while (i >= 0 && j >= 0) {
 while (j >= 0) {                                    
     nums1[k--] = nums2[j--];                        
 }                                                   
-```
 
 }
 // Time: O(M + N), Space: O(1)
+```
 
 ### 12. Intersection of Two Arrays II (LC 350)
 
  PATTERN: Parallel (Sorted Arrays)
  TEMPLATE: Compare and collect common elements
 
+```cpp
 vector<int> intersect(vector<int>& nums1, vector<int>& nums2) {
-```
 sort(nums1.begin(), nums1.end());             
 sort(nums2.begin(), nums2.end());             
 
@@ -701,18 +705,18 @@ while (i < nums1.size() && j < nums2.size()) {
 }                                             
 
 return result;                                
-```
 
 }
 // Time: O(N log N + M log M), Space: O(1) excluding output
+```
 
 ### 13. Implement strStr() (LC 28)
 
  PATTERN: Parallel (Pattern Matching)
  TEMPLATE: Two pointers for string matching
 
-int strStr(string haystack, string needle) {
 ```
+int strStr(string haystack, string needle) {
 if (needle.empty()) return 0;                      
 
 int m = haystack.size(), n = needle.size();        
@@ -726,10 +730,10 @@ for (int i = 0; i <= m - n; i++) {
 }                                                  
 
 return -1;  // Not found                           
-```
 
 }
 // Time: O(M * N), Space: O(1)
+```
 
 ### 14. Sort Colors (LC 75) - Dutch National Flag  HARD
 
@@ -755,8 +759,8 @@ KEY INSIGHT (BRILLIANT!):
 **GOLDEN RULE:**
 > After swap with right, DON'T move mid (might get 0 or 2)
 
+```cpp
 void sortColors(vector<int>& nums) {
-```
 int left = 0;           // Boundary for 0s                    
 int mid = 0;            // Current element                    
 int right = nums.size() - 1;  // Boundary for 2s              
@@ -774,10 +778,10 @@ while (mid <= right) {
         // DON'T advance mid! Need to check swapped element   
     }                                                         
 }                                                             
-```
 
 }
 // Time: O(N), Space: O(1)
+```
 
 ### 15. Find the Duplicate Number (LC 287)  HARD
 
@@ -804,8 +808,8 @@ KEY INSIGHT (MIND-BLOWING!):
 - Must not modify array
 - O(1) extra space
 
+```cpp
 int findDuplicate(vector<int>& nums) {
-```
 // Phase 1: Find intersection point in cycle    
 int slow = nums[0];                             
 int fast = nums[0];                             
@@ -823,10 +827,10 @@ while (slow != fast) {
 }                                               
 
 return slow;  // The duplicate number           
-```
 
 }
 // Time: O(N), Space: O(1)
+```
 
 ### 16. 4Sum (LC 18)
 
@@ -848,8 +852,8 @@ WHY O(N3) not O(N⁴):
 - Skip early if nums[i] + nums[i+1] + nums[i+2] + nums[i+3] > target
 - Skip early if nums[i] + nums[n-3] + nums[n-2] + nums[n-1] < target
 
+```cpp
 vector<vector<int>> fourSum(vector<int>& nums, int target) {
-```
 vector<vector<int>> result;                                                   
 int n = nums.size();                                                          
 if (n < 4) return result;                                                     
@@ -886,10 +890,10 @@ for (int i = 0; i < n - 3; i++) {
 }                                                                             
 
 return result;                                                                
-```
 
 }
 // Time: O(N3), Space: O(1) excluding output
+```
 
 ### 17. Next Permutation (LC 31)  HARD
 
@@ -915,8 +919,8 @@ return result;
 **GOLDEN RULE:**
 > Find first decrease from right, that's where change happens
 
+```cpp
 void nextPermutation(vector<int>& nums) {
-```
 int n = nums.size();                                     
 
 // Step 1: Find pivot (rightmost ascending pair)         
@@ -944,10 +948,10 @@ for (int i = n - 1; i > pivot; i--) {
 
 // Step 3: Reverse everything after pivot                
 reverse(nums.begin() + pivot + 1, nums.end());           
-```
 
 }
 // Time: O(N), Space: O(1)
+```
 
 ### 18. Partition List (LC 86)
 
@@ -963,8 +967,8 @@ reverse(nums.begin() + pivot + 1, nums.end());
 - Dummy nodes simplify edge cases (empty lists)
 - Easy to connect lists: less_tail > greater_head
 
+```cpp
 ListNode* partition(ListNode* head, int x) {
-```
 ListNode lessHead(0), greaterHead(0);               
 ListNode *less = &lessHead, *greater = &greaterHead;
 
@@ -983,10 +987,10 @@ greater->next = nullptr;  // Important! Avoid cycle
 less->next = greaterHead.next;  // Connect two lists
 
 return lessHead.next;                               
-```
 
 }
 // Time: O(N), Space: O(1)
+```
 
 ### 19. Squares of a Sorted Array (LC 977)
 
@@ -1006,8 +1010,8 @@ return lessHead.next;
 **GOLDEN RULE:**
 > Fill result backwards, comparing absolute values from ends
 
+```cpp
 vector<int> sortedSquares(vector<int>& nums) {
-```
 int n = nums.size();                        
 vector<int> result(n);                      
 int left = 0, right = n - 1;                
@@ -1027,10 +1031,10 @@ while (left <= right) {
 }                                           
 
 return result;                              
-```
 
 }
 // Time: O(N), Space: O(N)
+```
 
 ### 20. Valid Triangle Number (LC 611) 
 
@@ -1051,8 +1055,8 @@ return result;
 **BRILLIANT OPTIMIZATION:**
 - When condition satisfied, count (j - i) triangles at once!
 
+```cpp
 int triangleNumber(vector<int>& nums) {
-```
 sort(nums.begin(), nums.end());                                  
 int count = 0;                                                   
 
@@ -1072,10 +1076,10 @@ for (int k = nums.size() - 1; k >= 2; k--) {
 }                                                                
 
 return count;                                                    
-```
 
 }
 // Time: O(N2), Space: O(1)
+```
 
 ### 21. Boats to Save People (LC 881)
 
@@ -1097,8 +1101,8 @@ return count;
 - If heavy + light < limit, this is best use of boat
 - Any other pairing wastes opportunity
 
+```cpp
 int numRescueBoats(vector<int>& people, int limit) {
-```
 sort(people.begin(), people.end());                      
 int left = 0, right = people.size() - 1;                 
 int boats = 0;                                           
@@ -1112,10 +1116,10 @@ while (left <= right) {
 }                                                        
 
 return boats;                                            
-```
 
 }
 // Time: O(N log N), Space: O(1)
+```
 
 ### 22. Reorder List (LC 143)  HARD
 
@@ -1138,8 +1142,8 @@ return boats;
  Forgetting to handle odd/even length differently
  Careful with null checks during merge
 
+```cpp
 void reorderList(ListNode* head) {
-```
 if (!head || !head->next) return;              
 
 // Step 1: Find middle using slow & fast       
@@ -1174,10 +1178,10 @@ while (second) {
     first = temp1;                             
     second = temp2;                            
 }                                              
-```
 
 }
 // Time: O(N), Space: O(1)
+```
 
 ### 23. 3Sum Closest (LC 16)
 
@@ -1189,8 +1193,8 @@ while (second) {
 - Update result when found closer sum
 - No need to skip duplicates (looking for closest, not unique)
 
+```cpp
 int threeSumClosest(vector<int>& nums, int target) {
-```
 sort(nums.begin(), nums.end());                         
 int closest = nums[0] + nums[1] + nums[2];              
 
@@ -1215,10 +1219,10 @@ for (int i = 0; i < nums.size() - 2; i++) {
 }                                                       
 
 return closest;                                         
-```
 
 }
 // Time: O(N2), Space: O(1)
+```
 
 ### 24. Remove Nth Node From End (LC 19) 
 
@@ -1239,8 +1243,8 @@ return closest;
 - Remove head (use dummy node)
 - List size = n
 
+```cpp
 ListNode* removeNthFromEnd(ListNode* head, int n) {
-```
 ListNode dummy(0);                      
 dummy.next = head;                      
 ListNode *slow = &dummy, *fast = &dummy;
@@ -1262,10 +1266,10 @@ slow->next = slow->next->next;
 delete toDelete;                        
 
 return dummy.next;                      
-```
 
 }
 // Time: O(N), Space: O(1)
+```
 
 ## PART 4: QUICK REVISION TABLE
 
@@ -1402,8 +1406,8 @@ return dummy.next;
 
 ### **PATTERN: VALID PALINDROME II (Skip One Character)**
 
-bool validPalindrome(string s) {
 ```
+bool validPalindrome(string s) {
 int l = 0, r = s.size() - 1;                                          
 
 while (l < r) {                                                       
@@ -1414,24 +1418,22 @@ while (l < r) {
     l++; r--;                                                         
 }                                                                     
 return true;                                                          
-```
 
 }
 
 bool isPalindrome(string& s, int l, int r) {
-```
 while (l < r) {                        
     if (s[l++] != s[r--]) return false;
 }                                      
 return true;                           
-```
 
 }
+```
 
 ### **PATTERN: MERGE STRINGS ALTERNATELY**
 
-string mergeAlternately(string word1, string word2) {
 ```
+string mergeAlternately(string word1, string word2) {
 string result;                                 
 int i = 0, j = 0;                              
 
@@ -1441,14 +1443,14 @@ while (i < word1.size() || j < word2.size()) {
 }                                              
 
 return result;                                 
-```
 
 }
+```
 
 ### **PATTERN: STRING COMPRESSION**
 
+```cpp
 int compress(vector<char>& chars) {
-```
 int write = 0, read = 0;                              
 
 while (read < chars.size()) {                         
@@ -1473,16 +1475,16 @@ while (read < chars.size()) {
 }                                                     
 
 return write;                                         
-```
 
 }
+```
 
 ### **PATTERN: BACKSPACE STRING COMPARE (Reverse Traversal)**
 
  **KEY INSIGHT**: Process from RIGHT to handle backspaces in O(1) space
 
-bool backspaceCompare(string s, string t) {
 ```
+bool backspaceCompare(string s, string t) {
 int i = s.size() - 1, j = t.size() - 1;  
 
 while (i >= 0 || j >= 0) {               
@@ -1497,12 +1499,10 @@ while (i >= 0 || j >= 0) {
     i--; j--;                            
 }                                        
 return true;                             
-```
 
 }
 
 int getNextValidChar(string& s, int idx) {
-```
 int skip = 0;                            
 while (idx >= 0) {                       
     if (s[idx] == '#') { skip++; idx--; }
@@ -1510,16 +1510,16 @@ while (idx >= 0) {
     else break;                          
 }                                        
 return idx;                              
-```
 
 }
+```
 
 ### **PATTERN: BAG OF TOKENS (Opposite Ends Greedy)**
 
  **KEY INSIGHT**: Play smallest tokens face-up, largest face-down
 
+```cpp
 int bagOfTokensScore(vector<int>& tokens, int power) {
-```
 sort(tokens.begin(), tokens.end());               
 int l = 0, r = tokens.size() - 1;                 
 int score = 0, maxScore = 0;                      
@@ -1540,14 +1540,14 @@ while (l <= r) {
 }                                                 
 
 return maxScore;                                  
-```
 
 }
+```
 
 ### **PATTERN: MINIMUM LENGTH AFTER DELETING SIMILAR ENDS**
 
-int minimumLength(string s) {
 ```
+int minimumLength(string s) {
 int l = 0, r = s.size() - 1;              
 
 while (l < r && s[l] == s[r]) {           
@@ -1559,16 +1559,16 @@ while (l < r && s[l] == s[r]) {
 }                                         
 
 return r - l + 1;                         
-```
 
 }
+```
 
 ### **PATTERN: SENTENCE SIMILARITY III**
 
  **KEY INSIGHT**: Match words from both ends, check if remaining is contiguous
 
+```cpp
 bool areSentencesSimilar(string s1, string s2) {
-```
 vector<string> w1 = split(s1), w2 = split(s2);             
 if (w1.size() < w2.size()) swap(w1, w2);                   
 
@@ -1582,16 +1582,16 @@ while (i < n2 && w1[i] == w2[i]) i++;
 while (j < n2 - i && w1[n1 - 1 - j] == w2[n2 - 1 - j]) j++;
 
 return i + j >= n2;                                        
-```
 
 }
+```
 
 ### **PATTERN: NUMBER OF SUBSEQUENCES (Sorted + Two Pointers + Counting)**
 
  **KEY INSIGHT**: Sort array, fix minimum, count valid maximums
 
+```cpp
 int numSubseq(vector<int>& nums, int target) {
-```javascript
 const int MOD = 1e9 + 7;                                           
 sort(nums.begin(), nums.end());                                    
 int n = nums.size();                                               
@@ -1617,14 +1617,15 @@ while (l <= r) {
 }                                                                  
 
 return count;                                                      
-```
 
 }
+```
 
 ### **PATTERN: ROTATE ARRAY (Reverse Trick)**
 
  **KEY INSIGHT**: Three reverses = rotation!
 
+```cpp
 void rotate(vector<int>& nums, int k) {
 k %= nums.size();
 reverse(nums.begin(), nums.end());           // Reverse all
@@ -1637,6 +1638,7 @@ reverse(nums.begin() + k, nums.end());       // Reverse rest
 // Reverse all: [5,4,3,2,1]
 // Reverse first 2: [4,5,3,2,1]
 // Reverse rest: [4,5,1,2,3] Y
+```
 
 ## COMPLETE PROBLEM LIST BY CATEGORY
 
@@ -1775,4 +1777,3 @@ reverse(nums.begin() + k, nums.end());       // Reverse rest
                                    END                                              
 ===============================================================================     
 ```
-

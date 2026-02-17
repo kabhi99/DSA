@@ -24,30 +24,41 @@ STEP 1: Count points at each y-level
 Map: y-coordinate > count of points
 
 Example: points = [[1,1], [2,1], [3,2], [4,2]]
+```
 y=1: 2 points
 y=2: 2 points
+```
 
 STEP 2: Calculate "edges" for each y-level
 -------------------------------------------
 For each y-level with n points:
+```
 edge = C(n, 2) = n*(n-1)/2
+```
 
 This represents: "How many ways can we pick 2 points from this level?"
 
 Example:
+```
 y=1: 2 points > C(2,2) = 1 edge
 y=2: 2 points > C(2,2) = 1 edge
+```
 
 STEP 3: Count trapezoids using RUNNING SUM
 -------------------------------------------
 Instead of nested loops O(k2), use running sum O(k):
 
 Code:
+```
 sum = 0
+```
+
 for each y-level:
+```
 edge = C(count, 2)
 ans += edge * sum     // Pair with all previous levels
 sum += edge           // Add to running sum
+```
 
 Example:
 Process y=1: edge=1, ans += 1*0 = 0, sum = 1
@@ -63,12 +74,12 @@ For horizontal trapezoids:
 - X-coordinates can be anything - trapezoid is still valid
 
 Visual:
+```
 y=2  o-------------------o  (any x positions)
-```
 |                   |
-```
 
 y=1  o--o                   (any x positions)
+```
 
 As long as we have 2 horizontal lines with >2 points each,
 ANY selection of 2 points from each forms a trapezoid!
@@ -86,34 +97,48 @@ y=1  (1,1)o---(2,1)o---(3,1)o     3 points
 
 STEP 1: Count by y-coordinate
 ------------------------------
+```
 y=1: 3 points {(1,1), (2,1), (3,1)}
 y=2: 3 points {(1,2), (2,2), (3,2)}
+```
 
 STEP 2: Calculate edges
 ------------------------
+```
 y=1: C(3,2) = 3*2/2 = 3 edges
+```
+
 - {(1,1), (2,1)}
 - {(1,1), (3,1)}
 - {(2,1), (3,1)}
 
+```
 y=2: C(3,2) = 3*2/2 = 3 edges
+```
+
 - {(1,2), (2,2)}
 - {(1,2), (3,2)}
 - {(2,2), (3,2)}
 
 STEP 3: Count trapezoids (Running Sum)
 ---------------------------------------
+```
 sum = 0
+```
 
 Process y=1:
+```
 edge = 3
 ans += 3 * 0 = 0
 sum = 3
+```
 
 Process y=2:
+```
 edge = 3
 ans += 3 * 3 = 9
 sum = 6
+```
 
 Final answer: 9 trapezoids
 
@@ -168,6 +193,7 @@ Much better than O(n + k2) nested loop approach!
 
 ## CODE BREAKDOWN (Java)
 
+```
 Map<Integer, Integer> pointNum = new HashMap<>();
 
 // Step 1: Count points at each y-coordinate
@@ -175,7 +201,10 @@ for (int[] point : points) {
 pointNum.put(point[1], pointNum.getOrDefault(point[1], 0) + 1);
 
 }
+```
+
 ^
+```
 point[1] is y-coordinate
 
 // Step 2 & 3: Calculate edges and count trapezoids
@@ -188,6 +217,7 @@ sum += edge;         // Add to running sum
 }
 
 return (int) (ans % MOD);
+```
 
 ## EDGE CASES
 
@@ -229,4 +259,3 @@ Collinearity check?      NO                   YES (via intercept)
 5.  No need to check collinearity (different y = different line)
 6.  Count ALL combinations (including parallelograms)
 7.  Your Java solution is CORRECT and OPTIMIZED!
-
