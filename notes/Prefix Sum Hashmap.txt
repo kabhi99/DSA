@@ -1,0 +1,825 @@
+═══════════════════════════════════════════════════════════════════════════════
+        **PREFIX SUM + HASHMAP - SUBARRAY PROBLEMS GUIDE**
+═══════════════════════════════════════════════════════════════════════════════
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**TABLE OF CONTENTS**
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Core Concept & When to Use
+2. Universal Template
+3. Category 1: Count Subarrays
+4. Category 2: Maximum Length Subarrays
+5. Category 3: Check Existence
+6. Quick Revision Table
+
+
+═══════════════════════════════════════════════════════════════════════════════
+              **PART 1: CORE CONCEPT**
+═══════════════════════════════════════════════════════════════════════════════
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**🎯 WHEN TO USE PREFIX SUM + HASHMAP?**
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+STRONG SIGNALS:
+────────────────────────────────────────────────────────────────────────────
+  ✅ Count subarrays with some condition
+  ✅ Find maximum length subarray with condition
+  ✅ Check if subarray exists with condition
+  ✅ Array contains NEGATIVE numbers (Sliding Window won't work!)
+  ✅ Sum/condition is NOT monotonic
+  ✅ Need O(N) solution instead of O(N²) brute force
+
+KEYWORDS TO WATCH FOR:
+────────────────────────────────────────────────────────────────────────────
+  • "subarray sum equals K"
+  • "divisible by K"
+  • "count subarrays"
+  • "maximum length"
+  • "equal number of 0 and 1"
+  • "continuous subarray"
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📐 FUNDAMENTAL PRINCIPLE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+CORE IDEA:
+  If prefix sum up to index i is X, and
+     prefix sum up to index j is Y, and
+     Y = X + K
+  
+  Then: subarray [i+1...j] has sum = K
+
+MATHEMATICAL PROOF:
+  psum[j] = arr[0] + arr[1] + ... + arr[j]
+  psum[i] = arr[0] + arr[1] + ... + arr[i]
+  
+  psum[j] - psum[i] = arr[i+1] + arr[i+2] + ... + arr[j] = K
+  
+  Therefore: psum[j] = psum[i] + K
+  Rearranged: psum[i] = psum[j] - K
+
+LOOKUP STRATEGY:
+  At index j with psum[j], look for (psum[j] - K) in hashmap
+  If found → valid subarray exists!
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+❓ WHY NOT SLIDING WINDOW?
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SLIDING WINDOW REQUIREMENT:
+  • Prefix sum must be MONOTONIC (strictly increasing or decreasing)
+  • Works only when all elements are positive OR all negative
+  • Can maintain valid window by shrinking left pointer
+
+WHY IT FAILS WITH NEGATIVES:
+  Example: [1, -1, 5, -2, 3], K = 3
+  
+  • At i=0: sum=1
+  • At i=1: sum=0 (decreased! Not monotonic)
+  • At i=2: sum=5 (increased)
+  • At i=3: sum=3 (decreased again)
+  
+  Sliding window can't handle this non-monotonic behavior!
+
+GOLDEN RULE:
+  → Negative numbers in array → Use Prefix Sum + Hashmap
+  → All positive numbers → Can use Sliding Window OR Prefix Sum + Hashmap
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🔧 UNIVERSAL TEMPLATE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+TEMPLATE 1: COUNT SUBARRAYS
+────────────────────────────────────────────────────────────────────────────
+int countSubarrays(vector<int>& arr, int K) {
+    int count = 0;
+    int psum = 0;
+    unordered_map<int, int> mp;
+    mp[0] = 1;  // ⚠️ Initialize with 1 for counting
+    
+    for (int num : arr) {
+        psum += num;
+        
+        // Check if (psum - K) exists in map
+        if (mp.count(psum - K)) {
+            count += mp[psum - K];  // Add frequency
+        }
+        
+        mp[psum]++;  // Store/update current psum
+    }
+    
+    return count;
+}
+
+KEY POINTS:
+  • mp[0] = 1: Handles case where full prefix equals K
+  • count += mp[psum - K]: Add ALL occurrences
+  • Update map AFTER checking (order matters!)
+
+
+TEMPLATE 2: MAXIMUM LENGTH
+────────────────────────────────────────────────────────────────────────────
+int maxLengthSubarray(vector<int>& arr, int K) {
+    int maxLen = 0;
+    int psum = 0;
+    unordered_map<int, int> mp;
+    mp[0] = -1;  // ⚠️ Initialize with -1 for length
+    
+    for (int i = 0; i < arr.size(); i++) {
+        psum += arr[i];
+        
+        // Check if (psum - K) exists
+        if (mp.count(psum - K)) {
+            maxLen = max(maxLen, i - mp[psum - K]);
+        }
+        
+        // Only store if not exists (keep earliest)
+        if (!mp.count(psum)) {
+            mp[psum] = i;
+        }
+    }
+    
+    return maxLen;
+}
+
+KEY POINTS:
+  • mp[0] = -1: Handles full array case (length = i - (-1) = i + 1)
+  • Don't overwrite: Keep EARLIEST index for maximum length
+  • Length = current_index - stored_index
+
+
+TEMPLATE 3: CHECK EXISTENCE
+────────────────────────────────────────────────────────────────────────────
+bool existsSubarray(vector<int>& arr, int K) {
+    int psum = 0;
+    unordered_map<int, int> mp;
+    mp[0] = -1;  // For index tracking
+    
+    for (int i = 0; i < arr.size(); i++) {
+        psum += arr[i];
+        
+        if (mp.count(psum - K)) {
+            // Optional: Check additional conditions (e.g., length >= 2)
+            if (i - mp[psum - K] >= 2) {
+                return true;
+            }
+        }
+        
+        if (!mp.count(psum)) {
+            mp[psum] = i;
+        }
+    }
+    
+    return false;
+}
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎓 MAP INITIALIZATION - CRITICAL!
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+FOR COUNTING: mp[0] = 1
+  WHY? If psum - K = 0, entire prefix is valid
+       We need to COUNT this occurrence, so initialize to 1
+
+FOR LENGTH: mp[0] = -1
+  WHY? If psum - K = 0, entire prefix is valid
+       Length = i - (-1) = i + 1 (correct!)
+
+EXAMPLE:
+  arr = [1, 2, 3], K = 6
+  At i=2: psum=6, look for psum-K=0
+  
+  Counting: mp[0]=1 → count += 1 ✓
+  Length: mp[0]=-1 → length = 2 - (-1) = 3 ✓
+
+
+═══════════════════════════════════════════════════════════════════════════════
+  **PART 2: CATEGORY 1 - COUNT SUBARRAYS**
+═══════════════════════════════════════════════════════════════════════════════
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Subarray Sum Equals K (LC 560) ⭐ FUNDAMENTAL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎯 PROBLEM: Count subarrays with sum = K
+📌 CONDITION: Sum equals K
+⚠️  NEGATIVE VALUES: ALLOWED
+
+KEY INSIGHT:
+  • For each position, check if (psum - K) exists
+  • Add frequency of (psum - K) to count
+  • This counts ALL subarrays ending at current position
+
+WHY IT WORKS:
+  [1, -1, 1, 1, 1], K = 2
+  
+  i=0: psum=1, check mp[1-2]=-1 (not found), mp[1]=1
+  i=1: psum=0, check mp[0-2]=-2 (not found), mp[0]=1
+  i=2: psum=1, check mp[1-2]=-1 (not found), mp[1]=2
+  i=3: psum=2, check mp[2-2]=0 (found! count+=1), mp[2]=1
+  i=4: psum=3, check mp[3-2]=1 (found 2 times! count+=2), mp[3]=1
+  
+  Result: 3 subarrays
+
+COMMON MISTAKES:
+  ❌ Forgetting mp[0] = 1
+  ❌ Updating map before checking
+  ✅ Check first, then update
+
+int subarraySum(vector<int>& arr, int k) {
+    int count = 0;
+    int sum = 0;
+    unordered_map<int, int> mp;
+    mp[0] = 1;  // Important!
+    
+    for (int num : arr) {
+        sum += num;
+        count += mp[sum - k];  // Add frequency
+        mp[sum]++;             // Update map
+    }
+    
+    return count;
+}
+// Time: O(N), Space: O(N)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2. Subarray Sums Divisible by K (LC 974)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎯 PROBLEM: Count subarrays with sum divisible by K
+📌 CONDITION: Sum % K == 0
+⚠️  NEGATIVE VALUES: ALLOWED
+
+KEY INSIGHT (BRILLIANT!):
+  • If (psum[i] - psum[j]) % K == 0
+    Then: psum[i] % K == psum[j] % K
+  
+  • Store and check REMAINDERS, not actual sums!
+  • Must handle negative remainders in C++
+
+NEGATIVE REMAINDER HANDLING:
+  C++ gives negative remainder for negative dividends
+  -5 % 3 = -2 (C++)
+  
+  Fix: if (sum < 0) sum += k
+  Or:  sum = (sum % k + k) % k
+
+WHY REMAINDERS WORK:
+  If two positions have same remainder, their difference is divisible by K
+  Example: psum[i] % 5 = 2, psum[j] % 5 = 2
+           → (psum[j] - psum[i]) % 5 = 0 ✓
+
+int subarraysDivByK(vector<int>& nums, int k) {
+    int count = 0;
+    int sum = 0;
+    unordered_map<int, int> mp;
+    mp[0] = 1;
+    
+    for (int num : nums) {
+        sum = (sum + num) % k;
+        
+        // Handle negative remainder
+        if (sum < 0) {
+            sum += k;
+        }
+        
+        count += mp[sum];
+        mp[sum]++;
+    }
+    
+    return count;
+}
+// Time: O(N), Space: O(K)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+3. Binary Subarrays With Sum (LC 930)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎯 PROBLEM: Count binary subarrays with given sum
+📌 CONDITION: Sum equals goal
+⚠️  NEGATIVE VALUES: NOT ALLOWED
+
+KEY INSIGHT:
+  • Same template as LC 560
+  • Can ALSO use Sliding Window (all values are 0 or 1, monotonic!)
+  • Prefix Sum + Hashmap works for both cases
+
+NOTE:
+  This problem demonstrates that Prefix Sum + Hashmap works even when
+  Sliding Window is applicable. But Sliding Window is more efficient here.
+
+int numSubarraysWithSum(vector<int>& nums, int goal) {
+    int count = 0;
+    int sum = 0;
+    unordered_map<int, int> mp;
+    mp[0] = 1;
+    
+    for (int num : nums) {
+        sum += num;
+        count += mp[sum - goal];
+        mp[sum]++;
+    }
+    
+    return count;
+}
+// Time: O(N), Space: O(N)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+4. Count Number of Nice Subarrays (LC 1248)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎯 PROBLEM: Count subarrays with exactly K odd numbers
+📌 CONDITION: K odd numbers
+⚠️  TRANSFORMATION: Convert to binary (odd=1, even=0)
+
+KEY INSIGHT:
+  • Transform problem: odd → 1, even → 0
+  • Now it's "count subarrays with sum = K"
+  • Use same template as LC 560!
+
+TRANSFORMATION MAGIC:
+  [1,1,2,1,1], k=3 (count 3 odds)
+  → [1,1,0,1,1] (mark odds as 1)
+  → Count subarrays with sum = 3
+
+int numberOfSubarrays(vector<int>& nums, int k) {
+    int count = 0;
+    int sum = 0;
+    unordered_map<int, int> mp;
+    mp[0] = 1;
+    
+    for (int num : nums) {
+        sum += (num % 2);  // Count only odd numbers
+        count += mp[sum - k];
+        mp[sum]++;
+    }
+    
+    return count;
+}
+// Time: O(N), Space: O(N)
+
+
+═══════════════════════════════════════════════════════════════════════════════
+  **PART 3: CATEGORY 2 - MAXIMUM LENGTH SUBARRAYS**
+═══════════════════════════════════════════════════════════════════════════════
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+5. Contiguous Array (LC 525) ⭐ BRILLIANT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎯 PROBLEM: Maximum length subarray with equal 0s and 1s
+📌 CONDITION: count(0) == count(1)
+⚠️  TRANSFORMATION: Convert 0 to -1
+
+KEY INSIGHT (GENIUS TRANSFORMATION!):
+  • Equal 0s and 1s → count(0) - count(1) = 0
+  • Transform: 0 → -1, 1 → 1
+  • Now: count(0) - count(1) = 0 becomes sum = 0!
+  • Find longest subarray with sum = 0
+
+WHY THIS WORKS:
+  [0,1,0] with 2 zeros and 1 one
+  → [-1,1,-1] 
+  → sum = -1 (not equal)
+  
+  [0,1,0,1] with 2 zeros and 2 ones
+  → [-1,1,-1,1]
+  → sum = 0 (equal!) ✓
+
+ALTERNATIVE APPROACH (Same idea):
+  • Track difference = count(0) - count(1)
+  • When difference repeats, we have equal counts
+  • Length = current_index - first_occurrence
+
+int findMaxLength(vector<int>& nums) {
+    int maxLen = 0;
+    unordered_map<int, int> mp;
+    mp[0] = -1;  // For full array case
+    
+    int zeros = 0, ones = 0;
+    
+    for (int i = 0; i < nums.size(); i++) {
+        if (nums[i] == 0) zeros++;
+        else ones++;
+        
+        int diff = zeros - ones;
+        
+        if (mp.count(diff)) {
+            maxLen = max(maxLen, i - mp[diff]);
+        } else {
+            mp[diff] = i;
+        }
+    }
+    
+    return maxLen;
+}
+// Time: O(N), Space: O(N)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+6. Maximum Size Subarray Sum Equals K (LC 325) ⭐
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎯 PROBLEM: Maximum length subarray with sum = K
+📌 CONDITION: Sum equals K
+⚠️  NEGATIVE VALUES: ALLOWED
+
+KEY INSIGHT:
+  • Similar to LC 560, but find LENGTH not COUNT
+  • Store indices, not frequencies
+  • Keep EARLIEST occurrence (don't overwrite)
+
+WHY KEEP EARLIEST?
+  [1, -1, 5, -2, 3], K = 3
+  
+  At i=0: psum=1, mp[1]=0
+  At i=2: psum=5, mp[5]=2
+  At i=4: psum=6, check mp[6-3]=mp[3] (not found)
+  
+  If psum=3 appears at i=1 and i=4, keep i=1 for maximum length
+
+int maxSubArrayLen(vector<int>& nums, int k) {
+    int maxLen = 0;
+    int psum = 0;
+    unordered_map<int, int> mp;
+    mp[0] = -1;
+    
+    for (int i = 0; i < nums.size(); i++) {
+        psum += nums[i];
+        
+        if (mp.count(psum - k)) {
+            maxLen = max(maxLen, i - mp[psum - k]);
+        }
+        
+        // Only store if not exists (keep earliest)
+        if (!mp.count(psum)) {
+            mp[psum] = i;
+        }
+    }
+    
+    return maxLen;
+}
+// Time: O(N), Space: O(N)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+7. Minimum Operations to Reduce X to Zero (LC 1658) ⭐⭐
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎯 PROBLEM: Remove from ends to reduce x to 0
+📌 TRANSFORMATION: Find max middle subarray with sum = total - x
+⚠️  BRILLIANT REVERSE THINKING!
+
+KEY INSIGHT (GENIUS!):
+  • Remove from ends → keep middle
+  • Want minimum removals → want maximum middle
+  • Middle sum must be (total - x)
+  • Use LC 325 (Maximum Size Subarray Sum Equals K)!
+
+TRANSFORMATION:
+  nums = [1,1,4,2,3], x = 5, total = 11
+  
+  Find: max length subarray with sum = 11 - 5 = 6
+  → [4,2] has sum 6, length 2
+  → Minimum operations = 5 - 2 = 3
+
+int minOperations(vector<int>& nums, int x) {
+    int total = accumulate(nums.begin(), nums.end(), 0);
+    int target = total - x;
+    
+    if (target == 0) return nums.size();
+    
+    // Find max length subarray with sum = target
+    int maxLen = 0;
+    int psum = 0;
+    unordered_map<int, int> mp;
+    mp[0] = -1;
+    
+    for (int i = 0; i < nums.size(); i++) {
+        psum += nums[i];
+        
+        if (mp.count(psum - target)) {
+            maxLen = max(maxLen, i - mp[psum - target]);
+        }
+        
+        if (!mp.count(psum)) {
+            mp[psum] = i;
+        }
+    }
+    
+    return maxLen == 0 ? -1 : nums.size() - maxLen;
+}
+// Time: O(N), Space: O(N)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+8. Longest Subarray with Sum ≤ K (Pattern Extension)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎯 PROBLEM: Maximum length subarray with sum ≤ K
+📌 CONDITION: Sum ≤ K
+⚠️  LIMITATION: Prefix Sum + Hashmap doesn't work well here!
+
+WHY IT'S HARD:
+  • Can't just check for (psum - K) in map
+  • Need to check for ALL values in range [psum - K, psum - (-∞)]
+  • This requires sorted structure (TreeMap) → O(N log N)
+
+BETTER APPROACH:
+  • If all positive: Use Sliding Window O(N)
+  • With negatives: Use TreeMap for prefix sums
+
+NOTE: This shows the limitation of basic Prefix Sum + Hashmap technique.
+
+
+═══════════════════════════════════════════════════════════════════════════════
+  **PART 4: CATEGORY 3 - CHECK EXISTENCE**
+═══════════════════════════════════════════════════════════════════════════════
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+9. Continuous Subarray Sum (LC 523)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎯 PROBLEM: Check if subarray exists with sum divisible by K AND length ≥ 2
+📌 CONDITIONS: 
+   1. Sum is multiple of K
+   2. Length at least 2
+
+KEY INSIGHT:
+  • Similar to LC 974, but check existence + length constraint
+  • Store remainders and indices
+  • Check if i - mp[remainder] ≥ 2
+
+WHY LENGTH ≥ 2?
+  • Single element doesn't count
+  • Must check: current_index - stored_index ≥ 2
+
+EDGE CASE:
+  [0], k = 1
+  Single zero is multiple of k, but length < 2 → false
+
+bool checkSubarraySum(vector<int>& nums, int k) {
+    unordered_map<int, int> mp;
+    mp[0] = -1;  // For full array case
+    
+    int sum = 0;
+    
+    for (int i = 0; i < nums.size(); i++) {
+        sum += nums[i];
+        int remainder = sum % k;
+        
+        if (mp.count(remainder)) {
+            if (i - mp[remainder] >= 2) {
+                return true;
+            }
+        } else {
+            mp[remainder] = i;
+        }
+    }
+    
+    return false;
+}
+// Time: O(N), Space: O(K)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+10. Subarray Sum Divisible by K with Min Length (Extension)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎯 PROBLEM: Check if subarray exists divisible by K with min length L
+📌 TEMPLATE: Combine existence check with length constraint
+
+PATTERN:
+  Same as above, but check: i - mp[remainder] >= L
+
+bool checkSubarraySumMinLen(vector<int>& nums, int k, int minLen) {
+    unordered_map<int, int> mp;
+    mp[0] = -1;
+    
+    int sum = 0;
+    
+    for (int i = 0; i < nums.size(); i++) {
+        sum = (sum + nums[i]) % k;
+        if (sum < 0) sum += k;
+        
+        if (mp.count(sum)) {
+            if (i - mp[sum] >= minLen) {
+                return true;
+            }
+        } else {
+            mp[sum] = i;
+        }
+    }
+    
+    return false;
+}
+
+
+═══════════════════════════════════════════════════════════════════════════════
+              **PART 5: QUICK REVISION TABLE**
+═══════════════════════════════════════════════════════════════════════════════
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         PATTERN SELECTION GUIDE                             │
+├───────────────────────────┬─────────────────────┬───────────────────────────┤
+│ Problem Type              │ Map Init            │ Key Operation             │
+├───────────────────────────┼─────────────────────┼───────────────────────────┤
+│ Count subarrays           │ mp[0] = 1           │ count += mp[psum - K]     │
+│ Maximum length            │ mp[0] = -1          │ Don't overwrite indices   │
+│ Check existence           │ mp[0] = -1          │ Return true when found    │
+│ Divisibility (mod K)      │ mp[0] = 1 or -1     │ Store (psum % K + K) % K  │
+│ Equal 0s and 1s           │ mp[0] = -1          │ Track diff = cnt0 - cnt1  │
+└───────────────────────────┴─────────────────────┴───────────────────────────┘
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         CRITICAL FORMULAS                                   │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│ 1. BASIC LOOKUP                                                            │
+│    target = psum - K                                                        │
+│    if (mp.count(target)) → valid subarray found                            │
+│                                                                             │
+│ 2. DIVISIBILITY (Handle Negatives!)                                        │
+│    remainder = (sum % k + k) % k                                           │
+│    OR: if (sum < 0) sum += k                                               │
+│                                                                             │
+│ 3. LENGTH CALCULATION                                                      │
+│    length = current_index - mp[target]                                     │
+│    mp[0] = -1 makes this work for full array                               │
+│                                                                             │
+│ 4. COUNT CALCULATION                                                       │
+│    count += mp[target]                                                     │
+│    mp[0] = 1 handles full prefix case                                      │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         MAP INITIALIZATION RULES                            │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│ FOR COUNTING PROBLEMS:                                                     │
+│   mp[0] = 1                                                                │
+│   • Handles: full prefix from start is valid                               │
+│   • Example: If psum[i] = K, then mp[0] contributes count = 1             │
+│                                                                             │
+│ FOR LENGTH PROBLEMS:                                                       │
+│   mp[0] = -1                                                               │
+│   • Handles: full array case                                               │
+│   • Example: If psum[i] = K, length = i - (-1) = i + 1 ✓                  │
+│                                                                             │
+│ FOR EXISTENCE PROBLEMS:                                                    │
+│   mp[0] = -1 (or any sentinel)                                            │
+│   • Used for checking additional constraints (like length ≥ 2)            │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         COMMON MISTAKES & FIXES                             │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│ ❌ MISTAKE 1: Not initializing mp[0]                                        │
+│    FIX: Always initialize based on problem type (1 or -1)                  │
+│                                                                             │
+│ ❌ MISTAKE 2: Updating map before checking                                  │
+│    FIX: Always check for (psum - K) first, then update mp[psum]           │
+│                                                                             │
+│ ❌ MISTAKE 3: Not handling negative remainders                              │
+│    FIX: if (sum < 0) sum += k; OR sum = (sum % k + k) % k                 │
+│                                                                             │
+│ ❌ MISTAKE 4: Overwriting indices in length problems                        │
+│    FIX: if (!mp.count(psum)) mp[psum] = i;                                │
+│                                                                             │
+│ ❌ MISTAKE 5: Confusing count vs length initialization                      │
+│    FIX: Count → mp[0]=1, Length → mp[0]=-1                                │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                       GOLDEN RULES - MEMORIZE!                              │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  1️⃣  If array has NEGATIVES → Use Prefix Sum + Hashmap (not Sliding Window)│
+│                                                                             │
+│  2️⃣  Counting: mp[0] = 1, update AFTER checking                            │
+│                                                                             │
+│  3️⃣  Length: mp[0] = -1, DON'T overwrite (keep earliest)                   │
+│                                                                             │
+│  4️⃣  Divisibility: Store remainders, handle negatives!                     │
+│                                                                             │
+│  5️⃣  Check order: psum += num → check mp[psum-K] → update mp[psum]        │
+│                                                                             │
+│  6️⃣  Time: O(N), Space: O(N) for generic / O(K) for modulo                 │
+│                                                                             │
+│  7️⃣  Transform cleverly: 0→-1 for equal counts, odd→1 for nice arrays     │
+│                                                                             │
+│  8️⃣  Reverse thinking: Remove from ends → find middle subarray             │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                        INTERVIEW CHEAT CODES                                │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  📝 "This array has negative numbers, so Sliding Window won't work due to   │
+│      non-monotonic prefix sums. I'll use Prefix Sum with Hashmap."         │
+│                                                                             │
+│  📝 "For counting problems, I initialize mp[0] = 1 to handle the case       │
+│      where the entire prefix is valid."                                    │
+│                                                                             │
+│  📝 "For length problems, I initialize mp[0] = -1 and keep only the         │
+│      earliest occurrence of each prefix sum for maximum length."           │
+│                                                                             │
+│  📝 "Since this involves divisibility, I'll store remainders and handle     │
+│      negative remainders with: if (sum < 0) sum += k."                     │
+│                                                                             │
+│  📝 "The key insight is that if psum[j] - psum[i] = K, then I can look      │
+│      for (psum[j] - K) in my hashmap to find valid subarrays."             │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    TRANSFORMATION TECHNIQUES                                │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  🔄 Equal 0s and 1s → Track diff = count(0) - count(1)                     │
+│     When diff repeats, we have equal counts between those indices          │
+│                                                                             │
+│  🔄 K odd numbers → Transform: odd→1, even→0, find sum = K                 │
+│     Converts "count odds" to "subarray sum" problem                        │
+│                                                                             │
+│  🔄 Remove from ends → Find max middle with sum = total - x                │
+│     Minimum operations = n - maximum_middle_length                         │
+│                                                                             │
+│  🔄 Divisible by K → Store remainders, same remainder = divisible diff     │
+│     psum[i] % K = psum[j] % K → (psum[j] - psum[i]) % K = 0               │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+
+═══════════════════════════════════════════════════════════════════════════════
+                        **PROBLEM LIST**
+═══════════════════════════════════════════════════════════════════════════════
+
+CATEGORY 1: COUNT SUBARRAYS
+  ✓ 560.  Subarray Sum Equals K ⭐ FUNDAMENTAL
+  ✓ 974.  Subarray Sums Divisible by K
+  ✓ 930.  Binary Subarrays With Sum
+  ✓ 1248. Count Number of Nice Subarrays
+
+CATEGORY 2: MAXIMUM LENGTH
+  ✓ 525.  Contiguous Array ⭐ BRILLIANT TRANSFORMATION
+  ✓ 325.  Maximum Size Subarray Sum Equals K ⭐
+  ✓ 1658. Minimum Operations to Reduce X to Zero ⭐⭐ REVERSE THINKING
+
+CATEGORY 3: CHECK EXISTENCE
+  ✓ 523.  Continuous Subarray Sum
+
+RELATED PROBLEMS (Try These):
+  • 437.  Path Sum III (Binary Tree version)
+  • 1524. Number of Sub-arrays With Odd Sum
+  • 1590. Make Sum Divisible by P
+  • 2488. Count Subarrays With Median K
+
+
+═══════════════════════════════════════════════════════════════════════════════
+                   **COMPLEXITY ANALYSIS**
+═══════════════════════════════════════════════════════════════════════════════
+
+TIME COMPLEXITY:
+  • Single pass through array: O(N)
+  • Hashmap operations (insert, lookup): O(1) average
+  • Overall: O(N)
+
+SPACE COMPLEXITY:
+  • Generic problems: O(N) worst case (all different prefix sums)
+  • Modulo problems: O(K) (only K possible remainders)
+  • Example: LC 974 → O(K), LC 560 → O(N)
+
+WHY O(N) IS BETTER THAN BRUTE FORCE:
+  Brute Force: Check all subarrays O(N²)
+  Prefix Sum + Hashmap: Single pass O(N)
+  
+  For N=10⁵:
+    Brute Force: 10¹⁰ operations (TLE)
+    Our approach: 10⁵ operations (AC!)
+
+
+═══════════════════════════════════════════════════════════════════════════════
+                                   END
+═══════════════════════════════════════════════════════════════════════════════
+

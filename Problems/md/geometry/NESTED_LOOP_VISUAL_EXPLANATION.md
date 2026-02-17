@@ -1,0 +1,261 @@
+# VISUAL EXPLANATION: NESTED LOOP APPROACH (Lines 75-77)
+
+**CODE:**
+-----
+75| for i in 0..k:
+76|     for j in i+1..k:
+77|         ans += C(count[i],2) * C(count[j],2)
+
+Where:
+- k = number of different y-levels (horizontal lines)
+- count[i] = number of points on y-level i
+- C(n,2) = n*(n-1)/2 = "choose 2 from n"
+
+## WHAT DOES THIS DO?
+
+For HORIZONTAL TRAPEZOIDS, we need:
+- 2 points from one horizontal line (y-level i)
+- 2 points from another horizontal line (y-level j)
+- These form the two parallel horizontal sides
+
+This nested loop picks ALL PAIRS of different y-levels and counts
+how many trapezoids can be formed from each pair.
+
+## CONCRETE EXAMPLE WITH 3 Y-LEVELS
+
+Setup:
+------
+points = [[1,1], [2,1], [3,1],    < y=1: 3 points
+```
+      [1,2], [2,2],            < y=2: 2 points
+      [1,3], [2,3]]            < y=3: 2 points
+```
+
+After counting:
+y-level 0 (y=1): count[0] = 3 points
+y-level 1 (y=2): count[1] = 2 points
+y-level 2 (y=3): count[2] = 2 points
+
+Calculate "edges" (ways to pick 2 points from each level):
+e0 = C(3,2) = 3*2/2 = 3
+e1 = C(2,2) = 2*1/2 = 1
+e2 = C(2,2) = 2*1/2 = 1
+
+## VISUAL: THE NESTED LOOP EXECUTION
+
+OUTER LOOP (i):        INNER LOOP (j):             CALCULATION:
+---------------        ----------------            -------------
+
+```
+i=0 (y=1, 3 pts) --------------------------------------------------+
+                  |--> j=1 (y=2, 2 pts)   >   ans += e0*e1 = 3*1 = 3
+                                                                   |
+                  +--> j=2 (y=3, 2 pts)   >   ans += e0*e2 = 3*1 = 3
+
+i=1 (y=2, 2 pts) --------------------------------------------------+
+                                                                   |
+                  +--> j=2 (y=3, 2 pts)   >   ans += e1*e2 = 1*1 = 1
+```
+
+i=2 (y=3, 2 pts)   (no j, because j must be > i)
+
+TOTAL: ans = 3 + 3 + 1 = 7 trapezoids
+
+## VISUAL: MATRIX REPRESENTATION
+
+We're computing products in upper triangle of matrix:
+
+```
+  j=0   j=1   j=2  
+  (y=1) (y=2) (y=3)
++-----+-----+-----+
+```
+
+```
+i=0  |  X  | 3*1 | 3*1 |  < i=0 pairs with j=1,2
+(y=1)|     |  =3 |  =3                         |
+     +-----+-----+-----------------------------+
+i=1  |  X  |  X  | 1*1 |  < i=1 pairs with j=2  
+(y=2)|     |     |  =1                         |
+     +-----+-----+-----------------------------+
+i=2  |  X  |  X  |  X  |  < i=2 has no j>i      
+(y=3)|     |     |                             |
+     +-----+-----------------------------------+
+```
+
+X = skipped (j < i)
+
+Sum of upper triangle: 3 + 3 + 1 = 7
+
+## VISUAL: WHAT EACH COMPUTATION REPRESENTS
+
+### Computation 1: i=0, j=1 > ans += 3*1 = 3
+
+y=1 has 3 points: A, B, C
+y=2 has 2 points: D, E
+
+Ways to pick 2 from y=1: {AB, AC, BC} = 3 ways
+Ways to pick 2 from y=2: {DE} = 1 way
+
+Trapezoids formed:
+1. A-B-D-E  (bottom: AB, top: DE)
+2. A-C-D-E  (bottom: AC, top: DE)
+3. B-C-D-E  (bottom: BC, top: DE)
+
+Visual:
+```
+y=2  Do------oE     Do------oE     Do------oE
+     |      |       |      |       |        |
+y=1  Ao-oB  C      Ao  Bo-oC      A  Bo-oC   
+```
+
+Total: 3 trapezoids from (y=1, y=2)
+
+### Computation 2: i=0, j=2 > ans += 3*1 = 3
+
+y=1 has 3 points: A, B, C
+y=3 has 2 points: F, G
+
+Ways to pick 2 from y=1: {AB, AC, BC} = 3 ways
+Ways to pick 2 from y=3: {FG} = 1 way
+
+Trapezoids formed:
+4. A-B-F-G  (bottom: AB, top: FG)
+5. A-C-F-G  (bottom: AC, top: FG)
+6. B-C-F-G  (bottom: BC, top: FG)
+
+Total: 3 trapezoids from (y=1, y=3)
+
+### Computation 3: i=1, j=2 > ans += 1*1 = 1
+
+y=2 has 2 points: D, E
+y=3 has 2 points: F, G
+
+Ways to pick 2 from y=2: {DE} = 1 way
+Ways to pick 2 from y=3: {FG} = 1 way
+
+Trapezoids formed:
+7. D-E-F-G  (bottom: DE, top: FG)
+
+Visual:
+```
+y=3  Fo------oG
+     |        |
+y=2  Do------oE
+```
+
+Total: 1 trapezoid from (y=2, y=3)
+
+GRAND TOTAL: 3 + 3 + 1 = 7 trapezoids Y
+
+## DETAILED BREAKDOWN OF C(count[i], 2)
+
+What does C(n, 2) mean?
+-----------------------
+C(n, 2) = "n choose 2" = number of ways to pick 2 items from n items
+
+Formula: C(n, 2) = n! / (2! * (n-2)!)
+= n * (n-1) / 2
+
+Example: If we have 4 points {A, B, C, D}
+C(4, 2) = 4*3/2 = 6 ways
+
+Enumerate: {AB, AC, AD, BC, BD, CD} = 6 pairs Y
+
+Why multiply C(count[i],2) * C(count[j],2)?
+--------------------------------------------
+We need to pick:
+- 2 points from y-level i: C(count[i], 2) ways
+- 2 points from y-level j: C(count[j], 2) ways
+
+By multiplication principle:
+Total combinations = (ways from i) x (ways from j)
+
+Visual Example:
+---------------
+y-level i has 3 points: {A, B, C}
+y-level j has 2 points: {D, E}
+
+Pick 2 from i: {AB, AC, BC} = 3 ways
+Pick 2 from j: {DE}         = 1 way
+
+Combine them:
+AB with DE > trapezoid ABDE
+AC with DE > trapezoid ACDE
+BC with DE > trapezoid BCDE
+
+Total: 3 x 1 = 3 trapezoids
+
+## WHY j starts from i+1?
+
+Why not j=0?
+Because we'd count each pair twice!
+
+Example:
+i=0, j=1 > count trapezoid between y-level 0 and 1
+i=1, j=0 > count trapezoid between y-level 1 and 0 (SAME!)
+
+We'd double count!
+
+Why j = i+1 (instead of j=i)?
+Because a trapezoid needs TWO DIFFERENT horizontal lines!
+i=j means same y-level > can't form trapezoid
+
+By using j = i+1, we ensure:
+1. Each pair of y-levels is counted exactly once Y
+2. We always use different y-levels Y
+3. We cover all possible pairs Y
+
+Visual:
+-------
+For 4 y-levels (0,1,2,3), we check:
+
+(0,1) Y  (0,2) Y  (0,3) Y
+X  (1,2) Y  (1,3) Y
+X        X  (2,3) Y
+X        X        X
+
+Y = computed  X = skipped
+
+## COMPLEXITY ANALYSIS
+
+Time Complexity: O(k2)
+----------------------
+Outer loop: k iterations
+Inner loop: k iterations (on average k/2)
+Total: k * k/2 ~ O(k2)
+
+For k=3:   32 = 9   > actually computes 3 pairs
+For k=10:  102 = 100 > actually computes 45 pairs
+For k=100: 1002 = 10000 > actually computes 4950 pairs
+
+Exact formula: k*(k-1)/2 pairs = C(k,2)
+
+Why this causes TLE for large k:
+---------------------------------
+If we have 1000 unique y-coordinates:
+Nested loop: 1000*999/2 = 499,500 iterations!
+
+This is why the RUNNING SUM optimization (O(k)) is better!
+
+## SUMMARY
+
+Lines 75-77 implement the straightforward approach:
+
+1. Pick y-level i (outer loop)
+2. Pick y-level j > i (inner loop)
+3. Count trapezoids between levels i and j:
+- Ways to pick 2 points from level i: C(count[i], 2)
+- Ways to pick 2 points from level j: C(count[j], 2)
+- Total trapezoids: C(count[i], 2) x C(count[j], 2)
+4. Sum all combinations
+
+Visual Summary:
+```
+Level i: o-o-o  (pick 2)                              
+                                                 | | |
+Level j: o-o    (pick 2)                              
+
+= All ways to form trapezoids between these two levels
+```
+

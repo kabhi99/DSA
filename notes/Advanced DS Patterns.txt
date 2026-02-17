@@ -1,0 +1,669 @@
+═══════════════════════════════════════════════════════════════════════════════
+              **ADVANCED DATA STRUCTURE PATTERNS**
+═══════════════════════════════════════════════════════════════════════════════
+
+The "Crossover Zone" - Where Patterns Collide!
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**TABLE OF CONTENTS**
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. LRU Cache (Hashmap + Doubly Linked List)
+2. LFU Cache (Hashmap + Multiple DLL)
+3. Trie (Prefix Tree)
+4. Longest Increasing Path in Matrix (Graph + DP)
+5. Find Median from Data Stream (Two Heaps)
+6. Design Patterns Summary
+
+
+═══════════════════════════════════════════════════════════════════════════════
+              **PART 1: LRU CACHE (LC 146)** ⭐⭐⭐
+═══════════════════════════════════════════════════════════════════════════════
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**CONCEPT**
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+LRU = Least Recently Used
+
+REQUIREMENT:
+  • get(key): O(1) - return value if exists
+  • put(key, value): O(1) - insert or update
+  • When capacity exceeded, evict LEAST RECENTLY USED item
+
+💡 KEY INSIGHT: 
+  • Hashmap for O(1) lookup
+  • Doubly Linked List to track order (most recent at head, LRU at tail)
+
+DATA STRUCTURE:
+┌───────────────────────────────────────────────────────────────────────────┐
+│                                                                           │
+│   HashMap:  key → node pointer (for O(1) access)                         │
+│                                                                           │
+│   Doubly Linked List:  head ↔ [node] ↔ [node] ↔ ... ↔ tail              │
+│                        (MRU)                        (LRU)                 │
+│                                                                           │
+└───────────────────────────────────────────────────────────────────────────┘
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**LRU CACHE - FULL IMPLEMENTATION** ⭐⭐⭐
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+class LRUCache {
+    struct Node {
+        int key, value;
+        Node* prev;
+        Node* next;
+        Node(int k, int v) : key(k), value(v), prev(nullptr), next(nullptr) {}
+    };
+    
+    int capacity;
+    unordered_map<int, Node*> cache;
+    Node* head;  // Dummy head (MRU side)
+    Node* tail;  // Dummy tail (LRU side)
+    
+    void remove(Node* node) {
+        node->prev->next = node->next;
+        node->next->prev = node->prev;
+    }
+    
+    void insertAtHead(Node* node) {
+        node->next = head->next;
+        node->prev = head;
+        head->next->prev = node;
+        head->next = node;
+    }
+    
+    void moveToHead(Node* node) {
+        remove(node);
+        insertAtHead(node);
+    }
+    
+public:
+    LRUCache(int capacity) : capacity(capacity) {
+        head = new Node(0, 0);
+        tail = new Node(0, 0);
+        head->next = tail;
+        tail->prev = head;
+    }
+    
+    int get(int key) {
+        if (cache.find(key) == cache.end()) return -1;
+        
+        Node* node = cache[key];
+        moveToHead(node);  // Mark as recently used
+        return node->value;
+    }
+    
+    void put(int key, int value) {
+        if (cache.find(key) != cache.end()) {
+            // Update existing
+            Node* node = cache[key];
+            node->value = value;
+            moveToHead(node);
+        } else {
+            // Insert new
+            Node* node = new Node(key, value);
+            cache[key] = node;
+            insertAtHead(node);
+            
+            // Check capacity
+            if (cache.size() > capacity) {
+                // Remove LRU (node before tail)
+                Node* lru = tail->prev;
+                remove(lru);
+                cache.erase(lru->key);
+                delete lru;
+            }
+        }
+    }
+};
+
+TIME: O(1) for both get and put
+SPACE: O(capacity)
+
+
+═══════════════════════════════════════════════════════════════════════════════
+              **PART 2: LFU CACHE (LC 460)** ⭐⭐⭐
+═══════════════════════════════════════════════════════════════════════════════
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**CONCEPT**
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+LFU = Least Frequently Used
+
+REQUIREMENT:
+  • get(key): O(1) - return value, increment frequency
+  • put(key, value): O(1) - insert/update, increment frequency
+  • When capacity exceeded, evict item with LOWEST frequency
+  • Tie-breaker: if same frequency, evict LEAST RECENTLY used
+
+💡 KEY INSIGHT: 
+  • HashMap: key → node
+  • HashMap: frequency → doubly linked list of nodes with that frequency
+  • Track minFreq to know which frequency list to evict from
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**LFU CACHE - FULL IMPLEMENTATION** ⭐⭐⭐
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+class LFUCache {
+    struct Node {
+        int key, value, freq;
+        Node* prev;
+        Node* next;
+        Node(int k, int v) : key(k), value(v), freq(1), prev(nullptr), next(nullptr) {}
+    };
+    
+    struct DLinkedList {
+        Node* head;
+        Node* tail;
+        int size;
+        
+        DLinkedList() : size(0) {
+            head = new Node(0, 0);
+            tail = new Node(0, 0);
+            head->next = tail;
+            tail->prev = head;
+        }
+        
+        void addToHead(Node* node) {
+            node->next = head->next;
+            node->prev = head;
+            head->next->prev = node;
+            head->next = node;
+            size++;
+        }
+        
+        void remove(Node* node) {
+            node->prev->next = node->next;
+            node->next->prev = node->prev;
+            size--;
+        }
+        
+        Node* removeTail() {
+            if (size == 0) return nullptr;
+            Node* node = tail->prev;
+            remove(node);
+            return node;
+        }
+    };
+    
+    int capacity, minFreq;
+    unordered_map<int, Node*> keyToNode;
+    unordered_map<int, DLinkedList*> freqToList;
+    
+    void updateFreq(Node* node) {
+        int oldFreq = node->freq;
+        freqToList[oldFreq]->remove(node);
+        
+        // Update minFreq if needed
+        if (oldFreq == minFreq && freqToList[oldFreq]->size == 0) {
+            minFreq++;
+        }
+        
+        node->freq++;
+        if (freqToList.find(node->freq) == freqToList.end()) {
+            freqToList[node->freq] = new DLinkedList();
+        }
+        freqToList[node->freq]->addToHead(node);
+    }
+    
+public:
+    LFUCache(int capacity) : capacity(capacity), minFreq(0) {}
+    
+    int get(int key) {
+        if (keyToNode.find(key) == keyToNode.end()) return -1;
+        
+        Node* node = keyToNode[key];
+        updateFreq(node);
+        return node->value;
+    }
+    
+    void put(int key, int value) {
+        if (capacity == 0) return;
+        
+        if (keyToNode.find(key) != keyToNode.end()) {
+            Node* node = keyToNode[key];
+            node->value = value;
+            updateFreq(node);
+        } else {
+            if (keyToNode.size() >= capacity) {
+                // Evict LFU (use minFreq list, remove tail)
+                Node* lfu = freqToList[minFreq]->removeTail();
+                keyToNode.erase(lfu->key);
+                delete lfu;
+            }
+            
+            Node* node = new Node(key, value);
+            keyToNode[key] = node;
+            
+            if (freqToList.find(1) == freqToList.end()) {
+                freqToList[1] = new DLinkedList();
+            }
+            freqToList[1]->addToHead(node);
+            minFreq = 1;
+        }
+    }
+};
+
+
+═══════════════════════════════════════════════════════════════════════════════
+              **PART 3: TRIE (PREFIX TREE)** ⭐⭐⭐
+═══════════════════════════════════════════════════════════════════════════════
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**CONCEPT**
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+TRIE: Tree where each node represents a character, paths form words
+
+USE CASES:
+  • Autocomplete
+  • Spell checker
+  • IP routing (longest prefix match)
+  • Word search in grid
+
+OPERATIONS:
+  • insert(word): O(m) where m = word length
+  • search(word): O(m)
+  • startsWith(prefix): O(m)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**TRIE - IMPLEMENTATION (LC 208)** ⭐⭐
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+class TrieNode {
+public:
+    TrieNode* children[26];
+    bool isEnd;
+    
+    TrieNode() {
+        isEnd = false;
+        for (int i = 0; i < 26; i++) {
+            children[i] = nullptr;
+        }
+    }
+};
+
+class Trie {
+    TrieNode* root;
+    
+public:
+    Trie() {
+        root = new TrieNode();
+    }
+    
+    void insert(string word) {
+        TrieNode* node = root;
+        for (char c : word) {
+            int idx = c - 'a';
+            if (!node->children[idx]) {
+                node->children[idx] = new TrieNode();
+            }
+            node = node->children[idx];
+        }
+        node->isEnd = true;
+    }
+    
+    bool search(string word) {
+        TrieNode* node = root;
+        for (char c : word) {
+            int idx = c - 'a';
+            if (!node->children[idx]) return false;
+            node = node->children[idx];
+        }
+        return node->isEnd;
+    }
+    
+    bool startsWith(string prefix) {
+        TrieNode* node = root;
+        for (char c : prefix) {
+            int idx = c - 'a';
+            if (!node->children[idx]) return false;
+            node = node->children[idx];
+        }
+        return true;
+    }
+};
+
+
+════════════════════════════════════════════════════════════════════════════
+**SOLVED: Word Search II (LC 212)** ⭐⭐⭐
+════════════════════════════════════════════════════════════════════════════
+
+PROBLEM: Find all words from dictionary in a grid.
+
+💡 KEY INSIGHT: Build Trie from words, DFS from each cell with Trie guidance
+
+class Solution {
+    struct TrieNode {
+        TrieNode* children[26] = {};
+        string* word = nullptr;  // Store word at end node
+    };
+    
+    TrieNode* root = new TrieNode();
+    int dirs[4][2] = {{0,1}, {0,-1}, {1,0}, {-1,0}};
+    vector<string> result;
+    
+    void insertWord(const string& word) {
+        TrieNode* node = root;
+        for (char c : word) {
+            int idx = c - 'a';
+            if (!node->children[idx]) {
+                node->children[idx] = new TrieNode();
+            }
+            node = node->children[idx];
+        }
+        node->word = new string(word);
+    }
+    
+    void dfs(vector<vector<char>>& board, int r, int c, TrieNode* node) {
+        char ch = board[r][c];
+        if (ch == '#' || !node->children[ch - 'a']) return;
+        
+        node = node->children[ch - 'a'];
+        
+        if (node->word) {
+            result.push_back(*node->word);
+            node->word = nullptr;  // Avoid duplicates
+        }
+        
+        board[r][c] = '#';  // Mark visited
+        
+        int m = board.size(), n = board[0].size();
+        for (auto& d : dirs) {
+            int nr = r + d[0], nc = c + d[1];
+            if (nr >= 0 && nr < m && nc >= 0 && nc < n) {
+                dfs(board, nr, nc, node);
+            }
+        }
+        
+        board[r][c] = ch;  // Restore
+    }
+    
+public:
+    vector<string> findWords(vector<vector<char>>& board, vector<string>& words) {
+        // Build Trie
+        for (auto& word : words) {
+            insertWord(word);
+        }
+        
+        // DFS from each cell
+        int m = board.size(), n = board[0].size();
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                dfs(board, i, j, root);
+            }
+        }
+        
+        return result;
+    }
+};
+
+
+═══════════════════════════════════════════════════════════════════════════════
+              **PART 4: LONGEST INCREASING PATH IN MATRIX (LC 329)** ⭐⭐⭐
+═══════════════════════════════════════════════════════════════════════════════
+
+PROBLEM: Find the longest increasing path in a matrix.
+
+💡 KEY INSIGHT: DFS + Memoization (Graph + DP crossover!)
+              Each cell's answer depends only on strictly greater neighbors.
+
+int longestIncreasingPath(vector<vector<int>>& matrix) {
+    int m = matrix.size(), n = matrix[0].size();
+    vector<vector<int>> memo(m, vector<int>(n, 0));
+    int result = 0;
+    
+    function<int(int, int)> dfs = [&](int r, int c) -> int {
+        if (memo[r][c] != 0) return memo[r][c];
+        
+        int dirs[4][2] = {{0,1}, {0,-1}, {1,0}, {-1,0}};
+        int maxLen = 1;
+        
+        for (auto& d : dirs) {
+            int nr = r + d[0], nc = c + d[1];
+            if (nr >= 0 && nr < m && nc >= 0 && nc < n 
+                && matrix[nr][nc] > matrix[r][c]) {
+                maxLen = max(maxLen, 1 + dfs(nr, nc));
+            }
+        }
+        
+        return memo[r][c] = maxLen;
+    };
+    
+    for (int i = 0; i < m; i++) {
+        for (int j = 0; j < n; j++) {
+            result = max(result, dfs(i, j));
+        }
+    }
+    
+    return result;
+}
+
+TIME: O(M × N) - each cell computed once
+SPACE: O(M × N) for memoization
+
+
+═══════════════════════════════════════════════════════════════════════════════
+              **PART 5: FIND MEDIAN FROM DATA STREAM (LC 295)** ⭐⭐⭐
+═══════════════════════════════════════════════════════════════════════════════
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**CONCEPT**
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PROBLEM: Support addNum() and findMedian() in O(log n) time.
+
+💡 KEY INSIGHT: Use TWO HEAPS
+  • maxHeap: stores smaller half (largest of small at top)
+  • minHeap: stores larger half (smallest of large at top)
+  
+  [smaller half in maxHeap] <= median <= [larger half in minHeap]
+
+BALANCE: |maxHeap| = |minHeap| or |maxHeap| = |minHeap| + 1
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**IMPLEMENTATION** ⭐⭐⭐
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+class MedianFinder {
+    priority_queue<int> maxHeap;  // Smaller half (max at top)
+    priority_queue<int, vector<int>, greater<int>> minHeap;  // Larger half (min at top)
+    
+public:
+    void addNum(int num) {
+        // Always add to maxHeap first
+        maxHeap.push(num);
+        
+        // Move largest from maxHeap to minHeap
+        minHeap.push(maxHeap.top());
+        maxHeap.pop();
+        
+        // Balance: maxHeap should have >= minHeap size
+        if (maxHeap.size() < minHeap.size()) {
+            maxHeap.push(minHeap.top());
+            minHeap.pop();
+        }
+    }
+    
+    double findMedian() {
+        if (maxHeap.size() > minHeap.size()) {
+            return maxHeap.top();
+        }
+        return (maxHeap.top() + minHeap.top()) / 2.0;
+    }
+};
+
+TIME: O(log n) for addNum, O(1) for findMedian
+SPACE: O(n)
+
+
+═══════════════════════════════════════════════════════════════════════════════
+              **PART 6: ADDITIONAL CROSSOVER PROBLEMS**
+═══════════════════════════════════════════════════════════════════════════════
+
+════════════════════════════════════════════════════════════════════════════
+**SOLVED: Design Add and Search Words DS (LC 211)** ⭐⭐
+════════════════════════════════════════════════════════════════════════════
+
+💡 KEY INSIGHT: Trie + DFS for wildcard matching
+
+class WordDictionary {
+    struct TrieNode {
+        TrieNode* children[26] = {};
+        bool isEnd = false;
+    };
+    
+    TrieNode* root = new TrieNode();
+    
+    bool searchInNode(const string& word, int idx, TrieNode* node) {
+        if (!node) return false;
+        if (idx == word.size()) return node->isEnd;
+        
+        char c = word[idx];
+        if (c == '.') {
+            // Try all children
+            for (int i = 0; i < 26; i++) {
+                if (searchInNode(word, idx + 1, node->children[i])) {
+                    return true;
+                }
+            }
+            return false;
+        } else {
+            return searchInNode(word, idx + 1, node->children[c - 'a']);
+        }
+    }
+    
+public:
+    void addWord(string word) {
+        TrieNode* node = root;
+        for (char c : word) {
+            int idx = c - 'a';
+            if (!node->children[idx]) {
+                node->children[idx] = new TrieNode();
+            }
+            node = node->children[idx];
+        }
+        node->isEnd = true;
+    }
+    
+    bool search(string word) {
+        return searchInNode(word, 0, root);
+    }
+};
+
+
+════════════════════════════════════════════════════════════════════════════
+**SOLVED: Design Twitter (LC 355)** ⭐⭐
+════════════════════════════════════════════════════════════════════════════
+
+💡 KEY INSIGHT: HashMap for follows, priority queue for feed merging
+
+class Twitter {
+    int timestamp = 0;
+    unordered_map<int, vector<pair<int, int>>> tweets;  // userId -> [(time, tweetId)]
+    unordered_map<int, unordered_set<int>> following;   // userId -> set of followees
+    
+public:
+    void postTweet(int userId, int tweetId) {
+        tweets[userId].push_back({timestamp++, tweetId});
+    }
+    
+    vector<int> getNewsFeed(int userId) {
+        priority_queue<pair<int, int>> pq;  // {time, tweetId}
+        
+        // Add user's own tweets
+        for (auto& [time, id] : tweets[userId]) {
+            pq.push({time, id});
+        }
+        
+        // Add followees' tweets
+        for (int followee : following[userId]) {
+            for (auto& [time, id] : tweets[followee]) {
+                pq.push({time, id});
+            }
+        }
+        
+        vector<int> feed;
+        while (!pq.empty() && feed.size() < 10) {
+            feed.push_back(pq.top().second);
+            pq.pop();
+        }
+        
+        return feed;
+    }
+    
+    void follow(int followerId, int followeeId) {
+        if (followerId != followeeId) {
+            following[followerId].insert(followeeId);
+        }
+    }
+    
+    void unfollow(int followerId, int followeeId) {
+        following[followerId].erase(followeeId);
+    }
+};
+
+
+═══════════════════════════════════════════════════════════════════════════════
+              **DESIGN PATTERNS SUMMARY**
+═══════════════════════════════════════════════════════════════════════════════
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ PROBLEM                    │ DATA STRUCTURES USED                          │
+├────────────────────────────┼───────────────────────────────────────────────┤
+│ LRU Cache                  │ HashMap + Doubly Linked List                  │
+│ LFU Cache                  │ HashMap + Multiple DLL + minFreq tracker      │
+│ Trie                       │ Tree of TrieNodes with children array         │
+│ Word Search II             │ Trie + DFS backtracking on grid               │
+│ Longest Increasing Path    │ DFS + Memoization (Graph + DP)                │
+│ Median from Stream         │ Two Heaps (maxHeap + minHeap)                 │
+│ Top K Frequent             │ HashMap + Heap (or Bucket Sort)               │
+│ Sliding Window Maximum     │ Monotonic Deque                               │
+│ Design Twitter             │ HashMap + Priority Queue                      │
+└────────────────────────────┴───────────────────────────────────────────────┘
+
+
+═══════════════════════════════════════════════════════════════════════════════
+              **PROBLEM LIST**
+═══════════════════════════════════════════════════════════════════════════════
+
+CACHE DESIGN:
+  ✓ 146. LRU Cache ⭐⭐⭐
+  ✓ 460. LFU Cache ⭐⭐⭐
+
+TRIE PROBLEMS:
+  ✓ 208. Implement Trie ⭐⭐
+  ✓ 211. Design Add and Search Words ⭐⭐
+  ✓ 212. Word Search II ⭐⭐⭐
+  • 648. Replace Words ⭐
+  • 677. Map Sum Pairs ⭐
+
+GRAPH + DP CROSSOVER:
+  ✓ 329. Longest Increasing Path in Matrix ⭐⭐⭐
+  • 1216. Valid Palindrome III (DP)
+  • 1575. Count All Possible Routes (Graph + DP)
+
+HEAP DESIGN:
+  ✓ 295. Find Median from Data Stream ⭐⭐⭐
+  • 480. Sliding Window Median ⭐⭐⭐
+  ✓ 355. Design Twitter ⭐⭐
+
+SYSTEM DESIGN:
+  • 380. Insert Delete GetRandom O(1) ⭐⭐
+  • 381. Insert Delete GetRandom O(1) - Duplicates ⭐⭐⭐
+  • 432. All O(1) Data Structure ⭐⭐⭐
+  • 588. Design In-Memory File System ⭐⭐
+
+
+════════════════════════════════════════════════════════════════════════════════
+                                **END**
+════════════════════════════════════════════════════════════════════════════════
+

@@ -1,0 +1,865 @@
+═══════════════════════════════════════════════════════════════════════════════
+              **QUEUE - COMPLETE GUIDE**
+═══════════════════════════════════════════════════════════════════════════════
+
+First In, First Out (FIFO) - Master BFS, Sliding Window, and Level-Order!
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**TABLE OF CONTENTS**
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Queue Basics & Operations
+2. Types of Queues (Simple, Circular, Deque, Priority)
+3. ⭐ BFS Pattern (Most Common Use!)
+4. Queue Implementation Techniques
+5. Classic Queue Problems
+6. Pattern Recognition Guide
+7. Queue vs Stack Decision
+
+
+═══════════════════════════════════════════════════════════════════════════════
+              **PART 1: QUEUE BASICS**
+═══════════════════════════════════════════════════════════════════════════════
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**WHAT IS A QUEUE?**
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+DEFINITION:
+  Linear data structure following FIFO (First In, First Out) principle.
+  
+  Think: Line at a ticket counter
+  • First person in line gets served first
+  • New people join at the back
+  • Service happens from the front
+
+VISUALIZATION:
+  Front                              Rear
+    ↓                                  ↓
+  [5] ← [3] ← [7] ← [2] ← [9]
+   ↑                           ↑
+  dequeue                    enqueue
+  (remove)                    (add)
+
+💡 **MEMORY AID**: "**F**ront **F**irst, **R**ear **R**eceives"
+   (Front serves First, Rear Receives new elements)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**CORE OPERATIONS**
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+┌─────────────────┬──────────────────────────────────────┬──────────────┐
+│ Operation       │ Description                          │ Time         │
+├─────────────────┼──────────────────────────────────────┼──────────────┤
+│ enqueue(x)      │ Add element to rear                  │ O(1)         │
+│ dequeue()       │ Remove element from front            │ O(1)         │
+│ front() / peek()│ Get front element (don't remove)     │ O(1)         │
+│ isEmpty()       │ Check if queue is empty              │ O(1)         │
+│ size()          │ Get number of elements               │ O(1)         │
+└─────────────────┴──────────────────────────────────────┴──────────────┘
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**C++ STL QUEUE**
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+#include <queue>
+
+queue<int> q;
+
+// Basic operations
+q.push(5);           // enqueue - add to rear
+q.pop();             // dequeue - remove from front
+int x = q.front();   // peek front element
+int y = q.back();    // peek rear element
+bool empty = q.empty();
+int sz = q.size();
+
+// Iterate (requires copy or destruction)
+while (!q.empty()) {
+    int val = q.front();
+    q.pop();
+    // process val
+}
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**WHEN TO USE QUEUE?** 🎯
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+STRONG SIGNALS:
+────────────────────────────────────────────────────────────────────────────
+✅ BFS (Breadth-First Search) - Trees or Graphs
+✅ Level-order traversal
+✅ "Process in order of arrival"
+✅ "Shortest path in unweighted graph"
+✅ Task scheduling (FIFO order)
+✅ "First come, first served"
+✅ Stream processing
+
+KEYWORDS:
+  • "Level by level"
+  • "Layer by layer"
+  • "Nearest/Closest"
+  • "Shortest path"
+  • "In order"
+
+
+═══════════════════════════════════════════════════════════════════════════════
+              **PART 2: TYPES OF QUEUES**
+═══════════════════════════════════════════════════════════════════════════════
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**1. SIMPLE QUEUE** (Standard Queue)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+FIFO - discussed above
+Use C++ std::queue
+
+LIMITATION:
+  Once rear reaches end of array, can't add even if front has space.
+  Solution: Circular Queue!
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**2. CIRCULAR QUEUE** (Ring Buffer)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+CONCEPT: Rear wraps around to beginning when it reaches end.
+
+VISUALIZATION:
+        [2]
+      /     \
+   [9]       [5]
+     \       /
+      [7] [3]
+      
+  Rear and Front move circularly!
+
+IMPLEMENTATION (LC 622):
+────────────────────────────────────────────────────────────────────────────
+class MyCircularQueue {
+    vector<int> data;
+    int front, rear, size, capacity;
+    
+public:
+    MyCircularQueue(int k) : data(k), front(0), rear(-1), size(0), capacity(k) {}
+    
+    bool enQueue(int value) {
+        if (isFull()) return false;
+        rear = (rear + 1) % capacity;  // Wrap around!
+        data[rear] = value;
+        size++;
+        return true;
+    }
+    
+    bool deQueue() {
+        if (isEmpty()) return false;
+        front = (front + 1) % capacity;  // Wrap around!
+        size--;
+        return true;
+    }
+    
+    int Front() {
+        return isEmpty() ? -1 : data[front];
+    }
+    
+    int Rear() {
+        return isEmpty() ? -1 : data[rear];
+    }
+    
+    bool isEmpty() { return size == 0; }
+    bool isFull() { return size == capacity; }
+};
+
+💡 **KEY TRICK**: Use modulo (%) for circular wrapping!
+   next_index = (current_index + 1) % capacity
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**3. DEQUE (Double-Ended Queue)** ⭐
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+CONCEPT: Can add/remove from BOTH ends!
+
+C++ STL:
+────────────────────────────────────────────────────────────────────────────
+#include <deque>
+
+deque<int> dq;
+
+// Add to both ends
+dq.push_back(5);    // Add to rear
+dq.push_front(3);   // Add to front
+
+// Remove from both ends
+dq.pop_back();      // Remove from rear
+dq.pop_front();     // Remove from front
+
+// Access both ends
+int f = dq.front();
+int r = dq.back();
+
+// Random access (unlike queue!)
+int x = dq[2];      // Access by index
+
+USE CASES:
+  ✅ Sliding Window Maximum/Minimum (monotonic deque!)
+  ✅ Palindrome checking
+  ✅ Implement stack and queue simultaneously
+  ✅ Task scheduling with priorities
+
+💡 **MEMORY AID**: "**D**eque = **D**ouble **D**oors" (enter/exit both sides)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**4. PRIORITY QUEUE** ⭐⭐
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+CONCEPT: Elements served by PRIORITY, not FIFO order.
+
+C++ STL (Max-Heap by default):
+────────────────────────────────────────────────────────────────────────────
+#include <queue>
+
+// Max-heap (largest first)
+priority_queue<int> maxPQ;
+maxPQ.push(5);
+maxPQ.push(10);
+maxPQ.push(3);
+int max_val = maxPQ.top();  // 10
+maxPQ.pop();
+
+// Min-heap (smallest first)
+priority_queue<int, vector<int>, greater<int>> minPQ;
+minPQ.push(5);
+minPQ.push(10);
+minPQ.push(3);
+int min_val = minPQ.top();  // 3
+
+TIME COMPLEXITY:
+  Insert: O(log N)
+  Remove: O(log N)
+  Peek: O(1)
+
+See "Heap & Kth Problems.txt" for detailed priority queue patterns!
+
+
+═══════════════════════════════════════════════════════════════════════════════
+              **PART 3: BFS PATTERN** ⭐⭐⭐ (MOST IMPORTANT!)
+═══════════════════════════════════════════════════════════════════════════════
+
+This is THE primary use of queues in coding interviews!
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**BFS TEMPLATE 1: Basic BFS (Single Source)**
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+void BFS(Node* start) {
+    queue<Node*> q;
+    unordered_set<Node*> visited;
+    
+    q.push(start);
+    visited.insert(start);
+    
+    while (!q.empty()) {
+        Node* curr = q.front();
+        q.pop();
+        
+        // Process current node
+        process(curr);
+        
+        // Add neighbors
+        for (Node* neighbor : curr->neighbors) {
+            if (!visited.count(neighbor)) {
+                visited.insert(neighbor);
+                q.push(neighbor);
+            }
+        }
+    }
+}
+
+💡 **KEY INSIGHT**: Mark visited WHEN ADDING to queue, not when processing!
+   Why? Prevents adding same node multiple times.
+
+🎯 **WHY IT WORKS**:
+  Queue ensures we process nodes level by level.
+  All nodes at distance d are processed before distance d+1.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**BFS TEMPLATE 2: Level-Order Traversal** ⭐
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Use when you need to track levels separately.
+
+vector<vector<int>> levelOrder(TreeNode* root) {
+    vector<vector<int>> result;
+    if (!root) return result;
+    
+    queue<TreeNode*> q;
+    q.push(root);
+    
+    while (!q.empty()) {
+        int levelSize = q.size();  // ⚠️ Critical! Snapshot of current level
+        vector<int> currentLevel;
+        
+        for (int i = 0; i < levelSize; i++) {
+            TreeNode* node = q.front();
+            q.pop();
+            
+            currentLevel.push_back(node->val);
+            
+            if (node->left) q.push(node->left);
+            if (node->right) q.push(node->right);
+        }
+        
+        result.push_back(currentLevel);
+    }
+    
+    return result;
+}
+
+💡 **CRITICAL TRICK**: `int levelSize = q.size()`
+   Captures current level size BEFORE adding next level!
+
+VARIATIONS:
+  • Right side view: Take last element of each level
+  • Zigzag: Alternate reverse for odd levels
+  • Average of levels: Sum and divide by levelSize
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**BFS TEMPLATE 3: Shortest Path (Unweighted Graph)**
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+int shortestPath(Node* start, Node* target) {
+    queue<Node*> q;
+    unordered_map<Node*, int> distance;
+    
+    q.push(start);
+    distance[start] = 0;
+    
+    while (!q.empty()) {
+        Node* curr = q.front();
+        q.pop();
+        
+        if (curr == target) {
+            return distance[curr];  // Found shortest path!
+        }
+        
+        for (Node* neighbor : curr->neighbors) {
+            if (!distance.count(neighbor)) {
+                distance[neighbor] = distance[curr] + 1;
+                q.push(neighbor);
+            }
+        }
+    }
+    
+    return -1;  // No path found
+}
+
+💡 **WHY BFS for shortest path?**
+   BFS explores nodes in order of distance from start.
+   First time we reach target = shortest path!
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**BFS TEMPLATE 4: Multi-Source BFS** ⭐
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+START from multiple sources simultaneously!
+
+void multiSourceBFS(vector<Node*>& sources) {
+    queue<Node*> q;
+    unordered_set<Node*> visited;
+    
+    // Add ALL sources to queue
+    for (Node* source : sources) {
+        q.push(source);
+        visited.insert(source);
+    }
+    
+    while (!q.empty()) {
+        Node* curr = q.front();
+        q.pop();
+        
+        // Process
+        
+        for (Node* neighbor : curr->neighbors) {
+            if (!visited.count(neighbor)) {
+                visited.insert(neighbor);
+                q.push(neighbor);
+            }
+        }
+    }
+}
+
+CLASSIC PROBLEMS:
+  • Rotting Oranges (LC 994): All rotten oranges are sources
+  • Walls and Gates (LC 286): All gates are sources
+  • 01 Matrix (LC 542): All 0s are sources
+
+
+═══════════════════════════════════════════════════════════════════════════════
+              **PART 4: QUEUE IMPLEMENTATION PATTERNS**
+═══════════════════════════════════════════════════════════════════════════════
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**IMPLEMENT QUEUE USING STACKS (LC 232)** ⭐
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PROBLEM: Implement FIFO queue using only LIFO stacks.
+
+💡 **KEY INSIGHT**: Use TWO stacks!
+   • Input stack: Receives new elements
+   • Output stack: Serves elements in FIFO order
+
+🎯 **WHY IT WORKS**:
+   Reversing twice = original order!
+   Stack1 (LIFO) → Stack2 (reverses) → FIFO
+
+class MyQueue {
+    stack<int> input, output;
+    
+    void transfer() {
+        while (!input.empty()) {
+            output.push(input.top());
+            input.pop();
+        }
+    }
+    
+public:
+    void push(int x) {
+        input.push(x);
+    }
+    
+    int pop() {
+        if (output.empty()) transfer();
+        int val = output.top();
+        output.pop();
+        return val;
+    }
+    
+    int peek() {
+        if (output.empty()) transfer();
+        return output.top();
+    }
+    
+    bool empty() {
+        return input.empty() && output.empty();
+    }
+};
+
+AMORTIZED ANALYSIS:
+  Each element transferred at most once: O(1) amortized!
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**IMPLEMENT STACK USING QUEUES (LC 225)**
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+APPROACH 1: Make push() expensive
+
+class MyStack {
+    queue<int> q;
+    
+public:
+    void push(int x) {
+        int size = q.size();
+        q.push(x);
+        
+        // Rotate queue to make new element come to front
+        for (int i = 0; i < size; i++) {
+            q.push(q.front());
+            q.pop();
+        }
+    }
+    
+    int pop() {
+        int val = q.front();
+        q.pop();
+        return val;
+    }
+    
+    int top() { return q.front(); }
+    bool empty() { return q.empty(); }
+};
+
+💡 **CLEVER TRICK**: Rotate queue after each push!
+   New element ends up at front (LIFO behavior).
+
+
+═══════════════════════════════════════════════════════════════════════════════
+              **PART 5: CLASSIC QUEUE PROBLEMS**
+═══════════════════════════════════════════════════════════════════════════════
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**PROBLEM: Binary Tree Level Order (LC 102)** ⭐
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+See Template 2 above - this is THE fundamental BFS pattern!
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**PROBLEM: Rotting Oranges (LC 994)** ⭐⭐
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PROBLEM: All rotten oranges rot adjacent fresh oranges each minute.
+         Return minimum time until no fresh oranges remain.
+
+💡 **KEY INSIGHT**: Multi-source BFS! All rotten oranges start together.
+
+int orangesRotting(vector<vector<int>>& grid) {
+    int m = grid.size(), n = grid[0].size();
+    queue<pair<int, int>> q;
+    int fresh = 0;
+    
+    // Count fresh and add all rotten to queue
+    for (int i = 0; i < m; i++) {
+        for (int j = 0; j < n; j++) {
+            if (grid[i][j] == 2) q.push({i, j});
+            else if (grid[i][j] == 1) fresh++;
+        }
+    }
+    
+    if (fresh == 0) return 0;  // Already done!
+    
+    int minutes = 0;
+    int dirs[4][2] = {{0,1}, {0,-1}, {1,0}, {-1,0}};
+    
+    while (!q.empty()) {
+        int size = q.size();
+        bool rotted = false;
+        
+        for (int i = 0; i < size; i++) {
+            auto [x, y] = q.front();
+            q.pop();
+            
+            for (auto& dir : dirs) {
+                int nx = x + dir[0], ny = y + dir[1];
+                
+                if (nx >= 0 && nx < m && ny >= 0 && ny < n && grid[nx][ny] == 1) {
+                    grid[nx][ny] = 2;
+                    q.push({nx, ny});
+                    fresh--;
+                    rotted = true;
+                }
+            }
+        }
+        
+        if (rotted) minutes++;
+    }
+    
+    return fresh == 0 ? minutes : -1;
+}
+
+TIME: O(M × N)  |  SPACE: O(M × N)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**PROBLEM: Sliding Window Maximum (LC 239)** ⭐⭐ HARD
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PROBLEM: Find max in each sliding window of size k.
+
+💡 **KEY INSIGHT**: Use DEQUE to maintain decreasing sequence!
+   (This is actually Monotonic Deque, not simple queue)
+
+vector<int> maxSlidingWindow(vector<int>& nums, int k) {
+    deque<int> dq;  // Stores indices
+    vector<int> result;
+    
+    for (int i = 0; i < nums.size(); i++) {
+        // Remove elements outside window
+        if (!dq.empty() && dq.front() == i - k) {
+            dq.pop_front();
+        }
+        
+        // Remove smaller elements (they'll never be max)
+        while (!dq.empty() && nums[dq.back()] < nums[i]) {
+            dq.pop_back();
+        }
+        
+        dq.push_back(i);
+        
+        // Add to result when window is full
+        if (i >= k - 1) {
+            result.push_back(nums[dq.front()]);
+        }
+    }
+    
+    return result;
+}
+
+TIME: O(N)  |  SPACE: O(K)
+
+🎯 **WHY DEQUE?**
+   Need to remove from BOTH ends:
+   • Front: Elements outside window
+   • Back: Elements smaller than current
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**PROBLEM: Number of Islands (LC 200)** ⭐
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PROBLEM: Count number of islands (connected 1s) in a grid.
+
+APPROACH: BFS from each unvisited land cell.
+
+int numIslands(vector<vector<char>>& grid) {
+    if (grid.empty()) return 0;
+    int m = grid.size(), n = grid[0].size();
+    int count = 0;
+    
+    auto bfs = [&](int i, int j) {
+        queue<pair<int, int>> q;
+        q.push({i, j});
+        grid[i][j] = '0';  // Mark visited
+        
+        int dirs[4][2] = {{0,1}, {0,-1}, {1,0}, {-1,0}};
+        
+        while (!q.empty()) {
+            auto [x, y] = q.front();
+            q.pop();
+            
+            for (auto& dir : dirs) {
+                int nx = x + dir[0], ny = y + dir[1];
+                
+                if (nx >= 0 && nx < m && ny >= 0 && ny < n && grid[nx][ny] == '1') {
+                    grid[nx][ny] = '0';
+                    q.push({nx, ny});
+                }
+            }
+        }
+    };
+    
+    for (int i = 0; i < m; i++) {
+        for (int j = 0; j < n; j++) {
+            if (grid[i][j] == '1') {
+                bfs(i, j);
+                count++;
+            }
+        }
+    }
+    
+    return count;
+}
+
+TIME: O(M × N)  |  SPACE: O(min(M, N))
+
+NOTE: Can also solve with DFS (recursion)!
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**PROBLEM: Word Ladder (LC 127)** ⭐⭐ HARD
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PROBLEM: Shortest transformation sequence from beginWord to endWord.
+
+💡 **KEY INSIGHT**: BFS for shortest path! Each word = node, 1-diff = edge.
+
+int ladderLength(string beginWord, string endWord, vector<string>& wordList) {
+    unordered_set<string> dict(wordList.begin(), wordList.end());
+    if (!dict.count(endWord)) return 0;
+    
+    queue<string> q;
+    q.push(beginWord);
+    int level = 1;
+    
+    while (!q.empty()) {
+        int size = q.size();
+        
+        for (int i = 0; i < size; i++) {
+            string word = q.front();
+            q.pop();
+            
+            if (word == endWord) return level;
+            
+            // Try changing each character
+            for (int j = 0; j < word.size(); j++) {
+                char original = word[j];
+                
+                for (char c = 'a'; c <= 'z'; c++) {
+                    word[j] = c;
+                    
+                    if (dict.count(word)) {
+                        q.push(word);
+                        dict.erase(word);  // Mark visited
+                    }
+                }
+                
+                word[j] = original;
+            }
+        }
+        
+        level++;
+    }
+    
+    return 0;
+}
+
+TIME: O(M² × N) where M = word length, N = dict size
+SPACE: O(N)
+
+
+═══════════════════════════════════════════════════════════════════════════════
+              **PART 6: PATTERN RECOGNITION GUIDE**
+═══════════════════════════════════════════════════════════════════════════════
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**DECISION FLOWCHART**
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Need shortest path in UNWEIGHTED graph?
+  │
+  ├─ YES → BFS with queue ✓
+  │
+  └─ NO → Need to process level by level?
+      │
+      ├─ YES → BFS with level tracking ✓
+      │
+      └─ NO → Need to explore all paths?
+          │
+          ├─ YES → DFS (use stack/recursion)
+          │
+          └─ NO → Process in arrival order?
+              │
+              └─ YES → Simple queue ✓
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**QUEUE vs STACK**
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+┌──────────────────────┬─────────────────┬─────────────────────────┐
+│ Use Case             │ Queue (FIFO)    │ Stack (LIFO)            │
+├──────────────────────┼─────────────────┼─────────────────────────┤
+│ Tree Traversal       │ Level-order     │ Pre/In/Post-order       │
+│ Graph Traversal      │ BFS             │ DFS                     │
+│ Shortest Path        │ BFS ✓           │ Not suitable            │
+│ All Paths            │ Not ideal       │ DFS ✓                   │
+│ Explore Nearest      │ BFS ✓           │ DFS goes deep first     │
+│ Backtracking         │ Not suitable    │ DFS ✓                   │
+│ Memory Usage         │ Can be large    │ Generally smaller       │
+└──────────────────────┴─────────────────┴─────────────────────────┘
+
+💡 **MEMORY AID**: 
+   **B**FS = **B**readth (wide, level by level) → Queue
+   **D**FS = **D**epth (deep, backtrack) → Stack
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**PROBLEM TYPE → QUEUE TYPE**
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+┌────────────────────────────────┬──────────────────────────────────┐
+│ Problem Pattern                │ Queue Type                       │
+├────────────────────────────────┼──────────────────────────────────┤
+│ Level-order traversal          │ Simple Queue + size tracking     │
+│ Shortest path (unweighted)     │ Simple Queue + distance map      │
+│ Multi-source spread            │ Simple Queue (add all sources)   │
+│ Sliding window max/min         │ Deque (monotonic)                │
+│ LRU Cache                      │ Deque + HashMap                  │
+│ Task scheduling (priority)     │ Priority Queue                   │
+│ Find kth largest               │ Priority Queue (min-heap)        │
+│ Meeting rooms                  │ Priority Queue                   │
+│ Merge k sorted lists           │ Priority Queue                   │
+└────────────────────────────────┴──────────────────────────────────┘
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**COMMON MISTAKES** ⚠️
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+MISTAKE 1: Marking visited when processing (not when adding)
+────────────────────────────────────────────────────────────────────────────
+❌ while (!q.empty()) {
+    auto node = q.front(); q.pop();
+    visited.insert(node);  // TOO LATE!
+}
+
+✅ if (!visited.count(neighbor)) {
+    visited.insert(neighbor);  // Mark NOW!
+    q.push(neighbor);
+}
+
+WHY: Same node can be added multiple times → infinite loop!
+
+
+MISTAKE 2: Not capturing level size in level-order
+────────────────────────────────────────────────────────────────────────────
+❌ for (int i = 0; i < q.size(); i++)  // q.size() changes in loop!
+
+✅ int size = q.size();  // Capture first!
+   for (int i = 0; i < size; i++)
+
+
+MISTAKE 3: Using queue for DFS-type problems
+────────────────────────────────────────────────────────────────────────────
+Finding ALL paths → Use DFS (stack/recursion), not BFS!
+
+
+MISTAKE 4: Forgetting to check empty queue
+────────────────────────────────────────────────────────────────────────────
+❌ int val = q.front(); q.pop();  // Crash if empty!
+
+✅ if (!q.empty()) {
+    int val = q.front(); q.pop();
+}
+
+
+═══════════════════════════════════════════════════════════════════════════════
+              **QUICK REFERENCE CHEAT SHEET** 📋
+═══════════════════════════════════════════════════════════════════════════════
+
+**BASIC QUEUE:**
+────────────────────────────────────────────────────────────────────────────
+queue<int> q;
+q.push(x);       // enqueue
+q.pop();         // dequeue
+q.front();       // peek front
+q.back();        // peek back
+q.empty();       // check empty
+q.size();        // get size
+
+
+**DEQUE:**
+────────────────────────────────────────────────────────────────────────────
+deque<int> dq;
+dq.push_back(x);   dq.push_front(x);
+dq.pop_back();     dq.pop_front();
+dq.front();        dq.back();
+dq[i];             // random access!
+
+
+**BFS TEMPLATE:**
+────────────────────────────────────────────────────────────────────────────
+queue<Node*> q;
+unordered_set<Node*> visited;
+
+q.push(start);
+visited.insert(start);
+
+while (!q.empty()) {
+    int size = q.size();  // For level tracking
+    for (int i = 0; i < size; i++) {
+        auto curr = q.front(); q.pop();
+        // Process curr
+        
+        for (auto neighbor : curr->neighbors) {
+            if (!visited.count(neighbor)) {
+                visited.insert(neighbor);
+                q.push(neighbor);
+            }
+        }
+    }
+}
+
+
+════════════════════════════════════════════════════════════════════════════════
+                                **END**
+════════════════════════════════════════════════════════════════════════════════
+

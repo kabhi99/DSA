@@ -1,0 +1,877 @@
+# **C++ STL QUICK REFERENCE & TRICKS**
+
+Easy syntax for interviews - patterns you can remember instantly!
+
+### **TABLE OF CONTENTS**
+
+1. Vector Operations
+2. String Manipulations
+3. Set & Unordered Set
+4. Map & Unordered Map
+5. Stack & Queue & Deque
+6. Priority Queue (Heap)
+7. Sorting & Searching
+8. Advanced Algorithms
+9. Iterator Tricks
+10. Lambda Functions
+11. One-Liner Tricks
+
+## **PART 1: VECTOR OPERATIONS**
+
+### **BASIC OPERATIONS (Easy Pattern!)**
+
+// Initialize
+vector<int> v;                          // Empty
+vector<int> v(n);                       // Size n, all 0
+vector<int> v(n, val);                  // Size n, all val
+vector<int> v = {1, 2, 3};              // Initializer list
+vector<int> v(arr, arr + n);            // From array
+
+// Size
+v.size()                                // Number of elements
+v.empty()                               // Check if empty
+v.clear()                               // Remove all elements
+
+// Access
+v[i]                                    // Direct access (no bounds check)
+v.at(i)                                 // With bounds check
+v.front()                               // First element
+v.back()                                // Last element
+
+// Modify
+v.push_back(x)                          // Add to end
+v.pop_back()                            // Remove from end
+v.insert(v.begin() + i, x)              // Insert at position i
+v.erase(v.begin() + i)                  // Remove at position i
+v.resize(n)                             // Change size to n
+
+### ADVANCED VECTOR TRICKS
+
+// Initialize 2D vector (n x m)
+vector<vector<int>> matrix(n, vector<int>(m, 0));
+
+// Copy vector
+vector<int> copy = original;            // Deep copy
+vector<int> copy(original.begin(), original.end());
+
+// Reverse
+reverse(v.begin(), v.end());            // In-place reverse
+
+// Sort
+sort(v.begin(), v.end());               // Ascending
+sort(v.rbegin(), v.rend());             // Descending
+sort(v.begin(), v.end(), greater<int>()); // Descending (alternative)
+
+// Find element
+auto it = find(v.begin(), v.end(), target);
+if (it != v.end()) {
+int index = it - v.begin();         // Get index
+
+}
+
+// Count occurrences
+int cnt = count(v.begin(), v.end(), target);
+
+// Sum all elements
+int sum = accumulate(v.begin(), v.end(), 0);
+long long sum = accumulate(v.begin(), v.end(), 0LL); // For large sums
+
+// Min/Max element
+int minVal = *min_element(v.begin(), v.end());
+int maxVal = *max_element(v.begin(), v.end());
+
+// Remove duplicates (must sort first!)
+sort(v.begin(), v.end());
+v.erase(unique(v.begin(), v.end()), v.end());
+
+// Remove specific value
+v.erase(remove(v.begin(), v.end(), val), v.end());
+
+// Check if sorted
+bool sorted = is_sorted(v.begin(), v.end());
+
+// Rotate vector (shift left by n positions)
+rotate(v.begin(), v.begin() + n, v.end());
+
+## PART 2: STRING MANIPULATIONS
+
+### BASIC STRING OPERATIONS
+
+string s = "hello";
+
+// Size
+s.size() or s.length()                  // Both work the same
+
+// Access
+s[i]                                    // Character at index i
+s.at(i)                                 // With bounds check
+s.front()                               // First character
+s.back()                                // Last character
+
+// Modify
+s.push_back('x')                        // Add character to end
+s.pop_back()                            // Remove last character
+s += "world"                            // Concatenate
+s.append("!")                           // Append
+
+// Substring
+s.substr(pos, len)                      // From pos, length len
+s.substr(pos)                           // From pos to end
+
+// Find
+s.find("lo")                            // Returns index or string::npos
+s.rfind("l")                            // Find from right
+if (s.find("world") != string::npos)    // Check if substring exists
+
+// Replace
+s.replace(pos, len, "new")              // Replace len chars at pos
+
+// Insert/Erase
+s.insert(pos, "text")                   // Insert at position
+s.erase(pos, len)                       // Erase len chars from pos
+
+### ADVANCED STRING TRICKS
+
+// Reverse string
+reverse(s.begin(), s.end());
+
+// Sort characters
+sort(s.begin(), s.end());
+
+// Convert to lowercase
+transform(s.begin(), s.end(), s.begin(), ::tolower);
+
+// Convert to uppercase
+transform(s.begin(), s.end(), s.begin(), ::toupper);
+
+// Check palindrome (one-liner!)
+bool isPalindrome = (s == string(s.rbegin(), s.rend()));
+
+// Remove spaces
+s.erase(remove(s.begin(), s.end(), ' '), s.end());
+
+// Count character frequency
+unordered_map<char, int> freq;
+for (char c : s) freq[c]++;
+
+// String to integer
+int num = stoi(s);                      // String to int
+long num = stol(s);                     // String to long
+double num = stod(s);                   // String to double
+
+// Integer to string
+string s = to_string(num);
+
+// Split string by delimiter (custom function)
+vector<string> split(string s, char delim) {
+```
+vector<string> result;            
+stringstream ss(s);               
+string item;                      
+while (getline(ss, item, delim)) {
+    result.push_back(item);       
+}                                 
+return result;                    
+```
+
+}
+
+// Check if all characters are same
+bool allSame = s.empty() || all_of(s.begin(), s.end(),
+```
+                               [&](char c) { return c == s[0]; });
+```
+
+// Check if string is numeric
+bool isNumeric = all_of(s.begin(), s.end(), ::isdigit);
+
+// Check if alphanumeric
+bool isAlnum = all_of(s.begin(), s.end(), ::isalnum);
+
+## PART 3: SET & UNORDERED_SET
+
+### BASIC OPERATIONS
+
+set<int> s;                             // Ordered set (BST)
+unordered_set<int> us;                  // Hash set (faster)
+
+// Insert
+s.insert(x);                            // O(log N) for set
+us.insert(x);                           // O(1) average for unordered_set
+
+// Erase
+s.erase(x);                             // Remove element
+s.erase(s.begin());                     // Remove first element
+
+// Check existence
+if (s.count(x))                         // Returns 1 or 0
+if (s.find(x) != s.end())              // Alternative
+
+// Size
+s.size()
+s.empty()
+s.clear()
+
+// Access (set only - ordered!)
+*s.begin()                              // Smallest element
+*s.rbegin()                             // Largest element
+
+### ADVANCED SET TRICKS
+
+// Initialize from vector
+vector<int> v = {1, 2, 3};
+set<int> s(v.begin(), v.end());
+
+// Convert set to vector
+vector<int> v(s.begin(), s.end());
+
+// Find next greater element (set only)
+auto it = s.upper_bound(x);             // First element > x
+if (it != s.end()) {
+int nextGreater = *it;
+
+}
+
+// Find element >= x
+auto it = s.lower_bound(x);             // First element >= x
+
+// Find largest element < x
+auto it = s.lower_bound(x);
+if (it != s.begin()) {
+--it;
+int largest = *it;
+
+}
+
+// Remove all elements in range [l, r]
+s.erase(s.lower_bound(l), s.upper_bound(r));
+
+// Set operations (for two sets s1, s2)
+set<int> result;
+
+// Union
+set_union(s1.begin(), s1.end(), s2.begin(), s2.end(),
+inserter(result, result.begin()));
+
+// Intersection
+set_intersection(s1.begin(), s1.end(), s2.begin(), s2.end(),
+inserter(result, result.begin()));
+
+// Difference
+set_difference(s1.begin(), s1.end(), s2.begin(), s2.end(),
+inserter(result, result.begin()));
+
+## PART 4: MAP & UNORDERED_MAP
+
+### BASIC OPERATIONS
+
+map<int, int> m;                        // Ordered map (keys sorted)
+unordered_map<int, int> um;             // Hash map (faster)
+
+// Insert/Update
+m[key] = value;                         // Insert or update
+m.insert({key, value});                 // Insert (doesn't overwrite)
+
+// Access
+m[key]                                  // Returns value, creates if not exists!
+m.at(key)                               // Throws exception if not exists
+
+// Check existence
+if (m.count(key))                       // Returns 1 or 0
+if (m.find(key) != m.end())            // Alternative
+
+// Erase
+m.erase(key);                           // Remove by key
+m.erase(m.find(key));                   // Remove by iterator
+
+// Iterate
+for (auto& [key, value] : m) {          // C++17 structured binding
+// Use key and value
+
+}
+
+for (auto& p : m) {                     // Pair
+int key = p.first;
+int value = p.second;
+
+}
+
+### ADVANCED MAP TRICKS
+
+// Increment counter (elegant!)
+m[key]++;                               // Works even if key doesn't exist!
+
+// Get value with default
+int val = m.count(key) ? m[key] : defaultVal;
+
+// Find key with max value
+auto maxPair = max_element(m.begin(), m.end(),
+```
+[](const auto& a, const auto& b) {
+    return a.second < b.second;   
+});                               
+```
+
+int maxKey = maxPair->first;
+
+// Get all keys
+vector<int> keys;
+for (auto& [key, val] : m) {
+keys.push_back(key);
+
+}
+
+// Get all values
+vector<int> values;
+for (auto& [key, val] : m) {
+values.push_back(val);
+
+}
+
+// Check if value exists (slow O(N))
+bool valueExists = false;
+for (auto& [key, val] : m) {
+```
+if (val == target) {   
+    valueExists = true;
+    break;             
+}                      
+```
+
+}
+
+// Map with custom comparator (descending keys)
+map<int, int, greater<int>> m;          // Keys in descending order
+
+// Frequency map one-liner
+unordered_map<int, int> freq;
+for (int x : v) freq[x]++;
+
+## PART 5: STACK, QUEUE, DEQUE
+
+### STACK (LIFO)
+
+stack<int> st;
+
+st.push(x);                             // Add to top
+st.pop();                               // Remove from top (no return!)
+st.top();                               // Access top
+st.empty();                             // Check if empty
+st.size();                              // Number of elements
+
+// Common pattern: pop and get value
+int val = st.top();
+st.pop();
+
+### QUEUE (FIFO)
+
+queue<int> q;
+
+q.push(x);                              // Add to back
+q.pop();                                // Remove from front (no return!)
+q.front();                              // Access front
+q.back();                               // Access back
+q.empty();
+q.size();
+
+// Common pattern
+int val = q.front();
+q.pop();
+
+### DEQUE (Double-ended queue)
+
+deque<int> dq;
+
+// Add/Remove from both ends
+dq.push_front(x);                       // Add to front
+dq.push_back(x);                        // Add to back
+dq.pop_front();                         // Remove from front
+dq.pop_back();                          // Remove from back
+
+// Access
+dq.front();                             // First element
+dq.back();                              // Last element
+dq[i];                                  // Random access like vector
+
+// Also supports
+dq.size();
+dq.empty();
+dq.clear();
+
+// Use for: Sliding window maximum, monotonic deque
+
+## PART 6: PRIORITY QUEUE (HEAP)
+
+### BASIC PRIORITY QUEUE
+
+// Max heap (default)
+priority_queue<int> maxHeap;            // Largest on top
+
+// Min heap
+priority_queue<int, vector<int>, greater<int>> minHeap;  // Smallest on top
+
+// Operations
+pq.push(x);                             // Add element
+pq.pop();                               // Remove top
+pq.top();                               // Access top
+pq.empty();
+pq.size();
+
+### CUSTOM COMPARATORS
+
+// Priority queue with pairs (sort by first, then second)
+priority_queue<pair<int, int>> pq;      // Max heap by first element
+
+// Min heap with pairs
+priority_queue<pair<int, int>, vector<pair<int, int>>,
+greater<pair<int, int>>> minHeap;
+
+// Custom comparator (example: sort by second element of pair)
+auto cmp = [](pair<int,int> a, pair<int,int> b) {
+```
+return a.second > b.second;         // Min heap by second element
+```
+
+};
+priority_queue<pair<int,int>, vector<pair<int,int>>, decltype(cmp)> pq(cmp);
+
+// Common pattern: Top K elements
+priority_queue<int, vector<int>, greater<int>> minHeap;  // Size K
+for (int x : nums) {
+```
+minHeap.push(x);                                      
+if (minHeap.size() > k) {                             
+    minHeap.pop();                  // Remove smallest
+}                                                     
+```
+
+}
+// Top K largest elements remain
+
+## PART 7: SORTING & SEARCHING
+
+### SORTING
+
+// Basic sort
+sort(v.begin(), v.end());               // Ascending
+sort(v.rbegin(), v.rend());             // Descending
+sort(v.begin(), v.end(), greater<int>()); // Descending (alternative)
+
+// Sort with custom comparator
+sort(v.begin(), v.end(), [](int a, int b) {
+```
+return a > b;                       // Descending
+```
+
+});
+
+// Sort vector of pairs (by second element)
+sort(pairs.begin(), pairs.end(), [](auto& a, auto& b) {
+```
+return a.second < b.second;
+```
+
+});
+
+// Sort by absolute value
+sort(v.begin(), v.end(), [](int a, int b) {
+```
+return abs(a) < abs(b);
+```
+
+});
+
+// Stable sort (maintains relative order)
+stable_sort(v.begin(), v.end());
+
+// Partial sort (sort only first k elements)
+partial_sort(v.begin(), v.begin() + k, v.end());
+
+// Nth element (quick select)
+nth_element(v.begin(), v.begin() + k, v.end());  // Kth smallest at v[k]
+
+### BINARY SEARCH
+
+// Array must be sorted first!
+
+// Check if element exists
+bool found = binary_search(v.begin(), v.end(), target);
+
+// Find position (returns iterator)
+auto it = lower_bound(v.begin(), v.end(), target);  // First >= target
+auto it = upper_bound(v.begin(), v.end(), target);  // First > target
+
+// Get index
+int idx = lower_bound(v.begin(), v.end(), target) - v.begin();
+
+// Count occurrences (in sorted array)
+int count = upper_bound(v.begin(), v.end(), x) - lower_bound(v.begin(), v.end(), x);
+
+// Find range [l, r] where element x appears
+auto left = lower_bound(v.begin(), v.end(), x);
+auto right = upper_bound(v.begin(), v.end(), x);
+
+## PART 8: ADVANCED ALGORITHMS
+
+### USEFUL STL ALGORITHMS
+
+// Reverse
+reverse(v.begin(), v.end());
+
+// Rotate (shift left by n positions)
+rotate(v.begin(), v.begin() + n, v.end());
+
+// Swap
+swap(a, b);                             // Swap two variables
+iter_swap(it1, it2);                    // Swap elements at iterators
+
+// Fill
+fill(v.begin(), v.end(), val);          // Fill all with val
+fill_n(v.begin(), n, val);              // Fill first n elements
+
+// Copy
+copy(src.begin(), src.end(), dest.begin());
+
+// Transform (apply function to each element)
+transform(v.begin(), v.end(), v.begin(), [](int x) {
+```
+return x * 2;                       // Double each element
+```
+
+});
+
+// Replace
+replace(v.begin(), v.end(), oldVal, newVal);
+
+// Remove (doesn't resize! Must erase)
+v.erase(remove(v.begin(), v.end(), val), v.end());
+
+// Remove if (with condition)
+v.erase(remove_if(v.begin(), v.end(), [](int x) {
+```
+return x % 2 == 0;                  // Remove even numbers
+```
+
+}), v.end());
+
+// Unique (remove consecutive duplicates - must sort first!)
+sort(v.begin(), v.end());
+v.erase(unique(v.begin(), v.end()), v.end());
+
+// Partition (move elements satisfying condition to front)
+auto it = partition(v.begin(), v.end(), [](int x) {
+```
+return x % 2 == 0;                  // Even numbers first
+```
+
+});
+
+// Next permutation
+next_permutation(v.begin(), v.end());   // Returns false when back to original
+prev_permutation(v.begin(), v.end());
+
+// Min/Max element
+auto minIt = min_element(v.begin(), v.end());
+auto maxIt = max_element(v.begin(), v.end());
+int minVal = *minIt;
+int maxVal = *maxIt;
+
+// Min/Max of two values
+int smaller = min(a, b);
+int larger = max(a, b);
+int middle = min(max(a, b), c);         // Clamp
+
+// All/Any/None of
+bool allPositive = all_of(v.begin(), v.end(), [](int x) { return x > 0; });
+bool anyNegative = any_of(v.begin(), v.end(), [](int x) { return x < 0; });
+bool noneZero = none_of(v.begin(), v.end(), [](int x) { return x == 0; });
+
+// Count
+int cnt = count(v.begin(), v.end(), val);
+int cntEven = count_if(v.begin(), v.end(), [](int x) { return x % 2 == 0; });
+
+// Accumulate (sum, product, etc.)
+int sum = accumulate(v.begin(), v.end(), 0);
+int product = accumulate(v.begin(), v.end(), 1, multiplies<int>());
+
+// Inner product (dot product)
+int dotProduct = inner_product(v1.begin(), v1.end(), v2.begin(), 0);
+
+// GCD and LCM (C++17)
+int g = gcd(a, b);                      // Greatest common divisor
+int l = lcm(a, b);                      // Least common multiple
+
+## PART 9: ITERATOR TRICKS
+
+// Iterator basics
+auto it = v.begin();                    // First element
+auto it = v.end();                      // Past-the-end
+auto it = v.rbegin();                   // Reverse iterator (last element)
+auto it = v.rend();                     // Reverse end
+
+### **SORT DESCENDING** 
+
+sort(v.rbegin(), v.rend());            //  Descending (REMEMBER THIS!)
+
+ MEMORY TRICK: "r" = reverse = descending
+
+// {3,1,4,5} > {5,4,3,1}
+
+### **REVERSE STRING / CHECK PALINDROME** 
+
+string rev(s.rbegin(), s.rend());      // Reverse string
+bool isPalin = (s == string(s.rbegin(), s.rend()));  // Palindrome check
+
+// Advance iterator
+advance(it, n);                         // Move iterator by n positions
+it += n;                                // Same for random access iterator
+
+// Distance between iterators
+int dist = distance(it1, it2);
+
+// Next/Prev iterator
+auto nextIt = next(it);                 // Iterator to next element
+auto nextIt = next(it, n);              // n positions ahead
+auto prevIt = prev(it);                 // Iterator to previous element
+
+// Iterator to index
+int idx = it - v.begin();
+
+// Index to iterator
+auto it = v.begin() + idx;
+
+## PART 10: LAMBDA FUNCTIONS (Quick Reference)
+
+// Basic lambda
+auto add = [](int a, int b) { return a + b; };
+int result = add(3, 4);
+
+// Lambda with capture
+int x = 10;
+auto addX = [x](int a) { return a + x; };       // Capture by value
+auto addXRef = [&x](int a) { return a + x; };   // Capture by reference
+
+// Capture all by value/reference
+auto f1 = [=]() { /* all by value */ };
+auto f2 = [&]() { /* all by reference */ };
+
+// Common use: sort with lambda
+sort(v.begin(), v.end(), [](int a, int b) {
+```
+return a > b;
+```
+
+});
+
+// Lambda in STL algorithms
+transform(v.begin(), v.end(), v.begin(), [](int x) {
+```
+return x * x;
+```
+
+});
+
+// Lambda for custom comparator
+auto cmp = [](int a, int b) { return a > b; };
+priority_queue<int, vector<int>, decltype(cmp)> pq(cmp);
+
+## PART 11: ONE-LINER TRICKS
+
+### POWERFUL ONE-LINERS
+
+// Check if vector is palindrome
+bool isPalindrome = equal(v.begin(), v.begin() + v.size()/2, v.rbegin());
+
+// Remove duplicates (unordered)
+sort(v.begin(), v.end());
+v.erase(unique(v.begin(), v.end()), v.end());
+
+// Find mode (most frequent element)
+unordered_map<int, int> freq;
+for (int x : v) freq[x]++;
+int mode = max_element(freq.begin(), freq.end(),
+```
+[](auto& a, auto& b) { return a.second < b.second; })->first;
+```
+
+// Check if all elements are unique
+set<int> s(v.begin(), v.end());
+bool allUnique = (s.size() == v.size());
+
+// Find second largest
+sort(v.begin(), v.end());
+int secondLargest = v[v.size() - 2];
+
+// Or using nth_element
+nth_element(v.begin(), v.begin() + v.size() - 2, v.end());
+int secondLargest = v[v.size() - 2];
+
+// Count distinct elements
+set<int> distinct(v.begin(), v.end());
+int count = distinct.size();
+
+// Check if array is sorted
+bool isSorted = is_sorted(v.begin(), v.end());
+
+// Find median
+sort(v.begin(), v.end());
+double median = v.size() % 2 ? v[v.size()/2] :
+(v[v.size()/2-1] + v[v.size()/2]) / 2.0;
+
+// Generate sequence [0, 1, 2, ..., n-1]
+vector<int> v(n);
+iota(v.begin(), v.end(), 0);
+
+// Generate random permutation
+random_shuffle(v.begin(), v.end());     // C++14
+shuffle(v.begin(), v.end(), mt19937(random_device()()));  // C++17
+
+// Swap two vectors (O(1)!)
+v1.swap(v2);
+
+// Clear vector and free memory
+vector<int>().swap(v);
+
+// 2D vector transpose
+vector<vector<int>> transposed(m[0].size(), vector<int>(m.size()));
+for (int i = 0; i < m.size(); i++)
+```
+for (int j = 0; j < m[0].size(); j++)
+    transposed[j][i] = m[i][j];      
+```
+
+## INTERVIEW QUICK REFERENCE CARD
+
+```
++-----------------------------------------------------------------------------+
+|                         MOST COMMON OPERATIONS                              |
++-----------------------------------------------------------------------------+
+|                                                                             |
+| VECTOR:                                                                     |
+|   v.push_back(x), v.pop_back(), v.size(), v.empty()                         |
+|   sort(v.begin(), v.end())                                                  |
+|   reverse(v.begin(), v.end())                                               |
+|   *min_element(v.begin(), v.end())                                          |
+|   accumulate(v.begin(), v.end(), 0)                                         |
+|                                                                             |
+| STRING:                                                                     |
+|   s.substr(pos, len), s.find("text")                                        |
+|   transform(s.begin(), s.end(), s.begin(), ::tolower)                       |
+|   to_string(num), stoi(s)                                                   |
+|                                                                             |
+| SET:                                                                        |
+|   s.insert(x), s.erase(x), s.count(x)                                       |
+|   s.lower_bound(x), s.upper_bound(x)                                        |
+|                                                                             |
+| MAP:                                                                        |
+|   m[key] = val, m[key]++, m.count(key)                                      |
+|   for (auto& [k, v] : m) { }                                                |
+|                                                                             |
+| HEAP:                                                                       |
+|   priority_queue<int> maxHeap;                                              |
+|   priority_queue<int, vector<int>, greater<int>> minHeap;                   |
+|   pq.push(x), pq.pop(), pq.top()                                            |
+|                                                                             |
+| ALGORITHMS:                                                                 |
+|   sort(v.begin(), v.end())                                                  |
+|   binary_search(v.begin(), v.end(), target)                                 |
+|   lower_bound(v.begin(), v.end(), target)                                   |
+|   next_permutation(v.begin(), v.end())                                      |
+|                                                                             |
++-----------------------------------------------------------------------------+
+
++-----------------------------------------------------------------------------+
+|                         COMPLEXITY CHEAT SHEET                              |
++-----------------------------------------------------------------------------+
+|                                                                             |
+| VECTOR:          Access O(1), Insert/Delete end O(1), Middle O(N)           |
+| SET:             Insert/Delete/Find O(log N)                                |
+| UNORDERED_SET:   Insert/Delete/Find O(1) average, O(N) worst                |
+| MAP:             Insert/Delete/Find O(log N)                                |
+| UNORDERED_MAP:   Insert/Delete/Find O(1) average, O(N) worst                |
+| PRIORITY_QUEUE:  Insert O(log N), Top O(1), Pop O(log N)                    |
+| SORT:            O(N log N)                                                 |
+| BINARY_SEARCH:   O(log N) on sorted array                                   |
+|                                                                             |
++-----------------------------------------------------------------------------+
+
+===============================================================================
+                         COMMON INTERVIEW PATTERNS                             
+===============================================================================
+```
+
+### PATTERN 1: Two Pointer with Sort
+
+sort(v.begin(), v.end());
+int left = 0, right = v.size() - 1;
+while (left < right) {
+```
+if (v[left] + v[right] == target) return true;
+else if (v[left] + v[right] < target) left++; 
+else right--;                                 
+```
+
+}
+
+### PATTERN 2: Sliding Window with Map
+
+unordered_map<char, int> freq;
+int left = 0, maxLen = 0;
+for (int right = 0; right < s.size(); right++) {
+```
+freq[s[right]]++;                               
+while (freq.size() > k) {                       
+    freq[s[left]]--;                            
+    if (freq[s[left]] == 0) freq.erase(s[left]);
+    left++;                                     
+}                                               
+maxLen = max(maxLen, right - left + 1);         
+```
+
+}
+
+### PATTERN 3: Top K Elements
+
+priority_queue<int, vector<int>, greater<int>> minHeap;
+for (int x : nums) {
+```
+minHeap.push(x);                      
+if (minHeap.size() > k) minHeap.pop();
+```
+
+}
+
+### PATTERN 4: Monotonic Stack
+
+stack<int> st;
+for (int i = 0; i < n; i++) {
+```
+while (!st.empty() && arr[st.top()] > arr[i]) {
+    st.pop();                                  
+}                                              
+// st.top() is previous smaller element        
+st.push(i);                                    
+```
+
+}
+
+### PATTERN 5: Remove Duplicates
+
+sort(v.begin(), v.end());
+v.erase(unique(v.begin(), v.end()), v.end());
+
+### PATTERN 6: Binary Search Template
+
+int left = 0, right = v.size() - 1;
+while (left <= right) {
+```
+int mid = left + (right - left) / 2;     
+if (v[mid] == target) return mid;        
+else if (v[mid] < target) left = mid + 1;
+else right = mid - 1;                    
+```
+
+}
+
+## END
+
