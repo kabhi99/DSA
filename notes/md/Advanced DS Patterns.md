@@ -625,6 +625,54 @@ void unfollow(int followerId, int followeeId) {
 };
 ```
 
+## **SOLVED: Insert Delete GetRandom O(1) - Duplicates Allowed (LC 381)** 
+
+SERIES: I (LC 380, no dups) > II (LC 381, with dups)
+
+ KEY INSIGHT:
+- Same as LC 380 but use unordered_map<int, unordered_set<int>> to track ALL indices
+- Remove: swap with last, update sets for both elements
+
+```java
+class RandomizedCollection {
+vector<int> nums;
+unordered_map<int, unordered_set<int>> valToIndices;
+```
+
+public:
+```
+bool insert(int val) {                                                      
+    nums.push_back(val);                                                    
+    valToIndices[val].insert(nums.size() - 1);                              
+    return valToIndices[val].size() == 1;                                   
+}                                                                           
+
+bool remove(int val) {                                                      
+    if (!valToIndices.count(val) || valToIndices[val].empty()) return false;
+
+    int removeIdx = *valToIndices[val].begin();                             
+    int lastVal = nums.back();                                              
+
+    nums[removeIdx] = lastVal;                                              
+    valToIndices[val].erase(removeIdx);                                     
+    valToIndices[lastVal].insert(removeIdx);                                
+    valToIndices[lastVal].erase(nums.size() - 1);                           
+
+    if (valToIndices[val].empty()) valToIndices.erase(val);                 
+    nums.pop_back();                                                        
+    return true;                                                            
+}                                                                           
+
+int getRandom() {                                                           
+    return nums[rand() % nums.size()];                                      
+}                                                                           
+```
+
+```
+};
+// Time: O(1) average for all operations
+```
+
 ## **DESIGN PATTERNS SUMMARY**
 
 ```

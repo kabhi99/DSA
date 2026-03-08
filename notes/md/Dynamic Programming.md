@@ -4347,6 +4347,295 @@ Pattern 8:  Tree DP             > Post-order DFS, return to parent
 Pattern 9:  Bitmask DP          > dp[mask], N < 20
 Pattern 10: Digit DP            > Digit by digit, tight bound
 
+### **PROBLEM: Best Time to Buy and Sell Stock (LC 121)** 
+
+PROBLEM: Find max profit from ONE transaction (buy once, sell once).
+
+ PATTERN: Decision Making (Pattern 5)
+ TEMPLATE: Track running minimum, compute max difference
+
+ **KEY INSIGHT**: Track the minimum price seen so far, and at each day
+compute profit if we sold today. No need for full DP table!
+
+```cpp
+int maxProfit(vector<int>& prices) {
+int minPrice = INT_MAX, maxProfit = 0;           
+for (int price : prices) {                       
+    minPrice = min(minPrice, price);             
+    maxProfit = max(maxProfit, price - minPrice);
+}                                                
+return maxProfit;                                
+
+}
+```
+
+TIME: O(N)  |  SPACE: O(1)
+
+### **PROBLEM: Best Time to Buy and Sell Stock II (LC 122)** 
+
+PROBLEM: Max profit with UNLIMITED transactions.
+
+ PATTERN: Decision Making (Pattern 5) - Greedy variant
+ TEMPLATE: Sum all positive consecutive differences
+
+ **KEY INSIGHT**: Collect every upward price movement. If tomorrow's price
+is higher than today's, "buy today sell tomorrow" captures that profit.
+
+```cpp
+int maxProfit(vector<int>& prices) {
+int profit = 0;                           
+for (int i = 1; i < prices.size(); i++) { 
+    if (prices[i] > prices[i-1]) {        
+        profit += prices[i] - prices[i-1];
+    }                                     
+}                                         
+return profit;                            
+
+}
+```
+
+TIME: O(N)  |  SPACE: O(1)
+
+### **PROBLEM: Best Time to Buy and Sell Stock III (LC 123)** 
+
+PROBLEM: Max profit with at most 2 transactions.
+
+ PATTERN: Decision Making (Pattern 5) - State machine
+ TEMPLATE: 4 states - buy1, sell1, buy2, sell2
+
+ **KEY INSIGHT**: Track 4 variables representing the best profit at each
+stage. buy1 = best cost for first buy, sell1 = best profit after first
+sell, buy2 = best cost for second buy (using sell1 profit), sell2 = final.
+
+ **WHY IT WORKS**: Each state builds on the previous. Processing all 4
+states in order for each price correctly propagates the optimal decisions.
+
+```cpp
+int maxProfit(vector<int>& prices) {
+int buy1 = INT_MIN, sell1 = 0;       
+int buy2 = INT_MIN, sell2 = 0;       
+for (int price : prices) {           
+    buy1 = max(buy1, -price);        
+    sell1 = max(sell1, buy1 + price);
+    buy2 = max(buy2, sell1 - price); 
+    sell2 = max(sell2, buy2 + price);
+}                                    
+return sell2;                        
+
+}
+```
+
+TIME: O(N)  |  SPACE: O(1)
+
+### **PROBLEM: Best Time to Buy/Sell Stock with Transaction Fee (LC 714)** 
+
+PROBLEM: Max profit with unlimited transactions, but each transaction costs a fee.
+
+ PATTERN: Decision Making (Pattern 5) - State machine
+ TEMPLATE: 2 states - hold (have stock), cash (no stock)
+
+ **KEY INSIGHT**: Same as unlimited transactions but subtract the fee when
+selling. Two states: cash (not holding) and hold (holding stock).
+
+```cpp
+int maxProfit(vector<int>& prices, int fee) {
+int hold = -prices[0], cash = 0;             
+for (int i = 1; i < prices.size(); i++) {    
+    cash = max(cash, hold + prices[i] - fee);
+    hold = max(hold, cash - prices[i]);      
+}                                            
+return cash;                                 
+
+}
+```
+
+TIME: O(N)  |  SPACE: O(1)
+
+### **PROBLEM: Unique Paths II (LC 63)** 
+
+PROBLEM: Count unique paths in grid with obstacles. Can only move right or down.
+
+ PATTERN: Distinct Ways (Pattern 2)
+ TEMPLATE: dp[i][j] = dp[i-1][j] + dp[i][j-1], but 0 if obstacle
+
+ **KEY INSIGHT**: Same as Unique Paths (LC 62) but dp[i][j] = 0 whenever
+```cpp
+grid[i][j] is an obstacle. Also check if start or end is blocked!
+
+int uniquePathsWithObstacles(vector<vector<int>>& grid) {
+int m = grid.size(), n = grid[0].size();                 
+if (grid[0][0] == 1 || grid[m-1][n-1] == 1) return 0;    
+
+vector<vector<long long>> dp(m, vector<long long>(n, 0));
+dp[0][0] = 1;                                            
+
+for (int i = 0; i < m; i++) {                            
+    for (int j = 0; j < n; j++) {                        
+        if (grid[i][j] == 1) { dp[i][j] = 0; continue; } 
+        if (i > 0) dp[i][j] += dp[i-1][j];               
+        if (j > 0) dp[i][j] += dp[i][j-1];               
+    }                                                    
+}                                                        
+
+return dp[m-1][n-1];                                     
+
+}
+```
+
+TIME: O(M x N)  |  SPACE: O(M x N)
+
+### **PROBLEM: Word Break (LC 139)** 
+
+PROBLEM: Can string s be segmented into words from dictionary?
+
+ PATTERN: DP on Strings (Pattern 4)
+ TEMPLATE: dp[i] = true if s[0..i-1] can be segmented
+
+ **KEY INSIGHT**: dp[i] = true if there exists j < i such that dp[j] is
+true AND s[j..i-1] is a word in the dictionary. Try all split points!
+
+```cpp
+bool wordBreak(string s, vector<string>& wordDict) {
+unordered_set<string> dict(wordDict.begin(), wordDict.end());
+int n = s.size();                                            
+vector<bool> dp(n + 1, false);                               
+dp[0] = true;                                                
+
+for (int i = 1; i <= n; i++) {                               
+    for (int j = 0; j < i; j++) {                            
+        if (dp[j] && dict.count(s.substr(j, i - j))) {       
+            dp[i] = true;                                    
+            break;                                           
+        }                                                    
+    }                                                        
+}                                                            
+
+return dp[n];                                                
+
+}
+```
+
+TIME: O(N2 x M)  |  SPACE: O(N)  where M = max word length
+
+### **PROBLEM: Word Break II (LC 140)** 
+
+PROBLEM: Return ALL possible word break segmentations of string s.
+
+ PATTERN: DP on Strings (Pattern 4) - Backtracking + Memoization
+ TEMPLATE: Recursive DFS with memoization on start index
+
+ **KEY INSIGHT**: Unlike Word Break I which only checks feasibility, we need
+all solutions. Use backtracking from each index, trying every word that
+matches at that position, and memoize results per start index.
+
+```cpp
+vector<string> wordBreak(string s, vector<string>& wordDict) {
+unordered_set<string> dict(wordDict.begin(), wordDict.end());
+unordered_map<int, vector<string>> memo;                     
+return backtrack(s, 0, dict, memo);                          
+
+}
+
+vector<string> backtrack(string& s, int start,
+                     unordered_set<string>& dict,               
+                     unordered_map<int, vector<string>>& memo) {
+if (memo.count(start)) return memo[start];                      
+if (start == s.size()) return {""};                             
+
+vector<string> result;                                          
+for (int end = start + 1; end <= s.size(); end++) {             
+    string word = s.substr(start, end - start);                 
+    if (dict.count(word)) {                                     
+        auto rest = backtrack(s, end, dict, memo);              
+        for (auto& r : rest) {                                  
+            result.push_back(word + (r.empty() ? "" : " " + r));
+        }                                                       
+    }                                                           
+}                                                               
+
+return memo[start] = result;                                    
+
+}
+```
+
+TIME: O(N x 2^N) worst case  |  SPACE: O(N x 2^N)
+
+### **PROBLEM: Coin Change II (LC 518)** 
+
+PROBLEM: Count number of combinations to make amount (coins can be reused).
+
+ PATTERN: Distinct Ways (Pattern 2) - Unbounded Knapsack
+ TEMPLATE: Outer loop = coins, inner loop = amounts (for combinations)
+
+ **KEY INSIGHT**: Loop coins OUTSIDE, amounts INSIDE to count combinations
+(not permutations). Each coin is considered once, avoiding duplicates.
+Compare with Combination Sum IV (LC 377) which loops amounts outside for
+permutations!
+
+```cpp
+int change(int amount, vector<int>& coins) {
+vector<int> dp(amount + 1, 0);            
+dp[0] = 1;                                
+
+for (int coin : coins) {                  
+    for (int j = coin; j <= amount; j++) {
+        dp[j] += dp[j - coin];            
+    }                                     
+}                                         
+
+return dp[amount];                        
+
+}
+```
+
+TIME: O(N x amount)  |  SPACE: O(amount)
+
+ CRITICAL DIFFERENCE:
+Combinations (this problem): outer loop = coins, inner = amounts
+Permutations (LC 377):       outer loop = amounts, inner = coins
+
+### **PROBLEM: Palindrome Partitioning II (LC 132)** 
+
+PROBLEM: Minimum cuts to partition string into all palindromes.
+
+ PATTERN: DP on Strings (Pattern 4)
+ TEMPLATE: dp[i] = min cuts for s[0..i], precompute palindrome table
+
+ **KEY INSIGHT**: Two-phase DP. First precompute isPalin[i][j] for all
+substrings. Then dp[i] = min(dp[j-1] + 1) for all j where s[j..i] is
+a palindrome. If s[0..i] itself is a palindrome, dp[i] = 0 (no cuts).
+
+```cpp
+int minCut(string s) {
+int n = s.size();                                             
+vector<vector<bool>> isPalin(n, vector<bool>(n, false));      
+
+for (int len = 1; len <= n; len++) {                          
+    for (int i = 0; i <= n - len; i++) {                      
+        int j = i + len - 1;                                  
+        if (s[i] == s[j] && (len <= 2 || isPalin[i+1][j-1])) {
+            isPalin[i][j] = true;                             
+        }                                                     
+    }                                                         
+}                                                             
+
+vector<int> dp(n, INT_MAX);                                   
+for (int i = 0; i < n; i++) {                                 
+    if (isPalin[0][i]) { dp[i] = 0; continue; }               
+    for (int j = 1; j <= i; j++) {                            
+        if (isPalin[j][i]) {                                  
+            dp[i] = min(dp[i], dp[j-1] + 1);                  
+        }                                                     
+    }                                                         
+}                                                             
+
+return dp[n-1];                                               
+
+}
+```
+
+TIME: O(N2)  |  SPACE: O(N2)
+
 ## **COMPLETE PROBLEM LIST BY PATTERN**
 
 **PATTERN 1: MIN/MAX PATH**
@@ -4358,10 +4647,12 @@ Pattern 10: Digit DP            > Digit by digit, tight bound
 **PATTERN 2: DISTINCT WAYS**
 - 70.   Climbing Stairs 
 - 62.   Unique Paths 
+- 63.   Unique Paths II 
 - 377.  Combination Sum IV
 - 494.  Target Sum 
 - 416.  Partition Equal Subset Sum
 - 279.  Perfect Squares
+- 518.  Coin Change II 
 
 **PATTERN 3: MERGING INTERVALS**
 - 312.  Burst Balloons 
@@ -4378,12 +4669,19 @@ Pattern 10: Digit DP            > Digit by digit, tight bound
 - 1092. Shortest Common Supersequence
 - 97.   Interleaving String
 - 10.   Regular Expression Matching 
+- 139.  Word Break 
+- 140.  Word Break II 
+- 132.  Palindrome Partitioning II 
 
 **PATTERN 5: DECISION MAKING**
 - 198.  House Robber 
 - 213.  House Robber II
+- 121.  Best Time to Buy/Sell Stock 
+- 122.  Best Time to Buy/Sell Stock II 
+- 123.  Best Time to Buy/Sell Stock III 
 - 309.  Best Time to Buy/Sell Stock with Cooldown 
 - 188.  Best Time to Buy/Sell Stock IV 
+- 714.  Best Time to Buy/Sell Stock with Transaction Fee 
 - 740.  Delete and Earn
 
 **PATTERN 6: LIS (Longest Increasing Subsequence)**

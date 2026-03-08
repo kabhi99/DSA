@@ -1108,7 +1108,32 @@ Always merge two smallest = optimal binary tree = minimum total cost.
 - 1046. Last Stone Weight
 - 264. Ugly Number II (can use heap or DP)
 
-### **PATTERN 11: UGLY NUMBER II - GENERATING SEQUENCE**
+### **PATTERN 11: UGLY NUMBERS - COMPLETE SERIES**
+
+## **SOLVED: Ugly Number I (LC 263)** 
+
+PROBLEM: Check if a number is ugly (only prime factors 2, 3, 5)
+
+ PATTERN: Simple divisibility check
+ SERIES: I (check) > II (nth ugly, heap/DP) > III (nth ugly from a,b,c, binary search)
+
+**KEY INSIGHT:**
+- Keep dividing by 2, 3, 5 until no longer divisible
+- If result is 1, it's ugly
+
+```
+bool isUgly(int n) {
+if (n <= 0) return false;     
+for (int p : {2, 3, 5}) {     
+    while (n % p == 0) n /= p;
+}                             
+return n == 1;                
+
+}
+// Time: O(log N), Space: O(1)
+```
+
+## **SOLVED: Ugly Number II (LC 264)** 
 
 PROBLEM: Find nth number whose only prime factors are 2, 3, 5
 
@@ -1194,6 +1219,37 @@ COMPARISON - Heap vs DP:
 Heap: O(N log N), needs set to avoid duplicates, more space
 DP:   O(N), no duplicates naturally, less space
 DP is clearly better here!
+
+## **SOLVED: Ugly Number III (LC 1201)** 
+
+PROBLEM: Find nth ugly number divisible by a, b, or c
+
+ PATTERN: Binary Search + Inclusion-Exclusion
+ SERIES: I (check) > II (nth ugly, factors 2,3,5) > III (nth ugly from a,b,c)
+
+**KEY INSIGHT:**
+- Count ugly numbers < mid using Inclusion-Exclusion with LCM
+- Binary search on the answer value
+
+```
+int nthUglyNumber(int n, int a, int b, int c) {
+long long ab = lcm((long long)a, (long long)b);                                  
+long long ac = lcm((long long)a, (long long)c);                                  
+long long bc = lcm((long long)b, (long long)c);                                  
+long long abc = lcm(ab, (long long)c);                                           
+
+long long lo = 1, hi = 2e9;                                                      
+while (lo < hi) {                                                                
+    long long mid = lo + (hi - lo) / 2;                                          
+    long long count = mid/a + mid/b + mid/c - mid/ab - mid/ac - mid/bc + mid/abc;
+    if (count < n) lo = mid + 1;                                                 
+    else hi = mid;                                                               
+}                                                                                
+return lo;                                                                       
+
+}
+// Time: O(log(2*10^9)), Space: O(1)
+```
 
 ## **PART 3: BINARY SEARCH + COUNT FUNCTION PATTERN**
 
@@ -2303,7 +2359,9 @@ QuickSelect                 O(N) avg, O(N2) worst   O(1)        Kth element in a
 
 **ADVANCED HEAP**
 
+- 263.  Ugly Number I 
 - 264.  Ugly Number II 
+- 1201. Ugly Number III 
 - 407.  Trapping Rain Water II 
 - 1057. Campus Bikes 
 - 2940. Find Building Where Alice and Bob Can Meet 
@@ -2364,7 +2422,9 @@ QuickSelect                 O(N) avg, O(N2) worst   O(1)        Kth element in a
 - Negative Handling: 2040
 
 **String/Sequence Generation:**
+- 263. Ugly Number I (Simple divisibility check)
 - 264. Ugly Number II (3-pointer DP)
+- 1201. Ugly Number III (Binary Search + Inclusion-Exclusion)
 - 1044. Longest Duplicate Substring (Rolling Hash)
 
 **2D/Multi-dimensional:**
@@ -2570,6 +2630,8 @@ Key: Compare fractions without division (cross multiply)
 | IPO                                                     | 6 - Two Heaps              |
 | Minimum Cost to Hire K Workers                          | 12 - Sort + Heap           |
 | Number of Flowers in Full Bloom                         | 7 - Sweep Line / BS        |
+| Ugly Number I                                           | 11 - Simple Check          |
+| Ugly Number III                                         | 11 - Binary Search + IE    |
 | Constrained Subsequence Sum                             | Heap/Deque + DP            |
 | Find Building Where Alice and Bob Can Meet              | Monotonic Stack + Heap     |
 | Rearrange String k Distance Apart                       | 8 - Greedy + Heap          |

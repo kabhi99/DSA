@@ -679,9 +679,48 @@ while (j >= 0) {
 // Time: O(M + N), Space: O(1)
 ```
 
-### 12. Intersection of Two Arrays II (LC 350)
+### 11a. Intersection of Two Arrays (LC 349)
+
+ PATTERN: Two Pointers (Sorted) or Hash Set
+ SERIES: I (unique intersect) > II (with duplicates)
+
+**KEY INSIGHT:**
+- Sort both arrays, use two pointers
+- Skip duplicates in result (unlike II which keeps them)
+- Alternative: Use hash set for O(N+M) without sorting
+
+```cpp
+vector<int> intersection(vector<int>& nums1, vector<int>& nums2) {
+sort(nums1.begin(), nums1.end());                         
+sort(nums2.begin(), nums2.end());                         
+
+int i = 0, j = 0;                                         
+vector<int> result;                                       
+
+while (i < nums1.size() && j < nums2.size()) {            
+    if (nums1[i] < nums2[j]) {                            
+        i++;                                              
+    } else if (nums1[i] > nums2[j]) {                     
+        j++;                                              
+    } else {                                              
+        if (result.empty() || result.back() != nums1[i]) {
+            result.push_back(nums1[i]);                   
+        }                                                 
+        i++;                                              
+        j++;                                              
+    }                                                     
+}                                                         
+
+return result;                                            
+
+}
+// Time: O(N log N + M log M), Space: O(1) excluding output
+```
+
+### 11b. Intersection of Two Arrays II (LC 350)
 
  PATTERN: Parallel (Sorted Arrays)
+ SERIES: I (unique intersect) > II (with duplicates, keeps frequency)
  TEMPLATE: Compare and collect common elements
 
 ```cpp
@@ -1651,6 +1690,7 @@ reverse(nums.begin() + k, nums.end());       // Reverse rest
 - 977.  Squares of a Sorted Array 
 - 11.   Container With Most Water 
 - 42.   Trapping Rain Water 
+- 407.  Trapping Rain Water II  (3D version > See Heap & Kth Problems.txt)
 - 15.   3Sum 
 - 18.   4Sum 
 - 881.  Boats to Save People 
@@ -1679,6 +1719,7 @@ reverse(nums.begin() + k, nums.end());       // Reverse rest
 - 2570. Merge Two 2D Arrays by Summing Values 
 - 408.  Valid Word Abbreviation 
 - 1662. Check If Two String Arrays are Equivalent 
+- 349.  Intersection of Two Arrays 
 - 2109. Adding Spaces to a String 
 
 **STRING MANIPULATION**

@@ -1070,6 +1070,8 @@ SECTION 1: STANDARD PREFIX SUM
 Y 560.  Subarray Sum Equals K 
 Y 325.  Maximum Size Subarray Sum Equals K
 Y 303.  Range Sum Query - Immutable
+- 307.  Range Sum Query - Mutable  (Needs Segment Tree/BIT > See Advanced DS Patterns.txt)
+- 308.  Range Sum Query 2D - Mutable  (Needs 2D BIT > See Advanced DS Patterns.txt)
 Y 525.  Contiguous Array  (Equal 0s and 1s - BRILLIANT)
 Y 1248. Count Number of Nice Subarrays
 Y 930.  Binary Subarrays With Sum

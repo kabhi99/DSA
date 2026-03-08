@@ -973,6 +973,56 @@ return uf.getComponents() == 1;
 }
 ```
 
+## **SOLVED: Number of Islands II (LC 305)** 
+
+PROBLEM: Add land one by one, count islands after each addition.
+
+ KEY INSIGHT: Online Union-Find - union new land with adjacent land cells
+
+```cpp
+vector<int> numIslands2(int m, int n, vector<vector<int>>& positions) {
+vector<int> parent(m * n, -1);                                            
+vector<int> rank(m * n, 0);                                               
+vector<int> result;                                                       
+int count = 0;                                                            
+int dirs[] = {0, 1, 0, -1, 0};                                            
+
+function<int(int)> find = [&](int x) -> int {                             
+    if (parent[x] != x) parent[x] = find(parent[x]);                      
+    return parent[x];                                                     
+};                                                                        
+
+for (auto& pos : positions) {                                             
+    int r = pos[0], c = pos[1];                                           
+    int id = r * n + c;                                                   
+
+    if (parent[id] != -1) { result.push_back(count); continue; }          
+
+    parent[id] = id;                                                      
+    count++;                                                              
+
+    for (int d = 0; d < 4; d++) {                                         
+        int nr = r + dirs[d], nc = c + dirs[d+1];                         
+        int nid = nr * n + nc;                                            
+        if (nr >= 0 && nr < m && nc >= 0 && nc < n && parent[nid] != -1) {
+            int p1 = find(id), p2 = find(nid);                            
+            if (p1 != p2) {                                               
+                if (rank[p1] < rank[p2]) swap(p1, p2);                    
+                parent[p2] = p1;                                          
+                if (rank[p1] == rank[p2]) rank[p1]++;                     
+                count--;                                                  
+            }                                                             
+        }                                                                 
+    }                                                                     
+    result.push_back(count);                                              
+}                                                                         
+return result;                                                            
+
+}
+```
+
+TIME: O(K * α(M*N))  |  SPACE: O(M*N)  where K = number of positions
+
 ## **PART 6: CYCLE DETECTION** 
 
 ### **CYCLE DETECTION - DIRECTED GRAPH (DFS)**
@@ -1398,6 +1448,7 @@ return bridges;
 
 - 207. Course Schedule 
 - 210. Course Schedule II 
+- 630. Course Schedule III  (Greedy + Heap > See Greedy Algorithms.txt / Heap.txt)
 - 269. Alien Dictionary 
 - 310. Minimum Height Trees 
 - 802. Find Eventual Safe States 
@@ -1415,6 +1466,7 @@ return bridges;
 - 1319. Number of Operations to Make Network Connected 
 - 990. Satisfiability of Equality Equations 
 - 1061. Lexicographically Smallest Equivalent String 
+- 305. Number of Islands II 
 
 **SHORTEST PATH** 
 

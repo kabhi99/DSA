@@ -366,6 +366,7 @@ return st.top();
 
 **PROBLEMS:**
 
+- 224. Basic Calculator I  (+, -, parentheses only)
 - 227. Basic Calculator II  (no parentheses, +,-,*,/)
 - 772. Basic Calculator III  (with parentheses)
 - 439. Ternary Expression Parser 
@@ -373,6 +374,48 @@ return st.top();
  **KEY INSIGHT**:
 Two stacks: one for numbers, one for operators
 Process operators based on precedence
+
+### **SOLVED: Basic Calculator I (LC 224)** 
+
+ PATTERN: Stack for parentheses + running sum
+ SERIES: Calculator I (+ - parens) > II (+ - * /) > III (all + parens)
+
+**KEY INSIGHT:**
+- Process digits to form numbers
+- Track sign (+1 or -1) and running result
+- On '(': push result and sign to stack, reset
+- On ')': pop and combine with saved result
+
+```
+int calculate(string s) {
+stack<int> stk;                        
+int result = 0, num = 0, sign = 1;     
+
+for (char c : s) {                     
+    if (isdigit(c)) {                  
+        num = num * 10 + (c - '0');    
+    } else if (c == '+' || c == '-') { 
+        result += sign * num;          
+        num = 0;                       
+        sign = (c == '+') ? 1 : -1;    
+    } else if (c == '(') {             
+        stk.push(result);              
+        stk.push(sign);                
+        result = 0;                    
+        sign = 1;                      
+    } else if (c == ')') {             
+        result += sign * num;          
+        num = 0;                       
+        result *= stk.top(); stk.pop();
+        result += stk.top(); stk.pop();
+    }                                  
+}                                      
+
+return result + sign * num;            
+
+}
+// Time: O(N), Space: O(N)
+```
 
 ### TEMPLATE - Basic Calculator II (No Parentheses):
 
@@ -999,6 +1042,40 @@ return result;
 }
 ```
 
+### **SOLVED: Next Greater Element III (LC 556)** 
+
+ PATTERN: Next Permutation on digits of a number
+ SERIES: NGE I (two arrays) > II (circular) > III (digit rearrangement)
+
+**KEY INSIGHT:**
+- Convert number to string of digits
+- Apply Next Permutation algorithm (see Two Pointers)
+- Check for 32-bit overflow
+
+```
+int nextGreaterElement(int n) {
+string s = to_string(n);                                 
+int len = s.size();                                      
+
+int pivot = -1;                                          
+for (int i = len - 2; i >= 0; i--) {                     
+    if (s[i] < s[i + 1]) { pivot = i; break; }           
+}                                                        
+if (pivot == -1) return -1;                              
+
+for (int i = len - 1; i > pivot; i--) {                  
+    if (s[i] > s[pivot]) { swap(s[i], s[pivot]); break; }
+}                                                        
+
+reverse(s.begin() + pivot + 1, s.end());                 
+
+long long result = stoll(s);                             
+return result > INT_MAX ? -1 : result;                   
+
+}
+// Time: O(D), Space: O(D)  where D = number of digits
+```
+
 ### **PROBLEM: Daily Temperatures (LC 739)** 
 
 PROBLEM: How many days until warmer temperature?
@@ -1511,6 +1588,7 @@ Think: "I want greater, so I pop smaller" > decreasing stack
 
 **B2. INFIX EXPRESSION CALCULATORS**
 
+- 224. Basic Calculator I 
 - 227. Basic Calculator II 
 - 772. Basic Calculator III 
 - 439. Ternary Expression Parser 
@@ -1552,6 +1630,7 @@ Think: "I want greater, so I pop smaller" > decreasing stack
 
 - 496. Next Greater Element I 
 - 503. Next Greater Element II (Circular) 
+- 556. Next Greater Element III  (Next Permutation on digits)
 - 739. Daily Temperatures 
 - 901. Online Stock Span 
 - 1019. Next Greater Node In Linked List 
@@ -1594,94 +1673,96 @@ Think: "I want greater, so I pop smaller" > decreasing stack
 ## **MASTER PROBLEM MAPPING TABLE**
 
 ```
-+-------------------------------------------------+-----------------------------+
-| Problem                                         | Category / Pattern          |
-+-------------------------------------------------+-----------------------------+
-| Crawler Log Folder                              | A1 - Path Simulation        |
-| Baseball Game                                   | A1 - State Simulation       |
-| Valid Parentheses                               | A2 - Parentheses Matching   |
-| Implement Stack Using Queues                    | C2 - Stack Design           |
-| Implement Queue using Stacks                    | C3 - Stack Design           |
-| Final Prices With a Special Discount in a Shop  | D - Next Smaller            |
-| Make The String Great                           | A3 - String Processing      |
-| Min Stack                                       | C1 - Stack Design           |
-| Evaluate Reverse Polish Notation                | B1 - Postfix Evaluation     |
-| Removing Stars From a String                    | A3 - String Processing      |
-| Validate Stack Sequences                        | A1 - Stack Simulation       |
-| Asteroid Collision                              | A4 - Collision              |
-| Daily Temperatures                              | D - Next Greater            |
-| Online Stock Span                               | D - Previous Greater        |
-| Car Fleet                                       | A4 - Collision/Merging      |
-| Simplify Path                                   | A1 - Path Processing        |
-| Decode String                                   | B3 - Nested Parsing         |
-| Remove K Digits                                 | D - Monotonic Increasing    |
-| Remove All Adjacent Duplicates In String II     | A3 - String Processing      |
-| Reverse Substrings Between Each Pair of Parens  | A2 - Parentheses            |
-| Ternary Expression Parser                       | B2 - Expression Evaluation  |
-| Find Permutation                                | A1 - Stack Simulation       |
-| Minimum String Length After Removing Substrings | A3 - String Processing      |
-| Clear Digits                                    | A3 - String Processing      |
-| Minimum Add to Make Parentheses Valid           | A2 - Parentheses Matching   |
-| Maximum Width Ramp                              | D - Monotonic Stack         |
-| Basic Calculator II                             | B2 - Infix Evaluation       |
-| 132 Pattern                                     | D - Prev Greater + Min      |
-| Flatten Nested List Iterator                    | C4 - Iterator Design        |
-| Sum of Subarray Minimums                        | D - Next/Prev Smaller       |
-| Maximum Frequency Stack                         | C4 - Frequency Stack        |
-| Robot Collisions                                | A4 - Collision              |
-| Number of Visible People in a Queue             | D - Visibility/Counting     |
-| Largest Rectangle In Histogram                  | D - Next/Prev Smaller       |
-| Shortest Subarray with Sum at Least K           | D - Monotonic Deque         |
-| Parsing A Boolean Expression                    | B3 - Nested Parsing         |
-| Number of Atoms                                 | B3 - Nested Parsing         |
-| Basic Calculator III                            | B2 - Infix + Parentheses    |
-| Max Stack                                       | C1 - Stack Design           |
-+-------------------------------------------------+-----------------------------+
++-------------------------------------------------+--------------------------------+
+| Problem                                         | Category / Pattern             |
++-------------------------------------------------+--------------------------------+
+| Crawler Log Folder                              | A1 - Path Simulation           |
+| Baseball Game                                   | A1 - State Simulation          |
+| Valid Parentheses                               | A2 - Parentheses Matching      |
+| Implement Stack Using Queues                    | C2 - Stack Design              |
+| Implement Queue using Stacks                    | C3 - Stack Design              |
+| Final Prices With a Special Discount in a Shop  | D - Next Smaller               |
+| Make The String Great                           | A3 - String Processing         |
+| Min Stack                                       | C1 - Stack Design              |
+| Evaluate Reverse Polish Notation                | B1 - Postfix Evaluation        |
+| Removing Stars From a String                    | A3 - String Processing         |
+| Validate Stack Sequences                        | A1 - Stack Simulation          |
+| Asteroid Collision                              | A4 - Collision                 |
+| Daily Temperatures                              | D - Next Greater               |
+| Online Stock Span                               | D - Previous Greater           |
+| Car Fleet                                       | A4 - Collision/Merging         |
+| Simplify Path                                   | A1 - Path Processing           |
+| Decode String                                   | B3 - Nested Parsing            |
+| Remove K Digits                                 | D - Monotonic Increasing       |
+| Remove All Adjacent Duplicates In String II     | A3 - String Processing         |
+| Reverse Substrings Between Each Pair of Parens  | A2 - Parentheses               |
+| Ternary Expression Parser                       | B2 - Expression Evaluation     |
+| Find Permutation                                | A1 - Stack Simulation          |
+| Minimum String Length After Removing Substrings | A3 - String Processing         |
+| Clear Digits                                    | A3 - String Processing         |
+| Minimum Add to Make Parentheses Valid           | A2 - Parentheses Matching      |
+| Maximum Width Ramp                              | D - Monotonic Stack            |
+| Basic Calculator I                              | B2 - Infix Evaluation          |
+| Basic Calculator II                             | B2 - Infix Evaluation          |
+| 132 Pattern                                     | D - Prev Greater + Min         |
+| Flatten Nested List Iterator                    | C4 - Iterator Design           |
+| Sum of Subarray Minimums                        | D - Next/Prev Smaller          |
+| Maximum Frequency Stack                         | C4 - Frequency Stack           |
+| Robot Collisions                                | A4 - Collision                 |
+| Number of Visible People in a Queue             | D - Visibility/Counting        |
+| Largest Rectangle In Histogram                  | D - Next/Prev Smaller          |
+| Shortest Subarray with Sum at Least K           | D - Monotonic Deque            |
+| Parsing A Boolean Expression                    | B3 - Nested Parsing            |
+| Number of Atoms                                 | B3 - Nested Parsing            |
+| Basic Calculator III                            | B2 - Infix + Parentheses       |
+| Next Greater Element III                        | D - Next Permutation on Digits |
+| Max Stack                                       | C1 - Stack Design              |
++-------------------------------------------------+--------------------------------+
 
-+-------------------------------------------------------------------------------+
-|                    MONOTONIC STACK GOLDEN RULES                               |
-+-------------------------------------------------------------------------------+
-|                                                                               |
-|  1⃣  NEXT > Process INSIDE while loop (when popping)                          |
-|  2⃣  PREVIOUS > Process OUTSIDE while loop (after popping)                    |
-|  3⃣  GREATER > Use DECREASING stack (pop smaller)                             |
-|  4⃣  SMALLER > Use INCREASING stack (pop greater)                             |
-|  5⃣  Always store INDICES, not values!                                        |
-|  6⃣  Circular array? Process 2*n elements with i % n                          |
-|                                                                               |
-+-------------------------------------------------------------------------------+
++----------------------------------------------------------------------------------+
+|                    MONOTONIC STACK GOLDEN RULES                                  |
++----------------------------------------------------------------------------------+
+|                                                                                  |
+|  1⃣  NEXT > Process INSIDE while loop (when popping)                             |
+|  2⃣  PREVIOUS > Process OUTSIDE while loop (after popping)                       |
+|  3⃣  GREATER > Use DECREASING stack (pop smaller)                                |
+|  4⃣  SMALLER > Use INCREASING stack (pop greater)                                |
+|  5⃣  Always store INDICES, not values!                                           |
+|  6⃣  Circular array? Process 2*n elements with i % n                             |
+|                                                                                  |
++----------------------------------------------------------------------------------+
 
-+-------------------------------------------------------------------------------+
-|                      STACK PATTERN DECISION TREE                              |
-+-------------------------------------------------------------------------------+
-|                                                                               |
-|  Is it about Next/Previous Greater/Smaller?                                   |
-|    YES > SECTION D: Monotonic Stack                                           |
-|                                                                               |
-|  Is it about matching brackets/parentheses?                                   |
-|    YES > SECTION A2: Parentheses Matching                                     |
-|                                                                               |
-|  Is it about evaluating expressions (calculator)?                             |
-|    YES > SECTION B: Expression Evaluation                                     |
-|                                                                               |
-|  Is it about nested structures like "3[a2[b]]"?                               |
-|    YES > SECTION B3: Nested Structure Parsing                                 |
-|                                                                               |
-|  Is it about collisions/merging (asteroids, cars)?                            |
-|    YES > SECTION A4: Collision Problems                                       |
-|                                                                               |
-|  Is it about path/directory navigation?                                       |
-|    YES > SECTION A1: Path Processing                                          |
-|                                                                               |
-|  Is it about removing adjacent duplicates/chars?                              |
-|    YES > SECTION A3: String Processing                                        |
-|                                                                               |
-|  Is it about designing a special stack (Min/Max/Freq)?                        |
-|    YES > SECTION C: Stack Design                                              |
-|                                                                               |
-+-------------------------------------------------------------------------------+
++----------------------------------------------------------------------------------+
+|                      STACK PATTERN DECISION TREE                                 |
++----------------------------------------------------------------------------------+
+|                                                                                  |
+|  Is it about Next/Previous Greater/Smaller?                                      |
+|    YES > SECTION D: Monotonic Stack                                              |
+|                                                                                  |
+|  Is it about matching brackets/parentheses?                                      |
+|    YES > SECTION A2: Parentheses Matching                                        |
+|                                                                                  |
+|  Is it about evaluating expressions (calculator)?                                |
+|    YES > SECTION B: Expression Evaluation                                        |
+|                                                                                  |
+|  Is it about nested structures like "3[a2[b]]"?                                  |
+|    YES > SECTION B3: Nested Structure Parsing                                    |
+|                                                                                  |
+|  Is it about collisions/merging (asteroids, cars)?                               |
+|    YES > SECTION A4: Collision Problems                                          |
+|                                                                                  |
+|  Is it about path/directory navigation?                                          |
+|    YES > SECTION A1: Path Processing                                             |
+|                                                                                  |
+|  Is it about removing adjacent duplicates/chars?                                 |
+|    YES > SECTION A3: String Processing                                           |
+|                                                                                  |
+|  Is it about designing a special stack (Min/Max/Freq)?                           |
+|    YES > SECTION C: Stack Design                                                 |
+|                                                                                  |
++----------------------------------------------------------------------------------+
 
-================================================================================ 
-                                **END**                                          
-================================================================================ 
+================================================================================    
+                                **END**                                             
+================================================================================    
 ```

@@ -712,6 +712,37 @@ for (int col = 0; col < n; col++) {
 }
 ```
 
+### **PROBLEM: N-Queens II (LC 52)**  HARD
+
+ PATTERN: Constraint satisfaction with backtracking (count only)
+ TEMPLATE: Same as N-Queens but just count solutions, don't store boards
+
+```
+int totalNQueens(int n) {
+int count = 0;                                                                  
+set<int> cols, diag1, diag2;                                                    
+
+function<void(int)> backtrack = [&](int row) {                                  
+    if (row == n) { count++; return; }                                          
+
+    for (int col = 0; col < n; col++) {                                         
+        if (cols.count(col) || diag1.count(row - col) || diag2.count(row + col))
+            continue;                                                           
+
+        cols.insert(col); diag1.insert(row - col); diag2.insert(row + col);     
+        backtrack(row + 1);                                                     
+        cols.erase(col); diag1.erase(row - col); diag2.erase(row + col);        
+    }                                                                           
+};                                                                              
+
+backtrack(0);                                                                   
+return count;                                                                   
+
+}
+```
+
+TIME: O(N!)  |  SPACE: O(N)
+
 ### **PROBLEM: Sudoku Solver (LC 37)**  HARD
 
  PATTERN: Constraint satisfaction - rows, columns, boxes
@@ -848,6 +879,9 @@ return true;
 
 }
 ```
+
+NOTE: Palindrome Partitioning II (LC 132) asks for MINIMUM cuts, not all partitions.
+That's a DP problem > See Dynamic Programming.txt
 
 ## **PART 8: PRUNING TECHNIQUES**
 

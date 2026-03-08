@@ -304,7 +304,46 @@ Applications:
 Problems:
 - LC 22: Generate Parentheses
 - LC 96: Unique Binary Search Trees
+- LC 95: Unique Binary Search Trees II (generate all trees)
 - LC 894: All Possible Full Binary Trees
+
+**Unique Binary Search Trees II (LC 95)** 
+SERIES: I (count trees) > II (generate all trees)
+
+**KEY INSIGHT:**
+- For each root value i, left subtrees use [1..i-1], right use [i+1..n]
+- Recursively generate all left and right subtrees
+- Combine: every left x every right pairing
+
+```cpp
+vector<TreeNode*> generateTrees(int n) {
+if (n == 0) return {};
+return build(1, n);   
+
+}
+
+vector<TreeNode*> build(int lo, int hi) {
+if (lo > hi) return {nullptr};               
+
+vector<TreeNode*> result;                    
+for (int i = lo; i <= hi; i++) {             
+    auto lefts = build(lo, i - 1);           
+    auto rights = build(i + 1, hi);          
+
+    for (auto l : lefts) {                   
+        for (auto r : rights) {              
+            TreeNode* root = new TreeNode(i);
+            root->left = l;                  
+            root->right = r;                 
+            result.push_back(root);          
+        }                                    
+    }                                        
+}                                            
+return result;                               
+
+}
+// Time: O(4^n / n^(3/2)) Catalan number, Space: O(4^n / n^(3/2))
+```
 
 ## 8. DERANGEMENTS
 
@@ -562,6 +601,7 @@ long nCr(int n, int r) {
 
 **CATALAN:**
 - LC 22: Generate Parentheses
+- LC 95: Unique Binary Search Trees II
 - LC 96: Unique Binary Search Trees
 - LC 894: All Possible Full Binary Trees
 

@@ -286,6 +286,45 @@ return {};
 - Two Sum III (design data structure) > Store frequencies
 - Two Sum IV (BST) > Inorder + two pointers
 
+### 4b. Two Sum III - Data Structure Design (LC 170)
+
+ PATTERN: Hashmap + Design
+ SERIES: I (single query) > II (sorted, two pointers) > III (streaming design)
+
+**KEY INSIGHT:**
+- Store frequency of each number
+- For find: iterate keys, check if complement exists
+- Handle edge case: num == complement, need freq >= 2
+
+```java
+class TwoSum {
+unordered_map<long long, int> freq;
+```
+
+public:
+```
+void add(int number) {                                
+    freq[number]++;                                   
+}                                                     
+
+bool find(int value) {                                
+    for (auto& [num, count] : freq) {                 
+        long long complement = (long long)value - num;
+        if (complement == num) {                      
+            if (count >= 2) return true;              
+        } else {                                      
+            if (freq.count(complement)) return true;  
+        }                                             
+    }                                                 
+    return false;                                     
+}                                                     
+```
+
+```
+};
+// add: O(1), find: O(N), Space: O(N)
+```
+
 ### 5. 3Sum (LC 15) > See Two Pointers.txt
 
  PATTERN: Sort + Two pointers (primarily a TWO POINTERS problem)
@@ -560,6 +599,46 @@ return false;
 
 }
 // Time: O(N), Space: O(K)
+```
+
+### 11b. Contains Duplicate III (LC 220)  HARD
+
+ PATTERN: Bucket Sort / Sliding Window
+ SERIES: I (any dup) > II (dup within k) > III (diff < t within k)
+
+**KEY INSIGHT:**
+- Bucket elements by value / (t+1) so nearby values share a bucket
+- Check current bucket and adjacent buckets
+- Maintain window of size k
+
+**BUCKET TRICK:**
+- Bucket id = val / (t+1) for positive numbers
+- Same bucket > guaranteed |a - b| <= t
+- Adjacent bucket > need to verify |a - b| <= t
+
+```cpp
+bool containsNearbyAlmostDuplicate(vector<int>& nums, int indexDiff, int valueDiff) {
+if (valueDiff < 0) return false;                                                          
+long long w = (long long)valueDiff + 1;                                                   
+unordered_map<long long, long long> buckets;                                              
+
+for (int i = 0; i < nums.size(); i++) {                                                   
+    long long id = ((long long)nums[i] - INT_MIN) / w;                                    
+
+    if (buckets.count(id)) return true;                                                   
+    if (buckets.count(id - 1) && abs(nums[i] - buckets[id - 1]) <= valueDiff) return true;
+    if (buckets.count(id + 1) && abs(nums[i] - buckets[id + 1]) <= valueDiff) return true;
+
+    buckets[id] = nums[i];                                                                
+    if (i >= indexDiff) {                                                                 
+        long long removeId = ((long long)nums[i - indexDiff] - INT_MIN) / w;              
+        buckets.erase(removeId);                                                          
+    }                                                                                     
+}                                                                                         
+return false;                                                                             
+
+}
+// Time: O(N), Space: O(min(N, k))
 ```
 
 ### 12. Longest Consecutive Sequence (LC 128) 
@@ -1128,6 +1207,7 @@ Y 451.  Sort Characters By Frequency
 
 **PAIR/COMPLEMENT LOOKUP:**
 Y 1.   Two Sum  (Hashmap approach)
+Y 170. Two Sum III - Data Structure Design
 > 15.  3Sum (See Two Pointers.txt - better with two pointers)
 Y 454. 4Sum II  (Brilliant split optimization)
 
@@ -1139,6 +1219,7 @@ Y 49.  Group Anagrams
 **SET OPERATIONS:**
 Y 217. Contains Duplicate
 Y 219. Contains Duplicate II
+Y 220. Contains Duplicate III  HARD
 Y 128. Longest Consecutive Sequence 
 Y 349. Intersection of Two Arrays
 

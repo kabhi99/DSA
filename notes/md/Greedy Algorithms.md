@@ -2187,6 +2187,230 @@ int findMinArrowShots(vector<vector<int>>& points) {
 
 TIME: O(N log N)  |  SPACE: O(1)
 
+## **SOLVED PROBLEM 7.4: Jump Game III (LC 1306)** 
+
+PROBLEM: Can you reach any index with value 0? Start at index, jump +arr[i] or -arr[i].
+
+**EXAMPLE:**
+Input: arr = [4,2,3,0,3,1,2], start = 5
+Output: true (5>4>1>3, arr[3]=0)
+
+```java
+class Solution {
+```
+
+public:
+```
+bool canReach(vector<int>& arr, int start) {              
+    int n = arr.size();                                   
+    queue<int> q;                                         
+    q.push(start);                                        
+    vector<bool> visited(n, false);                       
+    visited[start] = true;                                
+
+    while (!q.empty()) {                                  
+        int i = q.front(); q.pop();                       
+        if (arr[i] == 0) return true;                     
+
+        for (int next : {i + arr[i], i - arr[i]}) {       
+            if (next >= 0 && next < n && !visited[next]) {
+                visited[next] = true;                     
+                q.push(next);                             
+            }                                             
+        }                                                 
+    }                                                     
+    return false;                                         
+}                                                         
+```
+
+```
+};
+```
+
+TIME: O(N)  |  SPACE: O(N)
+
+## **SOLVED PROBLEM 7.5: Jump Game IV (LC 1345)** 
+
+PROBLEM: Min jumps to reach last index. Can jump to i-1, i+1, or any j where arr[j]==arr[i].
+
+**EXAMPLE:**
+Input: arr = [100,-23,-23,404,100,23,23,23,3,404]
+Output: 3 (0>4>3>9)
+
+```java
+class Solution {
+```
+
+public:
+```
+int minJumps(vector<int>& arr) {                           
+    int n = arr.size();                                    
+    if (n == 1) return 0;                                  
+
+    unordered_map<int, vector<int>> graph;                 
+    for (int i = 0; i < n; i++) graph[arr[i]].push_back(i);
+
+    vector<bool> visited(n, false);                        
+    queue<int> q;                                          
+    q.push(0);                                             
+    visited[0] = true;                                     
+    int steps = 0;                                         
+
+    while (!q.empty()) {                                   
+        int sz = q.size();                                 
+        while (sz--) {                                     
+            int i = q.front(); q.pop();                    
+            if (i == n - 1) return steps;                  
+
+            vector<int>& neighbors = graph[arr[i]];        
+            neighbors.push_back(i - 1);                    
+            neighbors.push_back(i + 1);                    
+
+            for (int j : neighbors) {                      
+                if (j >= 0 && j < n && !visited[j]) {      
+                    visited[j] = true;                     
+                    q.push(j);                             
+                }                                          
+            }                                              
+            neighbors.clear();                             
+        }                                                  
+        steps++;                                           
+    }                                                      
+    return -1;                                             
+}                                                          
+```
+
+```
+};
+```
+
+TIME: O(N)  |  SPACE: O(N)
+
+## **SOLVED PROBLEM 7.6: Jump Game V (LC 1340)** 
+
+PROBLEM: Max indices you can visit. From i, jump to any j in [i-d, i+d] if arr[i] > all between.
+
+**EXAMPLE:**
+Input: arr = [6,4,14,6,8,13,9,7,10,6,12], d = 2
+Output: 4
+
+```java
+class Solution {
+```
+
+public:
+```
+int maxJumps(vector<int>& arr, int d) {                                          
+    int n = arr.size();                                                          
+    vector<int> dp(n, 0);                                                        
+
+    function<int(int)> solve = [&](int i) -> int {                               
+        if (dp[i]) return dp[i];                                                 
+        dp[i] = 1;                                                               
+        for (int dir : {-1, 1}) {                                                
+            for (int j = i + dir; j >= 0 && j < n && abs(j - i) <= d; j += dir) {
+                if (arr[j] >= arr[i]) break;                                     
+                dp[i] = max(dp[i], 1 + solve(j));                                
+            }                                                                    
+        }                                                                        
+        return dp[i];                                                            
+    };                                                                           
+
+    int ans = 0;                                                                 
+    for (int i = 0; i < n; i++) ans = max(ans, solve(i));                        
+    return ans;                                                                  
+}                                                                                
+```
+
+```
+};
+```
+
+TIME: O(N*d)  |  SPACE: O(N)
+
+## **SOLVED PROBLEM 7.7: Jump Game VI (LC 1696)** 
+
+PROBLEM: Max score reaching last index. Jump at most k steps. DP + Monotonic Deque.
+
+**EXAMPLE:**
+Input: nums = [1,-1,-2,4,-7,3], k = 2
+Output: 7 (0>3>5)
+
+```java
+class Solution {
+```
+
+public:
+```
+int maxResult(vector<int>& nums, int k) {                           
+    int n = nums.size();                                            
+    deque<int> dq;                                                  
+    vector<int> dp(n);                                              
+    dp[0] = nums[0];                                                
+    dq.push_back(0);                                                
+
+    for (int i = 1; i < n; i++) {                                   
+        while (!dq.empty() && dq.front() < i - k) dq.pop_front();   
+        dp[i] = nums[i] + dp[dq.front()];                           
+        while (!dq.empty() && dp[dq.back()] <= dp[i]) dq.pop_back();
+        dq.push_back(i);                                            
+    }                                                               
+
+    return dp[n - 1];                                               
+}                                                                   
+```
+
+```
+};
+```
+
+TIME: O(N)  |  SPACE: O(N)
+
+## **SOLVED PROBLEM 7.8: Jump Game VII (LC 1871)** 
+
+PROBLEM: Can reach last index? Jump minJump to maxJump steps, only land on '0'.
+
+**EXAMPLE:**
+Input: s = "011010", minJump = 2, maxJump = 3
+Output: true (0>2>5)
+
+```java
+class Solution {
+```
+
+public:
+```
+bool canReach(string s, int minJump, int maxJump) {
+    int n = s.size();                              
+    if (s[n-1] == '1') return false;               
+
+    queue<int> q;                                  
+    q.push(0);                                     
+    int farthest = 0;                              
+
+    while (!q.empty()) {                           
+        int i = q.front(); q.pop();                
+        int start = max(i + minJump, farthest + 1);
+        int end = min(i + maxJump, n - 1);         
+
+        for (int j = start; j <= end; j++) {       
+            if (s[j] == '0') {                     
+                if (j == n - 1) return true;       
+                q.push(j);                         
+            }                                      
+        }                                          
+        farthest = max(farthest, end);             
+    }                                              
+    return false;                                  
+}                                                  
+```
+
+```
+};
+```
+
+TIME: O(N)  |  SPACE: O(N)
+
 ## **PART 3: PROOF TECHNIQUES FOR GREEDY**
 
 METHOD 1: GREEDY STAYS AHEAD
@@ -2224,7 +2448,7 @@ Assume greedy isn't optimal, derive contradiction.
 ## **PART 5: COMPLETE PROBLEM LIST BY CATEGORY**
 
 **INTERVAL**: 56, 57, 252, 253, 435, 452, 646, 986, 1024, 1326
-**JUMP GAME**: 45, 55, 1306, 1345, 1654, 1696
+**JUMP GAME**: 45, 55, 1306, 1340, 1345, 1654, 1696, 1871
 **STOCK**: 121, 122, 123, 188, 309, 714
 **SORTING+GREEDY**: 406, 455, 630, 659, 763, 826, 870, 881, 945, 948, 1029
 **STRING/DIGIT**: 316, 321, 402, 556, 670, 738, 1081, 1405
