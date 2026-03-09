@@ -4636,6 +4636,50 @@ return dp[n-1];
 
 TIME: O(N2)  |  SPACE: O(N2)
 
+## **SOLVED: Super Egg Drop (LC 887)**  HARD
+
+```cpp
+int superEggDrop(int k, int n) {
+// dp[m][k] = max floors checkable with m moves and k eggs
+vector<vector<int>> dp(n + 1, vector<int>(k + 1, 0));     
+int m = 0;                                                
+while (dp[m][k] < n) {                                    
+    m++;                                                  
+    for (int j = 1; j <= k; j++) {                        
+        dp[m][j] = dp[m-1][j-1] + dp[m-1][j] + 1;         
+    }                                                     
+}                                                         
+return m;                                                 
+
+}
+// Time: O(N*K), Space: O(N*K)
+```
+
+## **SOLVED: Maximum Profit in Job Scheduling (LC 1235)** 
+
+```cpp
+int jobScheduling(vector<int>& startTime, vector<int>& endTime, vector<int>& profit) {
+int n = startTime.size();                                                                 
+vector<int> idx(n);                                                                       
+iota(idx.begin(), idx.end(), 0);                                                          
+sort(idx.begin(), idx.end(), [&](int a, int b) {                                          
+    return endTime[a] < endTime[b];                                                       
+});                                                                                       
+
+vector<int> dp(n + 1, 0);                                                                 
+vector<int> ends;                                                                         
+for (int i : idx) ends.push_back(endTime[i]);                                             
+
+for (int i = 0; i < n; i++) {                                                             
+    int j = upper_bound(ends.begin(), ends.begin() + i, startTime[idx[i]]) - ends.begin();
+    dp[i + 1] = max(dp[i], dp[j] + profit[idx[i]]);                                       
+}                                                                                         
+return dp[n];                                                                             
+
+}
+// Time: O(N log N), Space: O(N)
+```
+
 ## **COMPLETE PROBLEM LIST BY PATTERN**
 
 **PATTERN 1: MIN/MAX PATH**
@@ -4683,6 +4727,8 @@ TIME: O(N2)  |  SPACE: O(N2)
 - 188.  Best Time to Buy/Sell Stock IV 
 - 714.  Best Time to Buy/Sell Stock with Transaction Fee 
 - 740.  Delete and Earn
+- 887.  Super Egg Drop 
+- 1235. Maximum Profit in Job Scheduling 
 
 **PATTERN 6: LIS (Longest Increasing Subsequence)**
 - 300.  Longest Increasing Subsequence 

@@ -3195,6 +3195,92 @@ It's cleaner and less error-prone!
 For classic BS:  r = n - 1 (last index)
 For lower bound: r = n (one past end)
 
+### **PROBLEM: Single Element in a Sorted Array (LC 540)** 
+
+PROBLEM: Every element appears exactly twice except one. Find the single one.
+
+APPROACH: Binary search on pairs - single element disrupts the even/odd pairing
+
+**TEMPLATE:**
+
+```cpp
+int singleNonDuplicate(vector<int>& nums) {
+int lo = 0, hi = nums.size() - 1;                
+while (lo < hi) {                                
+    int mid = lo + (hi - lo) / 2;                
+    if (mid % 2 == 1) mid--;                     
+    if (nums[mid] == nums[mid + 1]) lo = mid + 2;
+    else hi = mid;                               
+}                                                
+return nums[lo];                                 
+
+}
+```
+
+TIME: O(log N)  |  SPACE: O(1)
+
+**KEY INSIGHT:**
+Before the single element, pairs start at even indices.
+After it, pairs start at odd indices.
+Snap mid to even, then check if pair is intact.
+
+### **PROBLEM: Search a 2D Matrix (LC 74)** 
+
+PROBLEM: Search target in row-sorted matrix where first int of each row > last of previous
+
+APPROACH: Treat matrix as flattened sorted array, binary search with index mapping
+
+**TEMPLATE:**
+
+```cpp
+bool searchMatrix(vector<vector<int>>& matrix, int target) {
+int m = matrix.size(), n = matrix[0].size();
+int lo = 0, hi = m * n - 1;                 
+while (lo <= hi) {                          
+    int mid = lo + (hi - lo) / 2;           
+    int val = matrix[mid / n][mid % n];     
+    if (val == target) return true;         
+    else if (val < target) lo = mid + 1;    
+    else hi = mid - 1;                      
+}                                           
+return false;                               
+
+}
+```
+
+TIME: O(log(M*N))  |  SPACE: O(1)
+
+**KEY INSIGHT:**
+Map 1D index to 2D: row = mid / n, col = mid % n
+
+### **PROBLEM: Pow(x, n) (LC 50)**  - Binary Exponentiation
+
+PROBLEM: Implement pow(x, n) efficiently
+
+APPROACH: Binary exponentiation - square x and halve n each step
+
+**TEMPLATE:**
+
+```
+double myPow(double x, int n) {
+long long p = abs((long long)n);     
+double result = 1.0;                 
+while (p > 0) {                      
+    if (p & 1) result *= x;          
+    x *= x;                          
+    p >>= 1;                         
+}                                    
+return n < 0 ? 1.0 / result : result;
+
+}
+```
+
+TIME: O(log N)  |  SPACE: O(1)
+
+**KEY INSIGHT:**
+x^13 = x^(1101₂) = x^8 * x^4 * x^1
+Process bits of n from LSB, multiply result when bit is set.
+
 ## **PART 7: PROBLEM LIST BY CATEGORY**
 
 **CLASSIC BINARY SEARCH**
@@ -3208,6 +3294,8 @@ For lower bound: r = n (one past end)
 - 162. Find Peak Element
 - 852. Peak Index in a Mountain Array
 - 1095. Find in Mountain Array
+- 74. Search a 2D Matrix 
+- 540. Single Element in a Sorted Array 
 
 **FIRST/LAST OCCURRENCE**
 
@@ -3247,6 +3335,7 @@ For lower bound: r = n (one past end)
 
 **MATHEMATICAL/ADVANCED**
 
+- 50. Pow(x, n) (Binary Exponentiation) 
 - 878. Nth Magical Number (Inclusion-Exclusion)
 - 1062. Longest Repeating Substring
 - 1044. Longest Duplicate Substring (Rolling Hash)

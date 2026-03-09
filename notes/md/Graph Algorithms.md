@@ -1413,11 +1413,42 @@ return bridges;
 | Grid traversal                    | DFS/BFS with 4/8-directional moves      |
 | Multi-source spread               | Multi-source BFS                        |
 +-----------------------------------------------------------------------------+
-
-===============================================================================
-              **PART 11: PROBLEM LIST BY CATEGORY**                            
-===============================================================================
 ```
+
+### **PROBLEM: Is Graph Bipartite? (LC 785)** 
+
+ PATTERN: BFS coloring - assign alternating colors to neighbors
+ TEMPLATE: 2-color BFS, conflict means not bipartite
+
+```cpp
+bool isBipartite(vector<vector<int>>& graph) {
+int n = graph.size();                         
+vector<int> color(n, -1);                     
+
+for (int i = 0; i < n; i++) {                 
+    if (color[i] != -1) continue;             
+    queue<int> q;                             
+    q.push(i);                                
+    color[i] = 0;                             
+    while (!q.empty()) {                      
+        int u = q.front(); q.pop();           
+        for (int v : graph[u]) {              
+            if (color[v] == -1) {             
+                color[v] = 1 - color[u];      
+                q.push(v);                    
+            } else if (color[v] == color[u]) {
+                return false;                 
+            }                                 
+        }                                     
+    }                                         
+}                                             
+return true;                                  
+
+}
+// Time: O(V+E), Space: O(V)
+```
+
+## **PART 11: PROBLEM LIST BY CATEGORY**
 
 **BFS PROBLEMS** 
 
@@ -1430,6 +1461,7 @@ return bridges;
 - 1091. Shortest Path in Binary Matrix
 - 934. Shortest Bridge 
 - 752. Open the Lock 
+- 785. Is Graph Bipartite? 
 - 815. Bus Routes 
 
 **DFS PROBLEMS** 

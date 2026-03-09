@@ -1660,6 +1660,120 @@ return count;
 }
 ```
 
+### **PATTERN: SET MATRIX ZEROES (LC 73)** 
+
+ **KEY INSIGHT**: Use first row/col as markers for O(1) space
+
+```cpp
+void setZeroes(vector<vector<int>>& matrix) {
+int m = matrix.size(), n = matrix[0].size();                          
+bool firstRow = false, firstCol = false;                              
+for (int i = 0; i < m; i++) if (matrix[i][0] == 0) firstCol = true;   
+for (int j = 0; j < n; j++) if (matrix[0][j] == 0) firstRow = true;   
+for (int i = 1; i < m; i++)                                           
+    for (int j = 1; j < n; j++)                                       
+        if (matrix[i][j] == 0) { matrix[i][0] = 0; matrix[0][j] = 0; }
+for (int i = 1; i < m; i++)                                           
+    for (int j = 1; j < n; j++)                                       
+        if (matrix[i][0] == 0 || matrix[0][j] == 0) matrix[i][j] = 0; 
+if (firstCol) for (int i = 0; i < m; i++) matrix[i][0] = 0;           
+if (firstRow) for (int j = 0; j < n; j++) matrix[0][j] = 0;           
+
+}
+// Time: O(M*N), Space: O(1)
+```
+
+### **PATTERN: ROTATE IMAGE (LC 48)**
+
+ **KEY INSIGHT**: Transpose + Reverse each row = 90o clockwise rotation
+
+```cpp
+void rotate(vector<vector<int>>& matrix) {
+int n = matrix.size();                   
+for (int i = 0; i < n; i++)              
+    for (int j = i + 1; j < n; j++)      
+        swap(matrix[i][j], matrix[j][i]);
+for (auto& row : matrix)                 
+    reverse(row.begin(), row.end());     
+
+}
+// Time: O(N^2), Space: O(1)
+```
+
+### **PATTERN: PASCAL'S TRIANGLE (LC 118)**
+
+```cpp
+vector<vector<int>> generate(int numRows) {
+vector<vector<int>> result;                              
+for (int i = 0; i < numRows; i++) {                      
+    result.push_back(vector<int>(i + 1, 1));             
+    for (int j = 1; j < i; j++)                          
+        result[i][j] = result[i-1][j-1] + result[i-1][j];
+}                                                        
+return result;                                           
+
+}
+// Time: O(N^2), Space: O(N^2)
+```
+
+### **PATTERN: POW(X, N) (LC 50)** - Binary Exponentiation
+
+```
+double myPow(double x, int n) {
+long long N = n;                 
+if (N < 0) { x = 1 / x; N = -N; }
+double result = 1.0;             
+while (N > 0) {                  
+    if (N & 1) result *= x;      
+    x *= x;                      
+    N >>= 1;                     
+}                                
+return result;                   
+
+}
+// Time: O(log N), Space: O(1)
+```
+
+### **PATTERN: MAX CONSECUTIVE ONES (LC 485)**
+
+```cpp
+int findMaxConsecutiveOnes(vector<int>& nums) {
+int maxCount = 0, count = 0;         
+for (int n : nums) {                 
+    count = (n == 1) ? count + 1 : 0;
+    maxCount = max(maxCount, count); 
+}                                    
+return maxCount;                     
+
+}
+// Time: O(N), Space: O(1)
+```
+
+### **PATTERN: REVERSE PAIRS (LC 493)**  HARD - Merge Sort approach
+
+ **KEY INSIGHT**: Count during merge sort - each merge step counts cross-half pairs
+
+```cpp
+int reversePairs(vector<int>& nums) {
+return mergeSort(nums, 0, nums.size() - 1);
+
+}
+int mergeSort(vector<int>& nums, int l, int r) {
+if (l >= r) return 0;                                                         
+int mid = l + (r - l) / 2;                                                    
+int count = mergeSort(nums, l, mid) + mergeSort(nums, mid + 1, r);            
+int j = mid + 1;                                                              
+for (int i = l; i <= mid; i++) {                                              
+    while (j <= r && (long long)nums[i] > 2LL * nums[j]) j++;                 
+    count += j - (mid + 1);                                                   
+}                                                                             
+inplace_merge(nums.begin() + l, nums.begin() + mid + 1, nums.begin() + r + 1);
+return count;                                                                 
+
+}
+// Time: O(N log N), Space: O(N)
+```
+
 ### **PATTERN: ROTATE ARRAY (Reverse Trick)**
 
  **KEY INSIGHT**: Three reverses = rotation!
@@ -1741,6 +1855,18 @@ reverse(nums.begin() + k, nums.end());       // Reverse rest
 
 - 2149. Array With Elements Not Equal to Average of Neighbors 
 - 2108. Find First Palindromic String in the Array 
+
+**STRIVER ESSENTIALS (Array)**
+
+- 48.   Rotate Image 
+- 50.   Pow(x, n) - Binary Exponentiation
+- 73.   Set Matrix Zeroes 
+- 118.  Pascal's Triangle 
+- 169.  Majority Element  (> See Hashmap Patterns.txt)
+- 229.  Majority Element II  (> See Hashmap Patterns.txt)
+- 315.  Count of Smaller Numbers After Self 
+- 485.  Max Consecutive Ones 
+- 493.  Reverse Pairs 
 
 ## **MASTER PROBLEM MAPPING TABLE**
 

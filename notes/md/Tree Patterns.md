@@ -1291,11 +1291,199 @@ return 0;  // Needs coverage from parent
 |    Update: left + right  (diameter through this node)                       |
 |                                                                             |
 +-----------------------------------------------------------------------------+
-
-===============================================================================
-              **PART 10: PROBLEM LIST BY CATEGORY**                            
-===============================================================================
 ```
+
+### **PROBLEM: Populating Next Right Pointers (LC 116)**
+
+ PATTERN: Level order connection using O(1) space
+ TEMPLATE: Use established next pointers to traverse levels
+
+Node* connect(Node* root) {
+```
+if (!root) return nullptr;                                   
+Node* leftmost = root;                                       
+while (leftmost->left) {                                     
+    Node* curr = leftmost;                                   
+    while (curr) {                                           
+        curr->left->next = curr->right;                      
+        if (curr->next) curr->right->next = curr->next->left;
+        curr = curr->next;                                   
+    }                                                        
+    leftmost = leftmost->left;                               
+}                                                            
+return root;                                                 
+```
+
+```
+}
+// Time: O(N), Space: O(1)
+```
+
+### **PROBLEM: BST Iterator (LC 173)** 
+
+ PATTERN: Controlled inorder traversal using stack
+ TEMPLATE: Push all left nodes, pop and push right's left chain
+
+```java
+class BSTIterator {
+stack<TreeNode*> stk;                                  
+void pushLeft(TreeNode* node) {                        
+    while (node) { stk.push(node); node = node->left; }
+}                                                      
+```
+
+public:
+```
+BSTIterator(TreeNode* root) { pushLeft(root); }
+int next() {                                   
+    TreeNode* node = stk.top(); stk.pop();     
+    pushLeft(node->right);                     
+    return node->val;                          
+}                                              
+bool hasNext() { return !stk.empty(); }        
+```
+
+```
+};
+// next(): O(1) amortized, Space: O(H)
+```
+
+### **PROBLEM: Inorder Successor in BST (LC 285)**
+
+ PATTERN: BST search with successor tracking
+ TEMPLATE: Go left when p < root (update successor), go right otherwise
+
+```cpp
+TreeNode* inorderSuccessor(TreeNode* root, TreeNode* p) {
+TreeNode* successor = nullptr;
+while (root) {                
+    if (p->val < root->val) { 
+        successor = root;     
+        root = root->left;    
+    } else {                  
+        root = root->right;   
+    }                         
+}                             
+return successor;             
+
+}
+// Time: O(H), Space: O(1)
+```
+
+### **PROBLEM: Largest BST Subtree (LC 333)** 
+
+ PATTERN: Post-order DFS returning {size, min, max}
+ TEMPLATE: Validate BST bottom-up, track max size globally
+
+```cpp
+int largestBSTSubtree(TreeNode* root) {
+int maxSize = 0;                                                     
+auto dfs = [&](auto& self, TreeNode* node) -> tuple<int, int, int> { 
+    // returns {size, min, max}. size = -1 means not a BST           
+    if (!node) return {0, INT_MAX, INT_MIN};                         
+    auto [ls, lmin, lmax] = self(self, node->left);                  
+    auto [rs, rmin, rmax] = self(self, node->right);                 
+    if (ls >= 0 && rs >= 0 && lmax < node->val && node->val < rmin) {
+        int size = ls + rs + 1;                                      
+        maxSize = max(maxSize, size);                                
+        return {size, min(lmin, node->val), max(rmax, node->val)};   
+    }                                                                
+    return {-1, 0, 0};                                               
+};                                                                   
+dfs(dfs, root);                                                      
+return maxSize;                                                      
+
+}
+// Time: O(N), Space: O(H)
+```
+
+### **PROBLEM: Boundary of Binary Tree (LC 545)** 
+
+ PATTERN: Three-pass traversal (left boundary + leaves + right boundary reversed)
+ TEMPLATE: Separate functions for left, leaves, right
+
+```cpp
+vector<int> boundaryOfBinaryTree(TreeNode* root) {
+if (!root) return {};                                                        
+vector<int> result = {root->val};                                            
+
+auto addLeft = [&](TreeNode* node) {                                         
+    while (node) {                                                           
+        if (node->left || node->right) result.push_back(node->val);          
+        node = node->left ? node->left : node->right;                        
+    }                                                                        
+};                                                                           
+auto addLeaves = [&](auto& self, TreeNode* node) -> void {                   
+    if (!node) return;                                                       
+    if (!node->left && !node->right) { result.push_back(node->val); return; }
+    self(self, node->left);                                                  
+    self(self, node->right);                                                 
+};                                                                           
+auto addRight = [&](TreeNode* node) {                                        
+    vector<int> tmp;                                                         
+    while (node) {                                                           
+        if (node->left || node->right) tmp.push_back(node->val);             
+        node = node->right ? node->right : node->left;                       
+    }                                                                        
+    for (int i = tmp.size() - 1; i >= 0; i--) result.push_back(tmp[i]);      
+};                                                                           
+
+addLeft(root->left);                                                         
+addLeaves(addLeaves, root->left);                                            
+addLeaves(addLeaves, root->right);                                           
+addRight(root->right);                                                       
+return result;                                                               
+
+}
+// Time: O(N), Space: O(N)
+```
+
+### **PROBLEM: Two Sum IV - Input is a BST (LC 653)**
+
+ PATTERN: BFS/DFS with hash set for complement lookup
+ TEMPLATE: Traverse tree, check if (k - node->val) seen
+
+```cpp
+bool findTarget(TreeNode* root, int k) {
+unordered_set<int> seen;                       
+queue<TreeNode*> q;                            
+q.push(root);                                  
+while (!q.empty()) {                           
+    TreeNode* node = q.front(); q.pop();       
+    if (seen.count(k - node->val)) return true;
+    seen.insert(node->val);                    
+    if (node->left) q.push(node->left);        
+    if (node->right) q.push(node->right);      
+}                                              
+return false;                                  
+
+}
+// Time: O(N), Space: O(N)
+```
+
+### **PROBLEM: Construct BST from Preorder Traversal (LC 1008)** 
+
+ PATTERN: Preorder traversal with upper bound constraint
+ TEMPLATE: Use bound to determine subtree boundaries
+
+```cpp
+TreeNode* bstFromPreorder(vector<int>& preorder) {
+int idx = 0;                         
+return build(preorder, idx, INT_MAX);
+
+}
+TreeNode* build(vector<int>& preorder, int& idx, int bound) {
+if (idx == preorder.size() || preorder[idx] > bound) return nullptr;
+TreeNode* root = new TreeNode(preorder[idx++]);                     
+root->left = build(preorder, idx, root->val);                       
+root->right = build(preorder, idx, bound);                          
+return root;                                                        
+
+}
+// Time: O(N), Space: O(N)
+```
+
+## **PART 10: PROBLEM LIST BY CATEGORY**
 
 **TRAVERSALS:**
 - 94.  Binary Tree Inorder Traversal
@@ -1318,6 +1506,12 @@ Y 108. Convert Sorted Array to BST
 Y 109. Convert Sorted List to BST 
 Y 173. BST Iterator 
 Y 99.  Recover Binary Search Tree 
+Y 116. Populating Next Right Pointers
+Y 285. Inorder Successor in BST
+Y 333. Largest BST Subtree 
+Y 545. Boundary of Binary Tree 
+Y 653. Two Sum IV - Input is a BST
+Y 1008. Construct BST from Preorder Traversal 
 
 **LCA & ANCESTORS:**
 Y 236. Lowest Common Ancestor of Binary Tree 

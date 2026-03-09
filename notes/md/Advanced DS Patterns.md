@@ -414,6 +414,99 @@ vector<string> findWords(vector<vector<char>>& board, vector<string>& words) {
 };
 ```
 
+## **SOLVED: Maximum XOR of Two Numbers in an Array (LC 421)** 
+
+ KEY INSIGHT: Build Trie of binary representations, greedily pick opposite bits
+
+```cpp
+struct TrieNode {
+TrieNode* children[2] = {};
+
+};
+
+int findMaximumXOR(vector<int>& nums) {
+TrieNode* root = new TrieNode();                                       
+for (int num : nums) {                                                 
+    TrieNode* node = root;                                             
+    for (int i = 31; i >= 0; i--) {                                    
+        int bit = (num >> i) & 1;                                      
+        if (!node->children[bit]) node->children[bit] = new TrieNode();
+        node = node->children[bit];                                    
+    }                                                                  
+}                                                                      
+
+int maxXor = 0;                                                        
+for (int num : nums) {                                                 
+    TrieNode* node = root;                                             
+    int curXor = 0;                                                    
+    for (int i = 31; i >= 0; i--) {                                    
+        int bit = (num >> i) & 1;                                      
+        int want = 1 - bit;                                            
+        if (node->children[want]) {                                    
+            curXor |= (1 << i);                                        
+            node = node->children[want];                               
+        } else {                                                       
+            node = node->children[bit];                                
+        }                                                              
+    }                                                                  
+    maxXor = max(maxXor, curXor);                                      
+}                                                                      
+return maxXor;                                                         
+
+}
+// Time: O(N * 32), Space: O(N * 32)
+```
+
+## **SOLVED: Maximum XOR With an Element From Array (LC 1707)** 
+
+ KEY INSIGHT: Offline queries sorted by limit, insert into Trie incrementally
+
+```cpp
+vector<int> maximizeXor(vector<int>& nums, vector<vector<int>>& queries) {
+sort(nums.begin(), nums.end());                                            
+int n = queries.size();                                                    
+vector<int> idx(n);                                                        
+iota(idx.begin(), idx.end(), 0);                                           
+sort(idx.begin(), idx.end(), [&](int a, int b) {                           
+    return queries[a][1] < queries[b][1];                                  
+});                                                                        
+
+TrieNode* root = new TrieNode();                                           
+vector<int> result(n, -1);                                                 
+int j = 0;                                                                 
+
+for (int i : idx) {                                                        
+    int xi = queries[i][0], mi = queries[i][1];                            
+    while (j < nums.size() && nums[j] <= mi) {                             
+        TrieNode* node = root;                                             
+        for (int b = 31; b >= 0; b--) {                                    
+            int bit = (nums[j] >> b) & 1;                                  
+            if (!node->children[bit]) node->children[bit] = new TrieNode();
+            node = node->children[bit];                                    
+        }                                                                  
+        j++;                                                               
+    }                                                                      
+    if (j == 0) continue;                                                  
+    TrieNode* node = root;                                                 
+    int curXor = 0;                                                        
+    for (int b = 31; b >= 0; b--) {                                        
+        int bit = (xi >> b) & 1;                                           
+        int want = 1 - bit;                                                
+        if (node->children[want]) {                                        
+            curXor |= (1 << b);                                            
+            node = node->children[want];                                   
+        } else {                                                           
+            node = node->children[bit];                                    
+        }                                                                  
+    }                                                                      
+    result[i] = curXor;                                                    
+}                                                                          
+return result;                                                             
+
+}
+// Time: O((N+Q) * 32 + N log N + Q log Q), Space: O(N * 32)
+```
+
 ## **PART 4: LONGEST INCREASING PATH IN MATRIX (LC 329)** 
 
 PROBLEM: Find the longest increasing path in a matrix.
@@ -703,6 +796,8 @@ Y 460. LFU Cache
 Y 208. Implement Trie 
 Y 211. Design Add and Search Words 
 Y 212. Word Search II 
+Y 421. Maximum XOR of Two Numbers in an Array 
+Y 1707. Maximum XOR With an Element From Array 
 - 648. Replace Words 
 - 677. Map Sum Pairs 
 

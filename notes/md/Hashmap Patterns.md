@@ -213,6 +213,54 @@ return result;
 // Time: O(N log N), Space: O(N)
 ```
 
+### 4. Majority Element (LC 169) - Boyer-Moore Voting Algorithm
+
+ PATTERN: Frequency counting / Boyer-Moore Voting
+ TEMPLATE: Track candidate with count
+
+```cpp
+int majorityElement(vector<int>& nums) {
+int candidate = 0, count = 0;            
+for (int num : nums) {                   
+    if (count == 0) candidate = num;     
+    count += (num == candidate) ? 1 : -1;
+}                                        
+return candidate;                        
+
+}
+// Time: O(N), Space: O(1)
+```
+
+### 5. Majority Element II (LC 229) - Extended Boyer-Moore (at most 2 candidates)
+
+ PATTERN: Frequency counting / Extended Boyer-Moore
+ TEMPLATE: Track two candidates
+
+```cpp
+vector<int> majorityElement(vector<int>& nums) {
+int c1 = 0, c2 = 0, cnt1 = 0, cnt2 = 0;      
+for (int n : nums) {                         
+    if (n == c1) cnt1++;                     
+    else if (n == c2) cnt2++;                
+    else if (cnt1 == 0) { c1 = n; cnt1 = 1; }
+    else if (cnt2 == 0) { c2 = n; cnt2 = 1; }
+    else { cnt1--; cnt2--; }                 
+}                                            
+cnt1 = cnt2 = 0;                             
+for (int n : nums) {                         
+    if (n == c1) cnt1++;                     
+    else if (n == c2) cnt2++;                
+}                                            
+vector<int> result;                          
+int threshold = nums.size() / 3;             
+if (cnt1 > threshold) result.push_back(c1);  
+if (cnt2 > threshold) result.push_back(c2);  
+return result;                               
+
+}
+// Time: O(N), Space: O(1)
+```
+
 ## **PART 3: PATTERN 2 - PAIR/COMPLEMENT LOOKUP**
 
 ### PATTERN OVERVIEW
@@ -1204,6 +1252,8 @@ Y 387. First Unique Character
 Y 1365. How Many Numbers Smaller Than Current
 Y 347.  Top K Frequent Elements 
 Y 451.  Sort Characters By Frequency
+Y 169.  Majority Element  (Boyer-Moore Voting)
+Y 229.  Majority Element II  (Extended Boyer-Moore)
 
 **PAIR/COMPLEMENT LOOKUP:**
 Y 1.   Two Sum  (Hashmap approach)

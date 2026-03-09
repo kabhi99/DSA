@@ -2019,6 +2019,7 @@ TIME: O(N)  |  SPACE: O(1)
 
 - 3.    Longest Substring Without Repeating Characters 
 - 209.  Minimum Size Subarray Sum 
+- 485.  Max Consecutive Ones  (Simple counting, no window needed)
 - 487.  Max Consecutive Ones II 
 - 904.  Fruit Into Baskets 
 - 1004. Max Consecutive Ones III 
