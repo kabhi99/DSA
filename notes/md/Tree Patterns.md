@@ -787,50 +787,74 @@ return root;
  PATTERN: Preorder traversal with null markers
  TEMPLATE: Use "null" for empty nodes, split by comma
 
+**KEY INSIGHT:**
+- Preorder (Root-Left-Right) + null markers = uniquely defines tree
+- Unlike LC 105/106, we DON'T need two traversals because null markers
+preserve the structure
+
+- Serialize: preorder DFS, write "null" for empty children
+- Deserialize: read tokens in same preorder order, "null" > return nullptr
+
+WHY PREORDER + NULL MARKERS?
+- Example:     1
+/   \
+2     3
+/ \
+4   5
+
+- Serialized: "1,2,null,null,3,4,null,null,5,null,null"
+- Each node writes itself, then left, then right
+- Null markers tell us exactly where subtrees end
+- Deserialize reads tokens in same order > perfectly reconstructs
+
+WHY QUEUE (not index)?
+- Queue.front() gives next token, queue.pop() advances
+- Recursion naturally consumes tokens in correct preorder order
+- Same idea as preIdx in LC 105, but with a queue of strings
+
 ```java
 class Codec {
 ```
 
 public:
 ```
-// Serialize: Preorder traversal with null markers
-string serialize(TreeNode* root) {                
-    if (!root) return "null";                     
+string serialize(TreeNode* root) {                           
+    if (!root) return "null";                                
 
-    return to_string(root->val) + ","            +
-           serialize(root->left) + ","           +
-           serialize(root->right);                
-}                                                 
+    return to_string(root->val) + ","                       +
+           serialize(root->left) + ","                      +
+           serialize(root->right);                           
+}                                                            
 
-// Deserialize: Reconstruct using queue           
-TreeNode* deserialize(string data) {              
-    queue<string> nodes;                          
-    stringstream ss(data);                        
-    string item;                                  
+TreeNode* deserialize(string data) {                         
+    queue<string> nodes;                                     
+    stringstream ss(data);                                   
+    string item;                                             
 
-    while (getline(ss, item, ',')) {              
-        nodes.push(item);                         
-    }                                             
+    while (getline(ss, item, ',')) {                         
+        nodes.push(item);                                    
+    }                                                        
 
-    return buildTree(nodes);                      
-}                                                 
+    return buildTree(nodes);                                 
+}                                                            
 
-TreeNode* buildTree(queue<string>& nodes) {       
-    string val = nodes.front();                   
-    nodes.pop();                                  
+TreeNode* buildTree(queue<string>& nodes) {                  
+    string val = nodes.front();                              
+    nodes.pop();                                             
 
-    if (val == "null") return nullptr;            
+    if (val == "null") return nullptr;                       
 
-    TreeNode* root = new TreeNode(stoi(val));     
-    root->left = buildTree(nodes);                
-    root->right = buildTree(nodes);               
+    TreeNode* root = new TreeNode(stoi(val));                
+    root->left = buildTree(nodes);   // Left first (preorder)
+    root->right = buildTree(nodes);  // Right second         
 
-    return root;                                  
-}                                                 
+    return root;                                             
+}                                                            
 ```
 
 ```
 };
+// Time: O(N), Space: O(N)
 ```
 
 ## **PART 8: TREE PROPERTIES**
