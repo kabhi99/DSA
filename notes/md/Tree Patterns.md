@@ -1030,37 +1030,52 @@ while (root) {
 
  KEY INSIGHT: Track (column, row, value) and sort appropriately
 
+**SORTING TRICK:**
+- tuple<int,int,int> = {col, row, val}
+- Default tuple sort = by col first, then row, then val
+- This is EXACTLY the order the problem asks for!
+
+**VISUALIZATION:**
+1               col: 0
+/ \
+2   3             col: -1, +1
+/ \   \
+4   5   7           col: -2, 0, +2
+
+Nodes: {-2,2,4}, {-1,1,2}, {0,0,1}, {0,2,5}, {1,1,3}, {2,2,7}
+After sort (by col, row, val): same order
+Result: [[4], [2], [1,5], [3], [7]]
+
 ```cpp
-vector<vector<int>> verticalTraversal(TreeNode* root) {
-// {column, row, value}                                                          
-vector<tuple<int, int, int>> nodes;                                              
-
-function<void(TreeNode*, int, int)> dfs = [&](TreeNode* node, int col, int row) {
-    if (!node) return;                                                           
-    nodes.push_back({col, row, node->val});                                      
-    dfs(node->left, col - 1, row + 1);                                           
-    dfs(node->right, col + 1, row + 1);                                          
-};                                                                               
-
-dfs(root, 0, 0);                                                                 
-
-// Sort by column, then row, then value                                          
-sort(nodes.begin(), nodes.end());                                                
-
-vector<vector<int>> result;                                                      
-int prevCol = INT_MIN;                                                           
-
-for (auto& [col, row, val] : nodes) {                                            
-    if (col != prevCol) {                                                        
-        result.push_back({});                                                    
-        prevCol = col;                                                           
-    }                                                                            
-    result.back().push_back(val);                                                
-}                                                                                
-
-return result;                                                                   
+void dfs(TreeNode* node, int col, int row, vector<tuple<int,int,int>>& nodes) {
+if (!node) return;                        
+nodes.push_back({col, row, node->val});   
+dfs(node->left, col - 1, row + 1, nodes); 
+dfs(node->right, col + 1, row + 1, nodes);
 
 }
+
+vector<vector<int>> verticalTraversal(TreeNode* root) {
+vector<tuple<int,int,int>> nodes;  // {col, row, val}
+dfs(root, 0, 0, nodes);                              
+
+sort(nodes.begin(), nodes.end());                    
+
+vector<vector<int>> result;                          
+int prevCol = INT_MIN;                               
+
+for (auto& [col, row, val] : nodes) {                
+    if (col != prevCol) {                            
+        result.push_back({});                        
+        prevCol = col;                               
+    }                                                
+    result.back().push_back(val);                    
+}                                                    
+
+return result;                                       
+
+}
+// Time: O(N log N), Space: O(N)
 ```
 
 ## **SOLVED: Binary Tree Top View / Bottom View** 
