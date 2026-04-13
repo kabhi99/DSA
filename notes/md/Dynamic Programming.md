@@ -1136,22 +1136,37 @@ PROBLEM: Each step has cost. Can climb 1 or 2 steps. Find min cost to reach top.
 
  **KEY INSIGHT**: At each step, choose cheaper path (from 1 or 2 steps back)
 
+**RECURSIVE (Top-Down):**
+
 ```cpp
 int minCostClimbingStairs(vector<int>& cost) {
-int n = cost.size();                                      
-vector<int> dp(n + 1);                                    
+    int n = cost.size();
+    vector<int> memo(n + 1, -1);
+    return solve(cost, n, memo);
+}
 
-// Can start from step 0 or 1                             
-dp[0] = 0;                                                
-dp[1] = 0;                                                
+int solve(vector<int>& cost, int i, vector<int>& memo) {
+    if (i <= 1) return 0;
+    if (memo[i] != -1) return memo[i];
+    return memo[i] = min(solve(cost, i-1, memo) + cost[i-1],
+                         solve(cost, i-2, memo) + cost[i-2]);
+}
+```
 
-for (int i = 2; i <= n; i++) {                            
-    // Take 1 step or 2 steps                             
-    dp[i] = min(dp[i-1] + cost[i-1], dp[i-2] + cost[i-2]);
-}                                                         
+**TABULATION (Bottom-Up):**
 
-return dp[n];                                             
+```cpp
+int minCostClimbingStairs(vector<int>& cost) {
+    int n = cost.size();
+    vector<int> dp(n + 1);
+    dp[0] = 0;
+    dp[1] = 0;
 
+    for (int i = 2; i <= n; i++) {
+        dp[i] = min(dp[i-1] + cost[i-1], dp[i-2] + cost[i-2]);
+    }
+
+    return dp[n];
 }
 ```
 
@@ -1174,21 +1189,44 @@ PROBLEM: Min coins to make amount (coins can be reused)
 
  **KEY INSIGHT**: For each amount, try all coins, pick best!
 
+**RECURSIVE (Top-Down):**
+
 ```cpp
 int coinChange(vector<int>& coins, int amount) {
-vector<int> dp(amount + 1, amount + 1);  // INT_MAX causes overflow!
-dp[0] = 0;                                                          
+    vector<int> memo(amount + 1, -2);
+    int ans = solve(coins, amount, memo);
+    return ans == INT_MAX ? -1 : ans;
+}
 
-for (int i = 1; i <= amount; i++) {                                 
-    for (int coin : coins) {                                        
-        if (coin <= i) {                                            
-            dp[i] = min(dp[i], dp[i - coin] + 1);                   
-        }                                                           
-    }                                                               
-}                                                                   
+int solve(vector<int>& coins, int amt, vector<int>& memo) {
+    if (amt == 0) return 0;
+    if (amt < 0) return INT_MAX;
+    if (memo[amt] != -2) return memo[amt];
 
-return dp[amount] > amount ? -1 : dp[amount];                       
+    int best = INT_MAX;
+    for (int coin : coins) {
+        int sub = solve(coins, amt - coin, memo);
+        if (sub != INT_MAX) best = min(best, sub + 1);
+    }
+    return memo[amt] = best;
+}
+```
 
+**TABULATION (Bottom-Up):**
+
+```cpp
+int coinChange(vector<int>& coins, int amount) {
+    vector<int> dp(amount + 1, amount + 1);
+    dp[0] = 0;
+
+    for (int i = 1; i <= amount; i++) {
+        for (int coin : coins) {
+            if (coin <= i)
+                dp[i] = min(dp[i], dp[i - coin] + 1);
+        }
+    }
+
+    return dp[amount] > amount ? -1 : dp[amount];
 }
 ```
 
@@ -1225,23 +1263,40 @@ WHY size amount+1?
 
 PROBLEM: Min path sum from top-left to bottom-right (only right/down moves)
 
+**RECURSIVE (Top-Down):**
+
 ```cpp
 int minPathSum(vector<vector<int>>& grid) {
-int m = grid.size(), n = grid[0].size();               
+    int m = grid.size(), n = grid[0].size();
+    vector<vector<int>> memo(m, vector<int>(n, -1));
+    return solve(grid, m-1, n-1, memo);
+}
 
-// Fill first row and column                           
-for (int i = 1; i < m; i++) grid[i][0] += grid[i-1][0];
-for (int j = 1; j < n; j++) grid[0][j] += grid[0][j-1];
+int solve(vector<vector<int>>& grid, int i, int j, vector<vector<int>>& memo) {
+    if (i == 0 && j == 0) return grid[0][0];
+    if (i < 0 || j < 0) return INT_MAX;
+    if (memo[i][j] != -1) return memo[i][j];
+    return memo[i][j] = grid[i][j] + min(solve(grid, i-1, j, memo),
+                                          solve(grid, i, j-1, memo));
+}
+```
 
-// Fill rest                                           
-for (int i = 1; i < m; i++) {                          
-    for (int j = 1; j < n; j++) {                      
-        grid[i][j] += min(grid[i-1][j], grid[i][j-1]); 
-    }                                                  
-}                                                      
+**TABULATION (Bottom-Up, in-place):**
 
-return grid[m-1][n-1];                                 
+```cpp
+int minPathSum(vector<vector<int>>& grid) {
+    int m = grid.size(), n = grid[0].size();
 
+    for (int i = 1; i < m; i++) grid[i][0] += grid[i-1][0];
+    for (int j = 1; j < n; j++) grid[0][j] += grid[0][j-1];
+
+    for (int i = 1; i < m; i++) {
+        for (int j = 1; j < n; j++) {
+            grid[i][j] += min(grid[i-1][j], grid[i][j-1]);
+        }
+    }
+
+    return grid[m-1][n-1];
 }
 ```
 
@@ -1383,20 +1438,35 @@ PROBLEM: Count ways to climb n stairs (1 or 2 steps at a time)
  **KEY INSIGHT**: This is Fibonacci!
 Ways to reach step n = ways to reach (n-1) + ways to reach (n-2)
 
+**RECURSIVE (Top-Down):**
+
 ```cpp
 int climbStairs(int n) {
-if (n <= 2) return n;                
+    vector<int> memo(n + 1, -1);
+    return solve(n, memo);
+}
 
-vector<int> dp(n + 1);               
-dp[1] = 1;  // 1 way to reach step 1 
-dp[2] = 2;  // 2 ways to reach step 2
+int solve(int n, vector<int>& memo) {
+    if (n <= 2) return n;
+    if (memo[n] != -1) return memo[n];
+    return memo[n] = solve(n-1, memo) + solve(n-2, memo);
+}
+```
 
-for (int i = 3; i <= n; i++) {       
-    dp[i] = dp[i-1] + dp[i-2];       
-}                                    
+**TABULATION (Bottom-Up):**
 
-return dp[n];                        
+```cpp
+int climbStairs(int n) {
+    if (n <= 2) return n;
+    vector<int> dp(n + 1);
+    dp[1] = 1;
+    dp[2] = 2;
 
+    for (int i = 3; i <= n; i++) {
+        dp[i] = dp[i-1] + dp[i-2];
+    }
+
+    return dp[n];
 }
 ```
 
@@ -1419,22 +1489,36 @@ PROBLEM: Count paths from top-left to bottom-right (only right/down)
 
  **KEY INSIGHT**:
 Ways to reach (i,j) = ways from left + ways from top
-```cpp
 dp[i][j] = dp[i-1][j] + dp[i][j-1]
 
+**RECURSIVE (Top-Down):**
+
+```cpp
 int uniquePaths(int m, int n) {
-vector<vector<int>> dp(m, vector<int>(n, 1));
+    vector<vector<int>> memo(m, vector<int>(n, -1));
+    return solve(m-1, n-1, memo);
+}
 
-// First row and column all 1 (only one way) 
+int solve(int i, int j, vector<vector<int>>& memo) {
+    if (i == 0 || j == 0) return 1;
+    if (memo[i][j] != -1) return memo[i][j];
+    return memo[i][j] = solve(i-1, j, memo) + solve(i, j-1, memo);
+}
+```
 
-for (int i = 1; i < m; i++) {                
-    for (int j = 1; j < n; j++) {            
-        dp[i][j] = dp[i-1][j] + dp[i][j-1];  
-    }                                        
-}                                            
+**TABULATION (Bottom-Up):**
 
-return dp[m-1][n-1];                         
+```cpp
+int uniquePaths(int m, int n) {
+    vector<vector<int>> dp(m, vector<int>(n, 1));
 
+    for (int i = 1; i < m; i++) {
+        for (int j = 1; j < n; j++) {
+            dp[i][j] = dp[i-1][j] + dp[i][j-1];
+        }
+    }
+
+    return dp[m-1][n-1];
 }
 ```
 
@@ -1452,21 +1536,41 @@ overwrites interior cells. First row & column stay as 1.
 
 PROBLEM: Count combinations to make target (ORDER MATTERS!)
 
+**RECURSIVE (Top-Down):**
+
 ```cpp
 int combinationSum4(vector<int>& nums, int target) {
-vector<unsigned int> dp(target + 1, 0);  // Unsigned to avoid overflow
-dp[0] = 1;                                                            
+    vector<int> memo(target + 1, -1);
+    return solve(nums, target, memo);
+}
 
-for (int i = 1; i <= target; i++) {                                   
-    for (int num : nums) {                                            
-        if (num <= i) {                                               
-            dp[i] += dp[i - num];                                     
-        }                                                             
-    }                                                                 
-}                                                                     
+int solve(vector<int>& nums, int target, vector<int>& memo) {
+    if (target == 0) return 1;
+    if (target < 0) return 0;
+    if (memo[target] != -1) return memo[target];
 
-return dp[target];                                                    
+    int ways = 0;
+    for (int num : nums) {
+        ways += solve(nums, target - num, memo);
+    }
+    return memo[target] = ways;
+}
+```
 
+**TABULATION (Bottom-Up):**
+
+```cpp
+int combinationSum4(vector<int>& nums, int target) {
+    vector<unsigned int> dp(target + 1, 0);
+    dp[0] = 1;
+
+    for (int i = 1; i <= target; i++) {
+        for (int num : nums) {
+            if (num <= i) dp[i] += dp[i - num];
+        }
+    }
+
+    return dp[target];
 }
 ```
 
@@ -1527,30 +1631,42 @@ P = 4
 
 So we need to find: "Count subsets with sum = 4"
 
-**COMPLETE SOLUTION:**
+**RECURSIVE (Top-Down) — direct +/- approach:**
 
 ```cpp
 int findTargetSumWays(vector<int>& nums, int target) {
-int sum = accumulate(nums.begin(), nums.end(), 0);                                  
+    unordered_map<string, int> memo;
+    return solve(nums, 0, target, memo);
+}
 
-// Edge cases                                                                       
-if (target > sum || target < -sum) return 0;                                        
-if ((target + sum) % 2 != 0) return 0;  // Must be even!                            
+int solve(vector<int>& nums, int i, int remaining, unordered_map<string, int>& memo) {
+    if (i == nums.size()) return remaining == 0 ? 1 : 0;
+    string key = to_string(i) + "," + to_string(remaining);
+    if (memo.count(key)) return memo[key];
+    return memo[key] = solve(nums, i+1, remaining - nums[i], memo)
+                     + solve(nums, i+1, remaining + nums[i], memo);
+}
+```
 
-int P = (target + sum) / 2;                                                         
+**TABULATION (Bottom-Up) — subset sum reduction:**
 
-// Now count subsets with sum = P                                                   
-vector<int> dp(P + 1, 0);                                                           
-dp[0] = 1;  // One way to make 0: pick nothing                                      
+```cpp
+int findTargetSumWays(vector<int>& nums, int target) {
+    int sum = accumulate(nums.begin(), nums.end(), 0);
+    if (target > sum || target < -sum) return 0;
+    if ((target + sum) % 2 != 0) return 0;
 
-for (int num : nums) {                                                              
-    for (int j = P; j >= num; j--) {  //  Reverse to avoid using same element twice!
-        dp[j] += dp[j - num];                                                       
-    }                                                                               
-}                                                                                   
+    int P = (target + sum) / 2;
+    vector<int> dp(P + 1, 0);
+    dp[0] = 1;
 
-return dp[P];                                                                       
+    for (int num : nums) {
+        for (int j = P; j >= num; j--) {
+            dp[j] += dp[j - num];
+        }
+    }
 
+    return dp[P];
 }
 ```
 
@@ -1751,22 +1867,40 @@ n = 1 > 1 (one square: 12)
 dp[n] = min(dp[n - i2] + 1) for all i where i2 < n
 ```
 
-**COMPLETE SOLUTION:**
+**RECURSIVE (Top-Down):**
 
 ```cpp
 int numSquares(int n) {
-vector<int> dp(n + 1, INT_MAX);             
-dp[0] = 0;  // Base case                    
+    vector<int> memo(n + 1, -1);
+    return solve(n, memo);
+}
 
-// Try all perfect squares                  
-for (int i = 1; i <= n; i++) {              
-    for (int j = 1; j * j <= i; j++) {      
-        dp[i] = min(dp[i], dp[i - j*j] + 1);
-    }                                       
-}                                           
+int solve(int n, vector<int>& memo) {
+    if (n == 0) return 0;
+    if (memo[n] != -1) return memo[n];
 
-return dp[n];                               
+    int best = INT_MAX;
+    for (int j = 1; j * j <= n; j++) {
+        best = min(best, solve(n - j*j, memo) + 1);
+    }
+    return memo[n] = best;
+}
+```
 
+**TABULATION (Bottom-Up):**
+
+```cpp
+int numSquares(int n) {
+    vector<int> dp(n + 1, INT_MAX);
+    dp[0] = 0;
+
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j * j <= i; j++) {
+            dp[i] = min(dp[i], dp[i - j*j] + 1);
+        }
+    }
+
+    return dp[n];
 }
 ```
 
@@ -1936,6 +2070,34 @@ nums = [3,1,5] > nums = [1,3,1,5,1]
 
 PROBLEM: Build binary tree minimizing sum of non-leaf nodes.
 
+**RECURSIVE (Top-Down):**
+
+```cpp
+int mctFromLeafValues(vector<int>& arr) {
+    int n = arr.size();
+    vector<vector<int>> maxs(n, vector<int>(n));
+    for (int i = 0; i < n; i++) {
+        maxs[i][i] = arr[i];
+        for (int j = i+1; j < n; j++) maxs[i][j] = max(maxs[i][j-1], arr[j]);
+    }
+    vector<vector<int>> memo(n, vector<int>(n, -1));
+    return solve(0, n-1, maxs, memo);
+}
+
+int solve(int i, int j, vector<vector<int>>& maxs, vector<vector<int>>& memo) {
+    if (i == j) return 0;
+    if (memo[i][j] != -1) return memo[i][j];
+    int best = INT_MAX;
+    for (int k = i; k < j; k++) {
+        best = min(best, solve(i, k, maxs, memo) + solve(k+1, j, maxs, memo)
+                        + maxs[i][k] * maxs[k+1][j]);
+    }
+    return memo[i][j] = best;
+}
+```
+
+**TABULATION (Bottom-Up):**
+
 ```cpp
 int mctFromLeafValues(vector<int>& arr) {
 int n = arr.size();                                                
@@ -1984,6 +2146,31 @@ merge happens and costs max(left) x max(right).
 PROBLEM: Burst balloons to maximize coins (multiply adjacent values).
 
  **BRILLIANT INSIGHT**: Think backwards! Which balloon to burst LAST?
+
+**RECURSIVE (Top-Down):**
+
+```cpp
+int maxCoins(vector<int>& nums) {
+    int n = nums.size();
+    nums.insert(nums.begin(), 1);
+    nums.push_back(1);
+    vector<vector<int>> memo(n + 2, vector<int>(n + 2, -1));
+    return solve(nums, 1, n, memo);
+}
+
+int solve(vector<int>& nums, int i, int j, vector<vector<int>>& memo) {
+    if (i > j) return 0;
+    if (memo[i][j] != -1) return memo[i][j];
+    int best = 0;
+    for (int k = i; k <= j; k++) {
+        int coins = nums[i-1] * nums[k] * nums[j+1];
+        best = max(best, solve(nums, i, k-1, memo) + coins + solve(nums, k+1, j, memo));
+    }
+    return memo[i][j] = best;
+}
+```
+
+**TABULATION (Bottom-Up):**
 
 ```cpp
 int maxCoins(vector<int>& nums) {
@@ -2071,24 +2258,40 @@ right subtrees = numTrees(n - k)
 total += left x right
 ```
 
-**COMPLETE SOLUTION:**
+**RECURSIVE (Top-Down):**
 
 ```cpp
 int numTrees(int n) {
-vector<int> dp(n + 1, 0);                      
-dp[0] = 1;  // Empty tree                      
-dp[1] = 1;  // Single node                     
+    vector<int> memo(n + 1, -1);
+    return solve(n, memo);
+}
 
-for (int nodes = 2; nodes <= n; nodes++) {     
-    for (int root = 1; root <= nodes; root++) {
-        int left = root - 1;                   
-        int right = nodes - root;              
-        dp[nodes] += dp[left] * dp[right];     
-    }                                          
-}                                              
+int solve(int n, vector<int>& memo) {
+    if (n <= 1) return 1;
+    if (memo[n] != -1) return memo[n];
+    int total = 0;
+    for (int root = 1; root <= n; root++) {
+        total += solve(root - 1, memo) * solve(n - root, memo);
+    }
+    return memo[n] = total;
+}
+```
 
-return dp[n];                                  
+**TABULATION (Bottom-Up):**
 
+```cpp
+int numTrees(int n) {
+    vector<int> dp(n + 1, 0);
+    dp[0] = 1;
+    dp[1] = 1;
+
+    for (int nodes = 2; nodes <= n; nodes++) {
+        for (int root = 1; root <= nodes; root++) {
+            dp[nodes] += dp[root - 1] * dp[nodes - root];
+        }
+    }
+
+    return dp[n];
 }
 ```
 
@@ -2178,12 +2381,43 @@ To merge into m piles (m > 1):
 dp[i][j][m] = min(dp[i][mid][1] + dp[mid+1][j][m-1])
 ```
 
-**COMPLETE SOLUTION:**
+**RECURSIVE (Top-Down):**
 
 ```cpp
 int mergeStones(vector<int>& stones, int k) {
-int n = stones.size();                                                                 
-if ((n - 1) % (k - 1) != 0) return -1;  // Impossible!                                 
+    int n = stones.size();
+    if ((n - 1) % (k - 1) != 0) return -1;
+    vector<int> prefix(n + 1, 0);
+    for (int i = 0; i < n; i++) prefix[i+1] = prefix[i] + stones[i];
+    vector<vector<vector<int>>> memo(n, vector<vector<int>>(n, vector<int>(k + 1, -1)));
+    return solve(0, n-1, 1, k, prefix, memo);
+}
+
+int solve(int i, int j, int m, int k, vector<int>& prefix,
+          vector<vector<vector<int>>>& memo) {
+    if (i == j) return m == 1 ? 0 : INT_MAX;
+    if (memo[i][j][m] != -1) return memo[i][j][m];
+    if (m == 1) {
+        int sub = solve(i, j, k, k, prefix, memo);
+        return memo[i][j][1] = sub == INT_MAX ? INT_MAX : sub + prefix[j+1] - prefix[i];
+    }
+    int best = INT_MAX;
+    for (int mid = i; mid < j; mid += k - 1) {
+        int left = solve(i, mid, 1, k, prefix, memo);
+        int right = solve(mid+1, j, m-1, k, prefix, memo);
+        if (left != INT_MAX && right != INT_MAX)
+            best = min(best, left + right);
+    }
+    return memo[i][j][m] = best;
+}
+```
+
+**TABULATION (Bottom-Up):**
+
+```cpp
+int mergeStones(vector<int>& stones, int k) {
+    int n = stones.size();
+    if ((n - 1) % (k - 1) != 0) return -1;                                 
 
 // Prefix sum for range sum                                                            
 vector<int> sum(n + 1, 0);                                                             
@@ -2380,23 +2614,40 @@ PROBLEM: Find longest subsequence common to both strings.
 If match: include this char + LCS of remaining
 If no match: max(skip from s1, skip from s2)
 
+**RECURSIVE (Top-Down):**
+
 ```cpp
 int longestCommonSubsequence(string text1, string text2) {
-int m = text1.size(), n = text2.size();                         
-vector<vector<int>> dp(m + 1, vector<int>(n + 1, 0));           
+    int m = text1.size(), n = text2.size();
+    vector<vector<int>> memo(m, vector<int>(n, -1));
+    return solve(text1, text2, m-1, n-1, memo);
+}
 
-for (int i = 1; i <= m; i++) {                                  
-    for (int j = 1; j <= n; j++) {                              
-        if (text1[i-1] == text2[j-1]) {                         
-            dp[i][j] = dp[i-1][j-1] + 1;  // Match!             
-        } else {                                                
-            dp[i][j] = max(dp[i-1][j], dp[i][j-1]);  // Skip one
-        }                                                       
-    }                                                           
-}                                                               
+int solve(string& s1, string& s2, int i, int j, vector<vector<int>>& memo) {
+    if (i < 0 || j < 0) return 0;
+    if (memo[i][j] != -1) return memo[i][j];
+    if (s1[i] == s2[j]) return memo[i][j] = 1 + solve(s1, s2, i-1, j-1, memo);
+    return memo[i][j] = max(solve(s1, s2, i-1, j, memo), solve(s1, s2, i, j-1, memo));
+}
+```
 
-return dp[m][n];                                                
+**TABULATION (Bottom-Up):**
 
+```cpp
+int longestCommonSubsequence(string text1, string text2) {
+    int m = text1.size(), n = text2.size();
+    vector<vector<int>> dp(m + 1, vector<int>(n + 1, 0));
+
+    for (int i = 1; i <= m; i++) {
+        for (int j = 1; j <= n; j++) {
+            if (text1[i-1] == text2[j-1])
+                dp[i][j] = dp[i-1][j-1] + 1;
+            else
+                dp[i][j] = max(dp[i-1][j], dp[i][j-1]);
+        }
+    }
+
+    return dp[m][n];
 }
 ```
 
@@ -2429,31 +2680,46 @@ PROBLEM: Min operations (insert/delete/replace) to convert s1 to s2.
 Match: no operation needed, dp[i-1][j-1]
 No match: min of (insert, delete, replace) + 1
 
+**RECURSIVE (Top-Down):**
+
 ```cpp
 int minDistance(string word1, string word2) {
-int m = word1.size(), n = word2.size();                  
-vector<vector<int>> dp(m + 1, vector<int>(n + 1));       
+    int m = word1.size(), n = word2.size();
+    vector<vector<int>> memo(m + 1, vector<int>(n + 1, -1));
+    return solve(word1, word2, m, n, memo);
+}
 
-// Base cases                                            
-for (int i = 0; i <= m; i++) dp[i][0] = i;  // Delete all
-for (int j = 0; j <= n; j++) dp[0][j] = j;  // Insert all
+int solve(string& w1, string& w2, int i, int j, vector<vector<int>>& memo) {
+    if (i == 0) return j;
+    if (j == 0) return i;
+    if (memo[i][j] != -1) return memo[i][j];
+    if (w1[i-1] == w2[j-1]) return memo[i][j] = solve(w1, w2, i-1, j-1, memo);
+    return memo[i][j] = 1 + min({solve(w1, w2, i-1, j, memo),
+                                  solve(w1, w2, i, j-1, memo),
+                                  solve(w1, w2, i-1, j-1, memo)});
+}
+```
 
-for (int i = 1; i <= m; i++) {                           
-    for (int j = 1; j <= n; j++) {                       
-        if (word1[i-1] == word2[j-1]) {                  
-            dp[i][j] = dp[i-1][j-1];  // No operation    
-        } else {                                         
-            dp[i][j] = 1 + min({                         
-                dp[i-1][j],    // Delete from word1      
-                dp[i][j-1],    // Insert to word1        
-                dp[i-1][j-1]   // Replace                
-            });                                          
-        }                                                
-    }                                                    
-}                                                        
+**TABULATION (Bottom-Up):**
 
-return dp[m][n];                                         
+```cpp
+int minDistance(string word1, string word2) {
+    int m = word1.size(), n = word2.size();
+    vector<vector<int>> dp(m + 1, vector<int>(n + 1));
 
+    for (int i = 0; i <= m; i++) dp[i][0] = i;
+    for (int j = 0; j <= n; j++) dp[0][j] = j;
+
+    for (int i = 1; i <= m; i++) {
+        for (int j = 1; j <= n; j++) {
+            if (word1[i-1] == word2[j-1])
+                dp[i][j] = dp[i-1][j-1];
+            else
+                dp[i][j] = 1 + min({dp[i-1][j], dp[i][j-1], dp[i-1][j-1]});
+        }
+    }
+
+    return dp[m][n];
 }
 ```
 
@@ -2482,40 +2748,47 @@ WHY NOT dp[i][0] = 0?
 
 ### **PROBLEM: Palindromic Substrings (LC 647)**
 
+**RECURSIVE (Top-Down) — expand from center:**
+
 ```cpp
 int countSubstrings(string s) {
-int n = s.size();                                  
-vector<vector<bool>> dp(n, vector<bool>(n, false));
-int count = 0;                                     
+    int count = 0;
+    for (int i = 0; i < s.size(); i++) {
+        expand(s, i, i, count);
+        expand(s, i, i+1, count);
+    }
+    return count;
+}
 
-// Single characters                               
-for (int i = 0; i < n; i++) {                      
-    dp[i][i] = true;                               
-    count++;                                       
-}                                                  
+void expand(string& s, int l, int r, int& count) {
+    while (l >= 0 && r < s.size() && s[l] == s[r]) {
+        count++;
+        l--; r++;
+    }
+}
+```
 
-// Two characters                                  
-for (int i = 0; i < n - 1; i++) {                  
-    if (s[i] == s[i+1]) {                          
-        dp[i][i+1] = true;                         
-        count++;                                   
-    }                                              
-}                                                  
+**TABULATION (Bottom-Up):**
 
-// Longer substrings                               
-for (int l = 3; l <= n; l++) {                     
-    for (int i = 0; i < n - l + 1; i++) {          
-        int j = i + l - 1;                         
+```cpp
+int countSubstrings(string s) {
+    int n = s.size(), count = 0;
+    vector<vector<bool>> dp(n, vector<bool>(n, false));
 
-        if (s[i] == s[j] && dp[i+1][j-1]) {        
-            dp[i][j] = true;                       
-            count++;                               
-        }                                          
-    }                                              
-}                                                  
+    for (int i = 0; i < n; i++) { dp[i][i] = true; count++; }
 
-return count;                                      
+    for (int i = 0; i < n-1; i++) {
+        if (s[i] == s[i+1]) { dp[i][i+1] = true; count++; }
+    }
 
+    for (int l = 3; l <= n; l++) {
+        for (int i = 0; i < n - l + 1; i++) {
+            int j = i + l - 1;
+            if (s[i] == s[j] && dp[i+1][j-1]) { dp[i][j] = true; count++; }
+        }
+    }
+
+    return count;
 }
 ```
 
@@ -2561,33 +2834,44 @@ else:
 dp[i][j] = max(dp[i+1][j], dp[i][j-1])
 ```
 
-**COMPLETE SOLUTION:**
+**RECURSIVE (Top-Down):**
 
 ```cpp
 int longestPalindromeSubseq(string s) {
-int n = s.size();                                        
-vector<vector<int>> dp(n, vector<int>(n, 0));            
+    int n = s.size();
+    vector<vector<int>> memo(n, vector<int>(n, -1));
+    return solve(s, 0, n-1, memo);
+}
 
-// Base: single characters                               
-for (int i = 0; i < n; i++) {                            
-    dp[i][i] = 1;                                        
-}                                                        
+int solve(string& s, int i, int j, vector<vector<int>>& memo) {
+    if (i > j) return 0;
+    if (i == j) return 1;
+    if (memo[i][j] != -1) return memo[i][j];
+    if (s[i] == s[j]) return memo[i][j] = 2 + solve(s, i+1, j-1, memo);
+    return memo[i][j] = max(solve(s, i+1, j, memo), solve(s, i, j-1, memo));
+}
+```
 
-// Iterate by length                                     
-for (int len = 2; len <= n; len++) {                     
-    for (int i = 0; i <= n - len; i++) {                 
-        int j = i + len - 1;                             
+**TABULATION (Bottom-Up):**
 
-        if (s[i] == s[j]) {                              
-            dp[i][j] = (len == 2) ? 2 : dp[i+1][j-1] + 2;
-        } else {                                         
-            dp[i][j] = max(dp[i+1][j], dp[i][j-1]);      
-        }                                                
-    }                                                    
-}                                                        
+```cpp
+int longestPalindromeSubseq(string s) {
+    int n = s.size();
+    vector<vector<int>> dp(n, vector<int>(n, 0));
 
-return dp[0][n-1];                                       
+    for (int i = 0; i < n; i++) dp[i][i] = 1;
 
+    for (int len = 2; len <= n; len++) {
+        for (int i = 0; i <= n - len; i++) {
+            int j = i + len - 1;
+            if (s[i] == s[j])
+                dp[i][j] = (len == 2) ? 2 : dp[i+1][j-1] + 2;
+            else
+                dp[i][j] = max(dp[i+1][j], dp[i][j-1]);
+        }
+    }
+
+    return dp[0][n-1];
 }
 ```
 
@@ -2663,31 +2947,42 @@ If s[i] != t[j]:
 t is empty: 1 way (delete all from s)
 s is empty but t is not: 0 ways
 
-**COMPLETE SOLUTION:**
+**RECURSIVE (Top-Down):**
 
 ```cpp
 int numDistinct(string s, string t) {
-int m = s.size(), n = t.size();                                          
-vector<vector<unsigned long>> dp(m + 1, vector<unsigned long>(n + 1, 0));
+    int m = s.size(), n = t.size();
+    vector<vector<int>> memo(m + 1, vector<int>(n + 1, -1));
+    return solve(s, t, m, n, memo);
+}
 
-// Base: empty t can be formed 1 way                                     
-for (int i = 0; i <= m; i++) {                                           
-    dp[i][0] = 1;                                                        
-}                                                                        
+int solve(string& s, string& t, int i, int j, vector<vector<int>>& memo) {
+    if (j == 0) return 1;
+    if (i == 0) return 0;
+    if (memo[i][j] != -1) return memo[i][j];
+    int res = solve(s, t, i-1, j, memo);
+    if (s[i-1] == t[j-1]) res += solve(s, t, i-1, j-1, memo);
+    return memo[i][j] = res;
+}
+```
 
-for (int i = 1; i <= m; i++) {                                           
-    for (int j = 1; j <= n; j++) {                                       
-        if (s[i-1] == t[j-1]) {                                          
-            dp[i][j] = dp[i-1][j-1] + dp[i-1][j];                        
-                      // use match   +  skip match                       
-        } else {                                                         
-            dp[i][j] = dp[i-1][j];  // Skip                              
-        }                                                                
-    }                                                                    
-}                                                                        
+**TABULATION (Bottom-Up):**
 
-return dp[m][n];                                                         
+```cpp
+int numDistinct(string s, string t) {
+    int m = s.size(), n = t.size();
+    vector<vector<unsigned long>> dp(m + 1, vector<unsigned long>(n + 1, 0));
 
+    for (int i = 0; i <= m; i++) dp[i][0] = 1;
+
+    for (int i = 1; i <= m; i++) {
+        for (int j = 1; j <= n; j++) {
+            dp[i][j] = dp[i-1][j];
+            if (s[i-1] == t[j-1]) dp[i][j] += dp[i-1][j-1];
+        }
+    }
+
+    return dp[m][n];
 }
 ```
 
@@ -2882,22 +3177,38 @@ PROBLEM: Max money robbing houses (can't rob adjacent houses).
  **KEY INSIGHT**:
 At each house: max(rob this + skip last, don't rob this)
 
+**RECURSIVE (Top-Down):**
+
 ```cpp
 int rob(vector<int>& nums) {
-int n = nums.size();                        
-if (n == 1) return nums[0];                 
+    vector<int> memo(nums.size(), -1);
+    return solve(nums, nums.size() - 1, memo);
+}
 
-vector<int> dp(n);                          
-dp[0] = nums[0];                            
-dp[1] = max(nums[0], nums[1]);              
+int solve(vector<int>& nums, int i, vector<int>& memo) {
+    if (i < 0) return 0;
+    if (memo[i] != -1) return memo[i];
+    return memo[i] = max(solve(nums, i-1, memo),
+                         solve(nums, i-2, memo) + nums[i]);
+}
+```
 
-for (int i = 2; i < n; i++) {               
-    dp[i] = max(dp[i-1], dp[i-2] + nums[i]);
-                // skip      rob this       
-}                                           
+**TABULATION (Bottom-Up):**
 
-return dp[n-1];                             
+```cpp
+int rob(vector<int>& nums) {
+    int n = nums.size();
+    if (n == 1) return nums[0];
 
+    vector<int> dp(n);
+    dp[0] = nums[0];
+    dp[1] = max(nums[0], nums[1]);
+
+    for (int i = 2; i < n; i++) {
+        dp[i] = max(dp[i-1], dp[i-2] + nums[i]);
+    }
+
+    return dp[n-1];
 }
 ```
 
@@ -2944,24 +3255,42 @@ PROBLEM: Max profit with transactions, 1 day cooldown after selling.
  **STATE MACHINE**:
 3 states: hold stock, sold (cooldown), no stock
 
+**RECURSIVE (Top-Down):**
+
 ```cpp
 int maxProfit(vector<int>& prices) {
-int hold = -prices[0];  // Holding stock                                 
-int sold = 0;           // Just sold (cooldown)                          
-int rest = 0;           // Not holding, can buy                          
+    int n = prices.size();
+    vector<vector<int>> memo(n, vector<int>(2, -1));
+    return solve(prices, 0, 0, memo);
+}
 
-for (int i = 1; i < prices.size(); i++) {                                
-    int prevHold = hold;                                                 
-    int prevSold = sold;                                                 
-    int prevRest = rest;                                                 
+int solve(vector<int>& prices, int i, int holding, vector<vector<int>>& memo) {
+    if (i >= prices.size()) return 0;
+    if (memo[i][holding] != -1) return memo[i][holding];
+    int doNothing = solve(prices, i+1, holding, memo);
+    if (holding)
+        return memo[i][holding] = max(doNothing,
+                                      prices[i] + solve(prices, i+2, 0, memo));
+    else
+        return memo[i][holding] = max(doNothing,
+                                      -prices[i] + solve(prices, i+1, 1, memo));
+}
+```
 
-    hold = max(prevHold, prevRest - prices[i]);  // Keep or buy          
-    sold = prevHold + prices[i];                 // Sell                 
-    rest = max(prevRest, prevSold);              // Rest or cooldown over
-}                                                                        
+**TABULATION (Bottom-Up, O(1) space):**
 
-return max(sold, rest);                                                  
+```cpp
+int maxProfit(vector<int>& prices) {
+    int hold = -prices[0], sold = 0, rest = 0;
 
+    for (int i = 1; i < prices.size(); i++) {
+        int prevHold = hold, prevSold = sold, prevRest = rest;
+        hold = max(prevHold, prevRest - prices[i]);
+        sold = prevHold + prices[i];
+        rest = max(prevRest, prevSold);
+    }
+
+    return max(sold, rest);
 }
 ```
 
@@ -3019,36 +3348,54 @@ sell[i][t] = max(sell[i-1][t], buy[i-1][t] + prices[i])
 // keep no stock   or sell today
 ```
 
-**COMPLETE SOLUTION:**
+**RECURSIVE (Top-Down):**
 
 ```cpp
 int maxProfit(int k, vector<int>& prices) {
-int n = prices.size();                                               
-if (n == 0 || k == 0) return 0;                                      
+    int n = prices.size();
+    if (n == 0 || k == 0) return 0;
+    vector<vector<vector<int>>> memo(n, vector<vector<int>>(k + 1, vector<int>(2, -1)));
+    return solve(prices, 0, k, 0, memo);
+}
 
-// Edge case: k >= n/2 means unlimited transactions                  
-if (k >= n / 2) {                                                    
-    int profit = 0;                                                  
-    for (int i = 1; i < n; i++) {                                    
-        profit += max(0, prices[i] - prices[i-1]);                   
-    }                                                                
-    return profit;                                                   
-}                                                                    
+int solve(vector<int>& prices, int i, int txLeft, int holding,
+          vector<vector<vector<int>>>& memo) {
+    if (i == prices.size() || txLeft == 0) return 0;
+    if (memo[i][txLeft][holding] != -1) return memo[i][txLeft][holding];
+    int doNothing = solve(prices, i+1, txLeft, holding, memo);
+    if (holding)
+        return memo[i][txLeft][holding] = max(doNothing,
+            prices[i] + solve(prices, i+1, txLeft-1, 0, memo));
+    else
+        return memo[i][txLeft][holding] = max(doNothing,
+            -prices[i] + solve(prices, i+1, txLeft, 1, memo));
+}
+```
 
-// buy[i][t] = max profit on day i with t transactions, holding stock
-// sell[i][t] = max profit on day i with t transactions, not holding 
-vector<vector<int>> buy(n, vector<int>(k + 1, -prices[0]));          
-vector<vector<int>> sell(n, vector<int>(k + 1, 0));                  
+**TABULATION (Bottom-Up):**
 
-for (int i = 1; i < n; i++) {                                        
-    for (int t = 1; t <= k; t++) {                                   
-        buy[i][t] = max(buy[i-1][t], sell[i-1][t-1] - prices[i]);    
-        sell[i][t] = max(sell[i-1][t], buy[i-1][t] + prices[i]);     
-    }                                                                
-}                                                                    
+```cpp
+int maxProfit(int k, vector<int>& prices) {
+    int n = prices.size();
+    if (n == 0 || k == 0) return 0;
 
-return sell[n-1][k];                                                 
+    if (k >= n / 2) {
+        int profit = 0;
+        for (int i = 1; i < n; i++) profit += max(0, prices[i] - prices[i-1]);
+        return profit;
+    }
 
+    vector<vector<int>> buy(n, vector<int>(k + 1, -prices[0]));
+    vector<vector<int>> sell(n, vector<int>(k + 1, 0));
+
+    for (int i = 1; i < n; i++) {
+        for (int t = 1; t <= k; t++) {
+            buy[i][t] = max(buy[i-1][t], sell[i-1][t-1] - prices[i]);
+            sell[i][t] = max(sell[i-1][t], buy[i-1][t] + prices[i]);
+        }
+    }
+
+    return sell[n-1][k];
 }
 ```
 
@@ -3138,12 +3485,27 @@ During backtracking:
 - If match: include once (part of LCS)
 - If no match: include both
 
-**COMPLETE SOLUTION:**
+**RECURSIVE (Top-Down) — LCS part only, then backtrack:**
+
+```cpp
+int solveLCS(string& s1, string& s2, int i, int j,
+             vector<vector<int>>& memo) {
+    if (i == 0 || j == 0) return 0;
+    if (memo[i][j] != -1) return memo[i][j];
+    if (s1[i-1] == s2[j-1]) return memo[i][j] = 1 + solveLCS(s1, s2, i-1, j-1, memo);
+    return memo[i][j] = max(solveLCS(s1, s2, i-1, j, memo),
+                            solveLCS(s1, s2, i, j-1, memo));
+}
+```
+
+NOTE: SCS needs the full DP table for backtracking, so tabulation is preferred.
+
+**TABULATION (Bottom-Up) — build LCS table + backtrack:**
 
 ```cpp
 string shortestCommonSupersequence(string s1, string s2) {
-int m = s1.size(), n = s2.size();                     
-vector<vector<int>> dp(m + 1, vector<int>(n + 1, 0)); 
+    int m = s1.size(), n = s2.size();
+    vector<vector<int>> dp(m + 1, vector<int>(n + 1, 0));
 
 // Build LCS table                                    
 for (int i = 1; i <= m; i++) {                        
@@ -3268,36 +3630,47 @@ dp[i][j] = (dp[i-1][j] && s1[i-1] == s3[i+j-1]) ||
 
 (dp[i][j-1] && s2[j-1] == s3[i+j-1])
 
-**COMPLETE SOLUTION:**
+**RECURSIVE (Top-Down):**
 
 ```cpp
 bool isInterleave(string s1, string s2, string s3) {
-int m = s1.size(), n = s2.size();                          
-if (m + n != s3.size()) return false;                      
+    if (s1.size() + s2.size() != s3.size()) return false;
+    vector<vector<int>> memo(s1.size() + 1, vector<int>(s2.size() + 1, -1));
+    return solve(s1, s2, s3, 0, 0, memo);
+}
 
-vector<vector<bool>> dp(m + 1, vector<bool>(n + 1, false));
-dp[0][0] = true;                                           
+bool solve(string& s1, string& s2, string& s3, int i, int j,
+           vector<vector<int>>& memo) {
+    if (i + j == s3.size()) return true;
+    if (memo[i][j] != -1) return memo[i][j];
+    bool res = false;
+    if (i < s1.size() && s1[i] == s3[i+j]) res = solve(s1, s2, s3, i+1, j, memo);
+    if (!res && j < s2.size() && s2[j] == s3[i+j]) res = solve(s1, s2, s3, i, j+1, memo);
+    return memo[i][j] = res;
+}
+```
 
-// Base: use only s1                                       
-for (int i = 1; i <= m; i++) {                             
-    dp[i][0] = dp[i-1][0] && s1[i-1] == s3[i-1];           
-}                                                          
+**TABULATION (Bottom-Up):**
 
-// Base: use only s2                                       
-for (int j = 1; j <= n; j++) {                             
-    dp[0][j] = dp[0][j-1] && s2[j-1] == s3[j-1];           
-}                                                          
+```cpp
+bool isInterleave(string s1, string s2, string s3) {
+    int m = s1.size(), n = s2.size();
+    if (m + n != s3.size()) return false;
 
-// Fill DP table                                           
-for (int i = 1; i <= m; i++) {                             
-    for (int j = 1; j <= n; j++) {                         
-        dp[i][j] = (dp[i-1][j] && s1[i-1] == s3[i+j-1]) | |
-                   (dp[i][j-1] && s2[j-1] == s3[i+j-1]);   
-    }                                                      
-}                                                          
+    vector<vector<bool>> dp(m + 1, vector<bool>(n + 1, false));
+    dp[0][0] = true;
 
-return dp[m][n];                                           
+    for (int i = 1; i <= m; i++) dp[i][0] = dp[i-1][0] && s1[i-1] == s3[i-1];
+    for (int j = 1; j <= n; j++) dp[0][j] = dp[0][j-1] && s2[j-1] == s3[j-1];
 
+    for (int i = 1; i <= m; i++) {
+        for (int j = 1; j <= n; j++) {
+            dp[i][j] = (dp[i-1][j] && s1[i-1] == s3[i+j-1]) ||
+                       (dp[i][j-1] && s2[j-1] == s3[i+j-1]);
+        }
+    }
+
+    return dp[m][n];
 }
 ```
 
@@ -3390,43 +3763,54 @@ if (p[j-1] == '*'):
 else:
 - Direct match: dp[i-1][j-1] if s[i-1] matches p[j-1]
 
-**COMPLETE SOLUTION:**
+**RECURSIVE (Top-Down):**
 
 ```cpp
 bool isMatch(string s, string p) {
-int m = s.size(), n = p.size();                            
-vector<vector<bool>> dp(m + 1, vector<bool>(n + 1, false));
+    vector<vector<int>> memo(s.size() + 1, vector<int>(p.size() + 1, -1));
+    return solve(s, p, 0, 0, memo);
+}
 
-dp[0][0] = true;  // Empty matches empty                   
+bool solve(string& s, string& p, int i, int j, vector<vector<int>>& memo) {
+    if (j == p.size()) return i == s.size();
+    if (memo[i][j] != -1) return memo[i][j];
 
-// Handle patterns like "a*", "a*b*"                       
-for (int j = 2; j <= n; j++) {                             
-    if (p[j-1] == '*') {                                   
-        dp[0][j] = dp[0][j-2];                             
-    }                                                      
-}                                                          
+    bool first_match = (i < s.size()) && (s[i] == p[j] || p[j] == '.');
 
-for (int i = 1; i <= m; i++) {                             
-    for (int j = 1; j <= n; j++) {                         
-        if (p[j-1] == '*') {                               
-            // Option 1: match 0 times                     
-            dp[i][j] = dp[i][j-2];                         
+    if (j + 1 < p.size() && p[j+1] == '*') {
+        return memo[i][j] = solve(s, p, i, j+2, memo) ||
+                            (first_match && solve(s, p, i+1, j, memo));
+    }
+    return memo[i][j] = first_match && solve(s, p, i+1, j+1, memo);
+}
+```
 
-            // Option 2: match 1+ times                    
-            if (p[j-2] == s[i-1] || p[j-2] == '.') {       
-                dp[i][j] = dp[i][j] || dp[i-1][j];         
-            }                                              
-        } else {                                           
-            // Direct character match or '.'               
-            if (p[j-1] == s[i-1] || p[j-1] == '.') {       
-                dp[i][j] = dp[i-1][j-1];                   
-            }                                              
-        }                                                  
-    }                                                      
-}                                                          
+**TABULATION (Bottom-Up):**
 
-return dp[m][n];                                           
+```cpp
+bool isMatch(string s, string p) {
+    int m = s.size(), n = p.size();
+    vector<vector<bool>> dp(m + 1, vector<bool>(n + 1, false));
+    dp[0][0] = true;
 
+    for (int j = 2; j <= n; j++) {
+        if (p[j-1] == '*') dp[0][j] = dp[0][j-2];
+    }
+
+    for (int i = 1; i <= m; i++) {
+        for (int j = 1; j <= n; j++) {
+            if (p[j-1] == '*') {
+                dp[i][j] = dp[i][j-2];
+                if (p[j-2] == s[i-1] || p[j-2] == '.')
+                    dp[i][j] = dp[i][j] || dp[i-1][j];
+            } else {
+                if (p[j-1] == s[i-1] || p[j-1] == '.')
+                    dp[i][j] = dp[i-1][j-1];
+            }
+        }
+    }
+
+    return dp[m][n];
 }
 ```
 
@@ -3711,16 +4095,55 @@ Answer = 4
 
 ## **SOLVED: Longest Increasing Subsequence (LC 300)** 
 
+**RECURSIVE (Top-Down) — O(N^2):**
+
 ```cpp
 int lengthOfLIS(vector<int>& nums) {
-vector<int> tails;                                         
-for (int num : nums) {                                     
-    auto it = lower_bound(tails.begin(), tails.end(), num);
-    if (it == tails.end()) tails.push_back(num);           
-    else *it = num;                                        
-}                                                          
-return tails.size();                                       
+    int n = nums.size();
+    vector<int> memo(n, -1);
+    int ans = 1;
+    for (int i = 0; i < n; i++) ans = max(ans, solve(nums, i, memo));
+    return ans;
+}
 
+int solve(vector<int>& nums, int i, vector<int>& memo) {
+    if (memo[i] != -1) return memo[i];
+    int best = 1;
+    for (int j = 0; j < i; j++) {
+        if (nums[j] < nums[i]) best = max(best, 1 + solve(nums, j, memo));
+    }
+    return memo[i] = best;
+}
+```
+
+**TABULATION (Bottom-Up) — O(N^2):**
+
+```cpp
+int lengthOfLIS(vector<int>& nums) {
+    int n = nums.size();
+    vector<int> dp(n, 1);
+
+    for (int i = 1; i < n; i++) {
+        for (int j = 0; j < i; j++) {
+            if (nums[j] < nums[i]) dp[i] = max(dp[i], dp[j] + 1);
+        }
+    }
+
+    return *max_element(dp.begin(), dp.end());
+}
+```
+
+**OPTIMAL — O(N log N) patience sort:**
+
+```cpp
+int lengthOfLIS(vector<int>& nums) {
+    vector<int> tails;
+    for (int num : nums) {
+        auto it = lower_bound(tails.begin(), tails.end(), num);
+        if (it == tails.end()) tails.push_back(num);
+        else *it = num;
+    }
+    return tails.size();
 }
 ```
 
@@ -3729,6 +4152,8 @@ return tails.size();
 PROBLEM: Count how many LIS exist.
 
 KEY INSIGHT: Track both length AND count for each position.
+
+**TABULATION (Bottom-Up) — O(N^2):**
 
 ```cpp
 int findNumberOfLIS(vector<int>& nums) {
@@ -3920,15 +4345,32 @@ Check problem constraints!
 
 ## **SOLVED: Maximum Subarray (LC 53)** 
 
+**TABULATION (dp[] version):**
+
 ```cpp
 int maxSubArray(vector<int>& nums) {
-int curr = nums[0], maxSum = nums[0];   
-for (int i = 1; i < nums.size(); i++) { 
-    curr = max(nums[i], curr + nums[i]);
-    maxSum = max(maxSum, curr);         
-}                                       
-return maxSum;                          
+    int n = nums.size();
+    vector<int> dp(n);
+    dp[0] = nums[0];
 
+    for (int i = 1; i < n; i++) {
+        dp[i] = max(nums[i], dp[i-1] + nums[i]);
+    }
+
+    return *max_element(dp.begin(), dp.end());
+}
+```
+
+**SPACE OPTIMIZED (Kadane's O(1)):**
+
+```cpp
+int maxSubArray(vector<int>& nums) {
+    int curr = nums[0], maxSum = nums[0];
+    for (int i = 1; i < nums.size(); i++) {
+        curr = max(nums[i], curr + nums[i]);
+        maxSum = max(maxSum, curr);
+    }
+    return maxSum;
 }
 ```
 
@@ -4468,6 +4910,35 @@ pairs, not just node. Same node with different masks = different states.
 ## **SOLVED: Partition to K Equal Sum Subsets (LC 698)** 
 
 PROBLEM: Partition array into K subsets with equal sum.
+
+**RECURSIVE (Top-Down with bitmask):**
+
+```cpp
+bool canPartitionKSubsets(vector<int>& nums, int k) {
+    int total = accumulate(nums.begin(), nums.end(), 0);
+    if (total % k != 0) return false;
+    int target = total / k;
+    sort(nums.rbegin(), nums.rend());
+    unordered_map<int, bool> memo;
+    return solve(nums, 0, 0, k, target, memo);
+}
+
+bool solve(vector<int>& nums, int mask, int curSum, int k, int target,
+           unordered_map<int, bool>& memo) {
+    if (k == 0) return true;
+    if (curSum == target) return solve(nums, mask, 0, k-1, target, memo);
+    if (memo.count(mask)) return memo[mask];
+    for (int i = 0; i < nums.size(); i++) {
+        if (mask & (1 << i)) continue;
+        if (curSum + nums[i] > target) continue;
+        if (solve(nums, mask | (1 << i), curSum + nums[i], k, target, memo))
+            return memo[mask] = true;
+    }
+    return memo[mask] = false;
+}
+```
+
+**TABULATION (Bottom-Up bitmask):**
 
 ```cpp
 int canPartitionKSubsets(vector<int>& nums, int k) {
@@ -5248,21 +5719,37 @@ Pattern 10: Digit DP            > Digit by digit, tight bound
 
 PROBLEM: Find max profit from ONE transaction (buy once, sell once).
 
- PATTERN: Decision Making (Pattern 5)
- TEMPLATE: Track running minimum, compute max difference
-
- **KEY INSIGHT**: Track the minimum price seen so far, and at each day
-compute profit if we sold today. No need for full DP table!
+**RECURSIVE (Top-Down):**
 
 ```cpp
 int maxProfit(vector<int>& prices) {
-int minPrice = INT_MAX, maxProfit = 0;           
-for (int price : prices) {                       
-    minPrice = min(minPrice, price);             
-    maxProfit = max(maxProfit, price - minPrice);
-}                                                
-return maxProfit;                                
+    int n = prices.size();
+    vector<vector<int>> memo(n, vector<int>(2, -1));
+    return solve(prices, 0, 0, memo);
+}
 
+int solve(vector<int>& prices, int i, int holding, vector<vector<int>>& memo) {
+    if (i == prices.size()) return 0;
+    if (memo[i][holding] != -1) return memo[i][holding];
+    int doNothing = solve(prices, i+1, holding, memo);
+    if (holding)
+        return memo[i][holding] = max(doNothing, prices[i]);
+    else
+        return memo[i][holding] = max(doNothing,
+            -prices[i] + solve(prices, i+1, 1, memo));
+}
+```
+
+**TABULATION (Greedy O(1)):**
+
+```cpp
+int maxProfit(vector<int>& prices) {
+    int minPrice = INT_MAX, maxProfit = 0;
+    for (int price : prices) {
+        minPrice = min(minPrice, price);
+        maxProfit = max(maxProfit, price - minPrice);
+    }
+    return maxProfit;
 }
 ```
 
@@ -5287,22 +5774,38 @@ at the single best buy point.
 
 PROBLEM: Max profit with UNLIMITED transactions.
 
- PATTERN: Decision Making (Pattern 5) - Greedy variant
- TEMPLATE: Sum all positive consecutive differences
-
- **KEY INSIGHT**: Collect every upward price movement. If tomorrow's price
-is higher than today's, "buy today sell tomorrow" captures that profit.
+**RECURSIVE (Top-Down):**
 
 ```cpp
 int maxProfit(vector<int>& prices) {
-int profit = 0;                           
-for (int i = 1; i < prices.size(); i++) { 
-    if (prices[i] > prices[i-1]) {        
-        profit += prices[i] - prices[i-1];
-    }                                     
-}                                         
-return profit;                            
+    int n = prices.size();
+    vector<vector<int>> memo(n, vector<int>(2, -1));
+    return solve(prices, 0, 0, memo);
+}
 
+int solve(vector<int>& prices, int i, int holding, vector<vector<int>>& memo) {
+    if (i == prices.size()) return 0;
+    if (memo[i][holding] != -1) return memo[i][holding];
+    int doNothing = solve(prices, i+1, holding, memo);
+    if (holding)
+        return memo[i][holding] = max(doNothing,
+            prices[i] + solve(prices, i+1, 0, memo));
+    else
+        return memo[i][holding] = max(doNothing,
+            -prices[i] + solve(prices, i+1, 1, memo));
+}
+```
+
+**TABULATION (Greedy O(1)):**
+
+```cpp
+int maxProfit(vector<int>& prices) {
+    int profit = 0;
+    for (int i = 1; i < prices.size(); i++) {
+        if (prices[i] > prices[i-1])
+            profit += prices[i] - prices[i-1];
+    }
+    return profit;
 }
 ```
 
@@ -5322,28 +5825,42 @@ to buying on the first day and selling on the last day of an uptrend.
 
 PROBLEM: Max profit with at most 2 transactions.
 
- PATTERN: Decision Making (Pattern 5) - State machine
- TEMPLATE: 4 states - buy1, sell1, buy2, sell2
-
- **KEY INSIGHT**: Track 4 variables representing the best profit at each
-stage. buy1 = best cost for first buy, sell1 = best profit after first
-sell, buy2 = best cost for second buy (using sell1 profit), sell2 = final.
-
- **WHY IT WORKS**: Each state builds on the previous. Processing all 4
-states in order for each price correctly propagates the optimal decisions.
+**RECURSIVE (Top-Down) — same as Stock IV with k=2:**
 
 ```cpp
 int maxProfit(vector<int>& prices) {
-int buy1 = INT_MIN, sell1 = 0;       
-int buy2 = INT_MIN, sell2 = 0;       
-for (int price : prices) {           
-    buy1 = max(buy1, -price);        
-    sell1 = max(sell1, buy1 + price);
-    buy2 = max(buy2, sell1 - price); 
-    sell2 = max(sell2, buy2 + price);
-}                                    
-return sell2;                        
+    int n = prices.size();
+    vector<vector<vector<int>>> memo(n, vector<vector<int>>(3, vector<int>(2, -1)));
+    return solve(prices, 0, 2, 0, memo);
+}
 
+int solve(vector<int>& prices, int i, int txLeft, int holding,
+          vector<vector<vector<int>>>& memo) {
+    if (i == prices.size() || txLeft == 0) return 0;
+    if (memo[i][txLeft][holding] != -1) return memo[i][txLeft][holding];
+    int doNothing = solve(prices, i+1, txLeft, holding, memo);
+    if (holding)
+        return memo[i][txLeft][holding] = max(doNothing,
+            prices[i] + solve(prices, i+1, txLeft-1, 0, memo));
+    else
+        return memo[i][txLeft][holding] = max(doNothing,
+            -prices[i] + solve(prices, i+1, txLeft, 1, memo));
+}
+```
+
+**TABULATION (State machine O(1)):**
+
+```cpp
+int maxProfit(vector<int>& prices) {
+    int buy1 = INT_MIN, sell1 = 0;
+    int buy2 = INT_MIN, sell2 = 0;
+    for (int price : prices) {
+        buy1 = max(buy1, -price);
+        sell1 = max(sell1, buy1 + price);
+        buy2 = max(buy2, sell1 - price);
+        sell2 = max(sell2, buy2 + price);
+    }
+    return sell2;
 }
 ```
 
@@ -5368,21 +5885,39 @@ buy1 = INT_MIN, sell1 = 0, buy2 = INT_MIN, sell2 = 0
 
 PROBLEM: Max profit with unlimited transactions, but each transaction costs a fee.
 
- PATTERN: Decision Making (Pattern 5) - State machine
- TEMPLATE: 2 states - hold (have stock), cash (no stock)
-
- **KEY INSIGHT**: Same as unlimited transactions but subtract the fee when
-selling. Two states: cash (not holding) and hold (holding stock).
+**RECURSIVE (Top-Down):**
 
 ```cpp
 int maxProfit(vector<int>& prices, int fee) {
-int hold = -prices[0], cash = 0;             
-for (int i = 1; i < prices.size(); i++) {    
-    cash = max(cash, hold + prices[i] - fee);
-    hold = max(hold, cash - prices[i]);      
-}                                            
-return cash;                                 
+    int n = prices.size();
+    vector<vector<int>> memo(n, vector<int>(2, -1));
+    return solve(prices, fee, 0, 0, memo);
+}
 
+int solve(vector<int>& prices, int fee, int i, int holding,
+          vector<vector<int>>& memo) {
+    if (i == prices.size()) return 0;
+    if (memo[i][holding] != -1) return memo[i][holding];
+    int doNothing = solve(prices, fee, i+1, holding, memo);
+    if (holding)
+        return memo[i][holding] = max(doNothing,
+            prices[i] - fee + solve(prices, fee, i+1, 0, memo));
+    else
+        return memo[i][holding] = max(doNothing,
+            -prices[i] + solve(prices, fee, i+1, 1, memo));
+}
+```
+
+**TABULATION (State machine O(1)):**
+
+```cpp
+int maxProfit(vector<int>& prices, int fee) {
+    int hold = -prices[0], cash = 0;
+    for (int i = 1; i < prices.size(); i++) {
+        cash = max(cash, hold + prices[i] - fee);
+        hold = max(hold, cash - prices[i]);
+    }
+    return cash;
 }
 ```
 
@@ -5407,26 +5942,45 @@ PROBLEM: Count unique paths in grid with obstacles. Can only move right or down.
  TEMPLATE: dp[i][j] = dp[i-1][j] + dp[i][j-1], but 0 if obstacle
 
  **KEY INSIGHT**: Same as Unique Paths (LC 62) but dp[i][j] = 0 whenever
-```cpp
 grid[i][j] is an obstacle. Also check if start or end is blocked!
 
+**RECURSIVE (Top-Down):**
+
+```cpp
 int uniquePathsWithObstacles(vector<vector<int>>& grid) {
-int m = grid.size(), n = grid[0].size();                 
-if (grid[0][0] == 1 || grid[m-1][n-1] == 1) return 0;    
+    int m = grid.size(), n = grid[0].size();
+    if (grid[0][0] == 1 || grid[m-1][n-1] == 1) return 0;
+    vector<vector<int>> memo(m, vector<int>(n, -1));
+    return solve(grid, m-1, n-1, memo);
+}
 
-vector<vector<long long>> dp(m, vector<long long>(n, 0));
-dp[0][0] = 1;                                            
+int solve(vector<vector<int>>& grid, int i, int j, vector<vector<int>>& memo) {
+    if (i < 0 || j < 0 || grid[i][j] == 1) return 0;
+    if (i == 0 && j == 0) return 1;
+    if (memo[i][j] != -1) return memo[i][j];
+    return memo[i][j] = solve(grid, i-1, j, memo) + solve(grid, i, j-1, memo);
+}
+```
 
-for (int i = 0; i < m; i++) {                            
-    for (int j = 0; j < n; j++) {                        
-        if (grid[i][j] == 1) { dp[i][j] = 0; continue; } 
-        if (i > 0) dp[i][j] += dp[i-1][j];               
-        if (j > 0) dp[i][j] += dp[i][j-1];               
-    }                                                    
-}                                                        
+**TABULATION (Bottom-Up):**
 
-return dp[m-1][n-1];                                     
+```cpp
+int uniquePathsWithObstacles(vector<vector<int>>& grid) {
+    int m = grid.size(), n = grid[0].size();
+    if (grid[0][0] == 1 || grid[m-1][n-1] == 1) return 0;
 
+    vector<vector<long long>> dp(m, vector<long long>(n, 0));
+    dp[0][0] = 1;
+
+    for (int i = 0; i < m; i++) {
+        for (int j = 0; j < n; j++) {
+            if (grid[i][j] == 1) { dp[i][j] = 0; continue; }
+            if (i > 0) dp[i][j] += dp[i-1][j];
+            if (j > 0) dp[i][j] += dp[i][j-1];
+        }
+    }
+
+    return dp[m-1][n-1];
 }
 ```
 
@@ -5458,24 +6012,45 @@ PROBLEM: Can string s be segmented into words from dictionary?
  **KEY INSIGHT**: dp[i] = true if there exists j < i such that dp[j] is
 true AND s[j..i-1] is a word in the dictionary. Try all split points!
 
+**RECURSIVE (Top-Down):**
+
 ```cpp
 bool wordBreak(string s, vector<string>& wordDict) {
-unordered_set<string> dict(wordDict.begin(), wordDict.end());
-int n = s.size();                                            
-vector<bool> dp(n + 1, false);                               
-dp[0] = true;                                                
+    unordered_set<string> dict(wordDict.begin(), wordDict.end());
+    vector<int> memo(s.size(), -1);
+    return solve(s, 0, dict, memo);
+}
 
-for (int i = 1; i <= n; i++) {                               
-    for (int j = 0; j < i; j++) {                            
-        if (dp[j] && dict.count(s.substr(j, i - j))) {       
-            dp[i] = true;                                    
-            break;                                           
-        }                                                    
-    }                                                        
-}                                                            
+bool solve(string& s, int start, unordered_set<string>& dict, vector<int>& memo) {
+    if (start == s.size()) return true;
+    if (memo[start] != -1) return memo[start];
+    for (int end = start + 1; end <= s.size(); end++) {
+        if (dict.count(s.substr(start, end - start)) && solve(s, end, dict, memo))
+            return memo[start] = 1;
+    }
+    return memo[start] = 0;
+}
+```
 
-return dp[n];                                                
+**TABULATION (Bottom-Up):**
 
+```cpp
+bool wordBreak(string s, vector<string>& wordDict) {
+    unordered_set<string> dict(wordDict.begin(), wordDict.end());
+    int n = s.size();
+    vector<bool> dp(n + 1, false);
+    dp[0] = true;
+
+    for (int i = 1; i <= n; i++) {
+        for (int j = 0; j < i; j++) {
+            if (dp[j] && dict.count(s.substr(j, i - j))) {
+                dp[i] = true;
+                break;
+            }
+        }
+    }
+
+    return dp[n];
 }
 ```
 
@@ -5561,19 +6136,37 @@ PROBLEM: Count number of combinations to make amount (coins can be reused).
 Compare with Combination Sum IV (LC 377) which loops amounts outside for
 permutations!
 
+**RECURSIVE (Top-Down):**
+
 ```cpp
 int change(int amount, vector<int>& coins) {
-vector<int> dp(amount + 1, 0);            
-dp[0] = 1;                                
+    vector<vector<int>> memo(coins.size(), vector<int>(amount + 1, -1));
+    return solve(coins, 0, amount, memo);
+}
 
-for (int coin : coins) {                  
-    for (int j = coin; j <= amount; j++) {
-        dp[j] += dp[j - coin];            
-    }                                     
-}                                         
+int solve(vector<int>& coins, int idx, int amt, vector<vector<int>>& memo) {
+    if (amt == 0) return 1;
+    if (idx == coins.size() || amt < 0) return 0;
+    if (memo[idx][amt] != -1) return memo[idx][amt];
+    return memo[idx][amt] = solve(coins, idx, amt - coins[idx], memo)
+                          + solve(coins, idx + 1, amt, memo);
+}
+```
 
-return dp[amount];                        
+**TABULATION (Bottom-Up):**
 
+```cpp
+int change(int amount, vector<int>& coins) {
+    vector<int> dp(amount + 1, 0);
+    dp[0] = 1;
+
+    for (int coin : coins) {
+        for (int j = coin; j <= amount; j++) {
+            dp[j] += dp[j - coin];
+        }
+    }
+
+    return dp[amount];
 }
 ```
 
@@ -5611,32 +6204,59 @@ PROBLEM: Minimum cuts to partition string into all palindromes.
 substrings. Then dp[i] = min(dp[j-1] + 1) for all j where s[j..i] is
 a palindrome. If s[0..i] itself is a palindrome, dp[i] = 0 (no cuts).
 
+**RECURSIVE (Top-Down):**
+
 ```cpp
 int minCut(string s) {
-int n = s.size();                                             
-vector<vector<bool>> isPalin(n, vector<bool>(n, false));      
+    int n = s.size();
+    vector<vector<bool>> isPalin(n, vector<bool>(n, false));
+    for (int len = 1; len <= n; len++)
+        for (int i = 0; i <= n - len; i++) {
+            int j = i + len - 1;
+            if (s[i] == s[j] && (len <= 2 || isPalin[i+1][j-1]))
+                isPalin[i][j] = true;
+        }
 
-for (int len = 1; len <= n; len++) {                          
-    for (int i = 0; i <= n - len; i++) {                      
-        int j = i + len - 1;                                  
-        if (s[i] == s[j] && (len <= 2 || isPalin[i+1][j-1])) {
-            isPalin[i][j] = true;                             
-        }                                                     
-    }                                                         
-}                                                             
+    vector<int> memo(n, -1);
+    return solve(s, 0, isPalin, memo);
+}
 
-vector<int> dp(n, INT_MAX);                                   
-for (int i = 0; i < n; i++) {                                 
-    if (isPalin[0][i]) { dp[i] = 0; continue; }               
-    for (int j = 1; j <= i; j++) {                            
-        if (isPalin[j][i]) {                                  
-            dp[i] = min(dp[i], dp[j-1] + 1);                  
-        }                                                     
-    }                                                         
-}                                                             
+int solve(string& s, int start, vector<vector<bool>>& isPalin, vector<int>& memo) {
+    if (start == s.size()) return -1;
+    if (memo[start] != -1) return memo[start];
+    int best = INT_MAX;
+    for (int end = start; end < s.size(); end++) {
+        if (isPalin[start][end])
+            best = min(best, 1 + solve(s, end + 1, isPalin, memo));
+    }
+    return memo[start] = best;
+}
+```
 
-return dp[n-1];                                               
+**TABULATION (Bottom-Up):**
 
+```cpp
+int minCut(string s) {
+    int n = s.size();
+    vector<vector<bool>> isPalin(n, vector<bool>(n, false));
+
+    for (int len = 1; len <= n; len++)
+        for (int i = 0; i <= n - len; i++) {
+            int j = i + len - 1;
+            if (s[i] == s[j] && (len <= 2 || isPalin[i+1][j-1]))
+                isPalin[i][j] = true;
+        }
+
+    vector<int> dp(n, INT_MAX);
+    for (int i = 0; i < n; i++) {
+        if (isPalin[0][i]) { dp[i] = 0; continue; }
+        for (int j = 1; j <= i; j++) {
+            if (isPalin[j][i])
+                dp[i] = min(dp[i], dp[j-1] + 1);
+        }
+    }
+
+    return dp[n-1];
 }
 ```
 
@@ -5662,21 +6282,45 @@ palindrome, we skip the inner loop entirely.
 
 ## **SOLVED: Super Egg Drop (LC 887)**  HARD
 
+**RECURSIVE (Top-Down) — binary search optimization:**
+
 ```cpp
 int superEggDrop(int k, int n) {
-// dp[m][k] = max floors checkable with m moves and k eggs
-vector<vector<int>> dp(n + 1, vector<int>(k + 1, 0));     
-int m = 0;                                                
-while (dp[m][k] < n) {                                    
-    m++;                                                  
-    for (int j = 1; j <= k; j++) {                        
-        dp[m][j] = dp[m-1][j-1] + dp[m-1][j] + 1;         
-    }                                                     
-}                                                         
-return m;                                                 
-
+    unordered_map<int, int> memo;
+    return solve(k, n, memo);
 }
-// Time: O(N*K), Space: O(N*K)
+
+int solve(int k, int n, unordered_map<int, int>& memo) {
+    if (n <= 1 || k == 1) return n;
+    int key = n * 1000 + k;
+    if (memo.count(key)) return memo[key];
+
+    int lo = 1, hi = n;
+    while (lo + 1 < hi) {
+        int mid = (lo + hi) / 2;
+        int breakCase = solve(k-1, mid-1, memo);
+        int noBreak = solve(k, n-mid, memo);
+        if (breakCase < noBreak) lo = mid;
+        else hi = mid;
+    }
+    return memo[key] = 1 + min(max(solve(k-1, lo-1, memo), solve(k, n-lo, memo)),
+                                max(solve(k-1, hi-1, memo), solve(k, n-hi, memo)));
+}
+```
+
+**TABULATION (Bottom-Up) — reverse thinking:**
+
+```cpp
+int superEggDrop(int k, int n) {
+    vector<vector<int>> dp(n + 1, vector<int>(k + 1, 0));
+    int m = 0;
+    while (dp[m][k] < n) {
+        m++;
+        for (int j = 1; j <= k; j++)
+            dp[m][j] = dp[m-1][j-1] + dp[m-1][j] + 1;
+    }
+    return m;
+}
 ```
 
  **WHY THIS BASE CASE?**
@@ -5695,27 +6339,57 @@ REVERSE THINKING: Instead of "min moves for n floors", ask
 
 ## **SOLVED: Maximum Profit in Job Scheduling (LC 1235)** 
 
+**RECURSIVE (Top-Down):**
+
 ```cpp
 int jobScheduling(vector<int>& startTime, vector<int>& endTime, vector<int>& profit) {
-int n = startTime.size();                                                                 
-vector<int> idx(n);                                                                       
-iota(idx.begin(), idx.end(), 0);                                                          
-sort(idx.begin(), idx.end(), [&](int a, int b) {                                          
-    return endTime[a] < endTime[b];                                                       
-});                                                                                       
+    int n = startTime.size();
+    vector<int> idx(n);
+    iota(idx.begin(), idx.end(), 0);
+    sort(idx.begin(), idx.end(), [&](int a, int b) {
+        return startTime[a] < startTime[b];
+    });
 
-vector<int> dp(n + 1, 0);                                                                 
-vector<int> ends;                                                                         
-for (int i : idx) ends.push_back(endTime[i]);                                             
+    vector<int> sortedStart;
+    for (int i : idx) sortedStart.push_back(startTime[i]);
 
-for (int i = 0; i < n; i++) {                                                             
-    int j = upper_bound(ends.begin(), ends.begin() + i, startTime[idx[i]]) - ends.begin();
-    dp[i + 1] = max(dp[i], dp[j] + profit[idx[i]]);                                       
-}                                                                                         
-return dp[n];                                                                             
-
+    vector<int> memo(n, -1);
+    return solve(0, idx, sortedStart, endTime, profit, memo);
 }
-// Time: O(N log N), Space: O(N)
+
+int solve(int i, vector<int>& idx, vector<int>& sortedStart,
+          vector<int>& endTime, vector<int>& profit, vector<int>& memo) {
+    if (i >= idx.size()) return 0;
+    if (memo[i] != -1) return memo[i];
+    int next = lower_bound(sortedStart.begin(), sortedStart.end(),
+                           endTime[idx[i]]) - sortedStart.begin();
+    return memo[i] = max(solve(i+1, idx, sortedStart, endTime, profit, memo),
+                         profit[idx[i]] + solve(next, idx, sortedStart, endTime, profit, memo));
+}
+```
+
+**TABULATION (Bottom-Up):**
+
+```cpp
+int jobScheduling(vector<int>& startTime, vector<int>& endTime, vector<int>& profit) {
+    int n = startTime.size();
+    vector<int> idx(n);
+    iota(idx.begin(), idx.end(), 0);
+    sort(idx.begin(), idx.end(), [&](int a, int b) {
+        return endTime[a] < endTime[b];
+    });
+
+    vector<int> dp(n + 1, 0);
+    vector<int> ends;
+    for (int i : idx) ends.push_back(endTime[i]);
+
+    for (int i = 0; i < n; i++) {
+        int j = upper_bound(ends.begin(), ends.begin() + i,
+                            startTime[idx[i]]) - ends.begin();
+        dp[i + 1] = max(dp[i], dp[j] + profit[idx[i]]);
+    }
+    return dp[n];
+}
 ```
 
  **WHY THIS BASE CASE?**
