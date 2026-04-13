@@ -150,58 +150,47 @@ Example: fibonacci(5) calls fibonacci(3) multiple times
 
 ### NAIVE RECURSION (Exponential Time):
 
-```
 int fib(int n) {
+```
 if (n <= 1) return n;                                    
 return fib(n-1) + fib(n-2);  // Recalculates same values!
+```
 
 }
-```
 
 TIME: O(2^N) - Every call spawns 2 more calls
 SPACE: O(N) - Recursion depth
 
 VISUALIZATION - fib(5):
-```
 fib(5)
-```
-
 /      \
-```
 fib(4)      fib(3)
-```
-
 /     \      /     \
-```
 fib(3)  fib(2) fib(2) fib(1)
-```
-
 /   \    /  \   /  \
-```
 fib(2) fib(1) ...
-```
 
 Notice: fib(3) computed twice, fib(2) computed 3 times!
 
 ### TOP-DOWN DP (Memoization):
 
-```cpp
 int fib(int n, vector<int>& memo) {
+```
 if (n <= 1) return n;                                   
 if (memo[n] != -1) return memo[n];  // Already computed!
 
 return memo[n] = fib(n-1, memo) + fib(n-2, memo);       
+```
 
 }
-```
 
 TIME: O(N) - Each subproblem computed once
 SPACE: O(N) - Memo array + recursion stack
 
 ### BOTTOM-UP DP (Tabulation):
 
-```cpp
 int fib(int n) {
+```
 if (n <= 1) return n;         
 
 vector<int> dp(n + 1);        
@@ -213,17 +202,33 @@ for (int i = 2; i <= n; i++) {
 }                             
 
 return dp[n];                 
+```
 
 }
-```
 
 TIME: O(N)
 SPACE: O(N)
 
+```
++-----------------------------------------------------------------------------+
+|                 TABULATION SIZE QUICK REFERENCE                             |
++-----------------------------+-----------------------------------------------+
+| Recursive parameter range   | Table size                                    |
++-----------------------------+-----------------------------------------------+
+| 0 to amount                 | amount + 1                                    |
+| 0 to n                      | n + 1                                         |
+| 0 to n-1                    | n                                             |
+| 1 to n                      | n + 1 (index 0 unused or base case)           |
++-----------------------------+-----------------------------------------------+
+```
+
+ RULE: If final answer is dp[X], vector needs size X + 1.
+dp[0] always holds the BASE CASE value from recursion.
+
 **SPACE-OPTIMIZED:**
 
-```
 int fib(int n) {
+```
 if (n <= 1) return n;         
 
 int prev2 = 0, prev1 = 1;     
@@ -233,9 +238,9 @@ for (int i = 2; i <= n; i++) {
     prev1 = curr;             
 }                             
 return prev1;                 
+```
 
 }
-```
 
 TIME: O(N)
 SPACE: O(1) Y
@@ -290,35 +295,33 @@ BASE CASE = Simplest subproblem you can answer WITHOUT recursion!
 ### EXAMPLE: Fibonacci
 
 Question: When can I answer immediately?
-```
 fib(0) = 0  (by definition)
 fib(1) = 1  (by definition)
-```
 
 These are base cases!
 
-```
 int fib(int n) {
+```
 if (n <= 1) return n;  //  Base case
 return fib(n-1) + fib(n-2);         
+```
 
 }
-```
 
 ### EXAMPLE: Climbing Stairs
 
 Question: What are trivial cases?
-```
 stairs = 0 > 0 ways (or 1 way: don't move)
 stairs = 1 > 1 way (one step)
 stairs = 2 > 2 ways (1+1 or 2)
 
 int climbStairs(int n) {
+```
 if (n <= 2) return n;  //  Base cases
 ...                                  
+```
 
 }
-```
 
 ### **STRATEGY 2: Identify "Invalid" vs "Valid" Base Cases**
 
@@ -328,14 +331,14 @@ if (n <= 2) return n;  //  Base cases
 
 ### EXAMPLE: Coin Change
 
-```
 int coinChange(int amount) {
+```
 if (amount == 0) return 0;      //  Valid: 0 coins needed
 if (amount < 0) return INT_MAX; //  Invalid: impossible  
 ...                                                      
+```
 
 }
-```
 
 For MIN problems:
 Valid base > return 0 or specific value
@@ -384,24 +387,18 @@ Draw small grids:
 mx1 grid: 1 way (only move down)
 
 Base cases:
-```
 dp[i][0] = 1  (first column)
 dp[0][j] = 1  (first row)
-```
 
 ### EXAMPLE: Longest Common Subsequence
 
 What if one string is empty?
-```
 LCS("abc", "") = 0
 LCS("", "xyz") = 0
-```
 
 Base cases:
-```
 dp[0][j] = 0
 dp[i][0] = 0
-```
 
 ## **HOW TO CONVERT TOP-DOWN TO BOTTOM-UP**  (STEP-BY-STEP!)
 
@@ -423,16 +420,16 @@ Let's see this with COMPLETE EXAMPLES!
 
 **TOP-DOWN:**
 
-```cpp
 int fib(int n, vector<int>& memo) {
+```
 if (n <= 1) return n;                    // < Base case
 if (memo[n] != -1) return memo[n];                     
 
 return memo[n] = fib(n-1, memo) + fib(n-2, memo);      
                  // ^ Recurrence relation              
+```
 
 }
-```
 
 **CONVERSION STEPS:**
 
@@ -445,8 +442,8 @@ STEP 6: Return > dp[n]
 
 **BOTTOM-UP:**
 
-```cpp
 int fib(int n) {
+```
 if (n <= 1) return n;                            
 
 vector<int> dp(n + 1);                           
@@ -458,14 +455,14 @@ for (int i = 2; i <= n; i++) {  // Order: forward
 }                                                
 
 return dp[n];  // Answer                         
+```
 
 }
-```
 
 ### STEP 7: Space optimization > Only need prev2 and prev1!
 
-```
 int fib(int n) {
+```
 if (n <= 1) return n;         
 int prev2 = 0, prev1 = 1;     
 for (int i = 2; i <= n; i++) {
@@ -474,16 +471,16 @@ for (int i = 2; i <= n; i++) {
     prev1 = curr;             
 }                             
 return prev1;                 
+```
 
 }
-```
 
 ### **EXAMPLE 2: Coin Change (1D with Loop)**
 
 **TOP-DOWN:**
 
-```cpp
 int coinChange(int amount, vector<int>& coins, vector<int>& memo) {
+```
 if (amount == 0) return 0;           // < Base: valid      
 if (amount < 0) return INT_MAX;      // < Base: invalid    
 if (memo[amount] != -1) return memo[amount];               
@@ -497,9 +494,9 @@ for (int coin : coins) {
 }                                                          
 
 return memo[amount] = result;                              
+```
 
 }
-```
 
 **CONVERSION STEPS:**
 
@@ -512,8 +509,8 @@ STEP 6: Return > dp[amount] > amount ? -1 : dp[amount]
 
 **BOTTOM-UP:**
 
-```cpp
 int coinChange(vector<int>& coins, int amount) {
+```
 vector<int> dp(amount + 1, amount + 1);  // Init with impossible  
 dp[0] = 0;  // Base case                                          
 
@@ -526,9 +523,9 @@ for (int i = 1; i <= amount; i++) {      // Build from 1 to amount
 }                                                                 
 
 return dp[amount] > amount ? -1 : dp[amount];                     
+```
 
 }
-```
 
  **KEY INSIGHT**:
 Top-Down goes amount > 0 (recursive)
@@ -539,8 +536,8 @@ Same logic, opposite direction!
 
 **TOP-DOWN:**
 
-```cpp
 int lcs(string& s1, string& s2, int i, int j, vector<vector<int>>& memo) {
+```
 if (i == 0 || j == 0) return 0;  // < Base: empty string
 if (memo[i][j] != -1) return memo[i][j];                
 
@@ -550,9 +547,9 @@ if (s1[i-1] == s2[j-1]) {
     return memo[i][j] = max(lcs(s1, s2, i-1, j, memo),  
                             lcs(s1, s2, i, j-1, memo)); 
 }                                                       
+```
 
 }
-```
 
 **CONVERSION STEPS:**
 
@@ -570,8 +567,8 @@ STEP 6: Return > dp[m][n]
 
 **BOTTOM-UP:**
 
-```cpp
 int longestCommonSubsequence(string text1, string text2) {
+```
 int m = text1.size(), n = text2.size();                           
 vector<vector<int>> dp(m + 1, vector<int>(n + 1, 0));             
 
@@ -588,14 +585,14 @@ for (int i = 1; i <= m; i++) {           // Build row by row
 }                                                                 
 
 return dp[m][n];                                                  
+```
 
 }
-```
 
 ### STEP 7: Space optimization > Only need previous row!
 
-```cpp
 int longestCommonSubsequence(string text1, string text2) {
+```
 int m = text1.size(), n = text2.size();   
 vector<int> dp(n + 1, 0);                 
 
@@ -613,9 +610,9 @@ for (int i = 1; i <= m; i++) {
 }                                         
 
 return dp[n];                             
+```
 
 }
-```
 
 ### **CRITICAL: DETERMINING ITERATION ORDER** 
 
@@ -625,28 +622,19 @@ RULE: Compute smaller subproblems BEFORE larger ones.
 
 ### EXAMPLE 1: Fibonacci
 
-```
 fib(n) depends on fib(n-1) and fib(n-2)
-```
-
 > Compute smaller n first
 > Loop: for (i = 0 to n) Y
 
 ### EXAMPLE 2: Unique Paths
 
-```
 dp[i][j] depends on dp[i-1][j] and dp[i][j-1]
-```
-
 > Need previous row and previous column
 > Loop: for (i = 0 to m) { for (j = 0 to n) } Y
 
 ### EXAMPLE 3: Merging Intervals (TRICKY!)
 
-```
 dp[i][j] depends on dp[i][k] and dp[k+1][j] for i < k < j
-```
-
 > Need SMALLER intervals first!
 > Loop by LENGTH (not position!):
 ```
@@ -666,10 +654,8 @@ This ensures smaller intervals computed before larger ones.
 
 ### MISTAKE 1: Wrong iteration direction
 
-```
  for (i = n down to 0)  // If you need i-1!
  for (i = 0 to n)        // Compute smaller first
-```
 
 Check dependencies! Draw on paper if needed.
 
@@ -678,19 +664,15 @@ Check dependencies! Draw on paper if needed.
 Top-Down uses s1[i-1] when i is from (1 to n)
 Bottom-Up must do same!
 
-```
  if (s1[i] == s2[j])     // Wrong!
  if (s1[i-1] == s2[j-1]) // Correct!
-```
 
 ### MISTAKE 3: Forgetting to initialize base cases
 
 In Top-Down, you return base case.
 In Bottom-Up, you MUST initialize it!
 
-```
  dp[0] = 0;  // Don't forget!
-```
 
 MISTAKE 4: Not handling edge cases
 ### if (n <= 1) return n;  // Handle before loop!
@@ -698,17 +680,17 @@ MISTAKE 4: Not handling edge cases
 **PRACTICE: Try Converting These!**
 ### TOP-DOWN House Robber:
 
-```cpp
 int rob(int i, vector<int>& nums, vector<int>& memo) {
+```
 if (i < 0) return 0;                                 
 if (i == 0) return nums[0];                          
 if (memo[i] != -1) return memo[i];                   
 
 return memo[i] = max(rob(i-1, nums, memo),           
                      rob(i-2, nums, memo) + nums[i]);
+```
 
 }
-```
 
 YOUR TASK: Convert to Bottom-Up!
 
@@ -721,37 +703,26 @@ EXAMPLE: Unique Paths (2D DP)
 ### DEPENDENCIES: dp[i][j] depends on dp[i-1][j] and dp[i][j-1]
 
 Visualize the grid:
-```
 j=0  j=1  j=2  j=3
 
 i=0   1    1    1    1
-```
-
 v    v    v    v
 
-```
 i=1   1  < ?
-```
-
 v
 
-```
 i=2   1
-```
-
 v
 
-```
 i=3   1
-```
 
 To compute dp[1][1]:
 Need dp[0][1] (above) < Must compute first!
 Need dp[1][0] (left)  < Must compute first!
 
 Iteration order:
-```
 for (i = 1 to m):      // Row by row
+```
   for (j = 1 to n):  // Column by column
       dp[i][j] = dp[i-1][j] + dp[i][j-1]
                    ^            ^       
@@ -761,8 +732,8 @@ for (i = 1 to m):      // Row by row
 
 **WRONG ORDER EXAMPLE:**
 
-```
  for (i = m down to 0):  // Computing larger first!
+```
   for (j = n down to 0):                
       dp[i][j] = dp[i-1][j] + dp[i][j-1]
                    ^            ^       
@@ -776,27 +747,19 @@ for (i = 1 to m):      // Row by row
 1D (Fibonacci)        dp[i-1], dp[i-2]      for (i = 0 to n) >
 
 2D (Paths)            dp[i-1][j]            for (i = 0 to m)
-```
 dp[i][j-1]              for (j = 0 to n)
-```
 
 Intervals             dp[i][k], dp[k+1][j]  for (len = 1 to n)
 (smaller intervals)     for (i = 0 to n-len)
-```
 j = i + len
-```
 
 Strings (Match)       dp[i-1][j-1]          for (i = 1 to m)
-```
 dp[i-1][j]              for (j = 1 to n)
 dp[i][j-1]
-```
 
 Palindrome            dp[i+1][j-1]          for (len = 1 to n)
 (one string)          (inner substring)       for (i = 0 to n-len)
-```
 j = i + len
-```
 
  **GOLDEN RULE**:
 Draw dependency arrows > iterate so arrows point to ALREADY computed!
@@ -807,14 +770,16 @@ STEP-BY-STEP with all details:
 
 **TOP-DOWN VERSION:**
 
-```cpp
 int rob(vector<int>& nums) {
+```
 vector<int> memo(nums.size(), -1);         
 return helper(nums.size() - 1, nums, memo);
+```
 
 }
 
 int helper(int i, vector<int>& nums, vector<int>& memo) {
+```
 // STEP 1: Identify base cases                       
 if (i < 0) return 0;           // No houses left     
 if (i == 0) return nums[0];    // Only one house     
@@ -829,9 +794,9 @@ int robCurrent = nums[i] + helper(i - 2, nums, memo);
 int skipCurrent = helper(i - 1, nums, memo);         
 
 return memo[i] = max(robCurrent, skipCurrent);       
+```
 
 }
-```
 
 **ANALYZE:**
 - States: i (position in array)
@@ -841,8 +806,8 @@ return memo[i] = max(robCurrent, skipCurrent);
 
 **CONVERT TO BOTTOM-UP:**
 
-```cpp
 int rob(vector<int>& nums) {
+```
 int n = nums.size();                              
 if (n == 0) return 0;                             
 if (n == 1) return nums[0];  // STEP 3: Edge cases
@@ -862,14 +827,14 @@ for (int i = 2; i < n; i++) {
 
 // STEP 6: Return answer                          
 return dp[n-1];                                   
+```
 
 }
-```
 
 ### STEP 7: Space Optimization (only need last 2 values):
 
-```cpp
 int rob(vector<int>& nums) {
+```
 int prev2 = 0;                         
 int prev1 = 0;                         
 
@@ -880,9 +845,9 @@ for (int num : nums) {
 }                                      
 
 return prev1;                          
+```
 
 }
-```
 
  **BEAUTIFUL**: O(N) time, O(1) space!
 
@@ -939,27 +904,21 @@ I could have arrived here?" Look back at all possible previous positions.
 ### ** UNIVERSAL TEMPLATE**
 
 **STATE DEFINITION:**
-```
 dp[i] = minimum/maximum cost to reach target i
-```
 
 **RECURRENCE:**
-```
 dp[i] = min/max(dp[i-k] for all valid transitions k) + cost[i]
-```
 
 **BASE CASE:**
-```
 dp[0] = 0 (no cost to reach starting point)
-```
 
 **INVALID STATE:**
 Return INT_MAX (for min) or INT_MIN (for max)
 
 **TEMPLATE:**
 
-```cpp
 int solve(int target, vector<int>& options) {
+```
 vector<int> dp(target + 1, INT_MAX);  // or amount+1 to avoid overflow
 dp[0] = 0;                                                            
 
@@ -972,17 +931,15 @@ for (int i = 1; i <= target; i++) {
 }                                                                     
 
 return dp[target] == INT_MAX ? -1 : dp[target];                       
+```
 
 }
-```
 
 ### ** COMMON PITFALLS**
 
  PITFALL 1: Using INT_MAX directly
-```
 dp[i] = INT_MAX;
 dp[i] = min(dp[i], dp[j] + 1);  // OVERFLOW when dp[j] = INT_MAX!
-```
 
  FIX: Use amount+1 or check before adding
 
@@ -1000,8 +957,8 @@ PROBLEM: Each step has cost. Can climb 1 or 2 steps. Find min cost to reach top.
 
  **KEY INSIGHT**: At each step, choose cheaper path (from 1 or 2 steps back)
 
-```cpp
 int minCostClimbingStairs(vector<int>& cost) {
+```
 int n = cost.size();                                      
 vector<int> dp(n + 1);                                    
 
@@ -1015,11 +972,19 @@ for (int i = 2; i <= n; i++) {
 }                                                         
 
 return dp[n];                                             
-
-}
 ```
 
+}
+
 TIME: O(N)  |  SPACE: O(N) > Can optimize to O(1)!
+
+ **WHY THIS BASE CASE?**
+dp[0] = 0, dp[1] = 0
+> You can START from step 0 or step 1 (problem says so).
+> Starting costs nothing, so both are 0.
+> dp[i] represents min cost to REACH step i, not to LEAVE it.
+> The "top" is step n (one past the last step), which is why
+dp array is size n+1 and answer is dp[n].
 
 ### **PROBLEM: Coin Change (LC 322)** 
 
@@ -1027,8 +992,8 @@ PROBLEM: Min coins to make amount (coins can be reused)
 
  **KEY INSIGHT**: For each amount, try all coins, pick best!
 
-```cpp
 int coinChange(vector<int>& coins, int amount) {
+```
 vector<int> dp(amount + 1, amount + 1);  // INT_MAX causes overflow!
 dp[0] = 0;                                                          
 
@@ -1041,24 +1006,37 @@ for (int i = 1; i <= amount; i++) {
 }                                                                   
 
 return dp[amount] > amount ? -1 : dp[amount];                       
+```
 
 }
-```
 
 TIME: O(Amount x Coins)  |  SPACE: O(Amount)
 
 **COMMON MISTAKE:**
-```
  dp[i] = INT_MAX > overflow when adding 1
  dp[i] = amount + 1 (impossible value, safe upper bound)
-```
+
+ **WHY THIS BASE CASE?**
+dp[0] = 0
+> "How many coins to make amount 0?" > Zero coins. You're already there.
+> This is the VALID base: recursion stops when amount reaches 0.
+
+dp[1..amount] = amount + 1 (not INT_MAX!)
+> These are UNKNOWN states, initialized to "impossible".
+> Why amount+1 not INT_MAX? Because dp[i-coin] + 1 would OVERFLOW
+if dp[i-coin] = INT_MAX. amount+1 is safe because you can never
+need more than 'amount' coins (worst case: all 1-coins).
+
+WHY size amount+1?
+> dp[i] = min coins for amount i. We need dp[0] through dp[amount].
+> Index 0 is the base case, index 'amount' is the answer.
 
 ### **PROBLEM: Minimum Path Sum (LC 64)**
 
 PROBLEM: Min path sum from top-left to bottom-right (only right/down moves)
 
-```cpp
 int minPathSum(vector<vector<int>>& grid) {
+```
 int m = grid.size(), n = grid[0].size();               
 
 // Fill first row and column                           
@@ -1073,11 +1051,25 @@ for (int i = 1; i < m; i++) {
 }                                                      
 
 return grid[m-1][n-1];                                 
-
-}
 ```
 
+}
+
  **SPACE OPTIMIZATION**: Modify grid in-place!
+
+ **WHY THIS BASE CASE?**
+First row: grid[0][j] += grid[0][j-1]
+> In the first row, you can ONLY come from the left (no row above).
+> So cost = sum of all cells to the left.
+
+First column: grid[i][0] += grid[i-1][0]
+> In the first column, you can ONLY come from above (nothing to the left).
+> So cost = sum of all cells above.
+
+grid[0][0] stays as is
+> Starting point. Cost to reach start = the cell's own value.
+> No "n+1" trick needed here because we modify the grid in-place
+and the grid itself already holds the starting values.
 
 **MORE PROBLEMS IN THIS PATTERN:**
 - 931. Minimum Falling Path Sum
@@ -1132,24 +1124,18 @@ CRITICAL DIFFERENCE FROM PATTERN 1:
 ### ** UNIVERSAL TEMPLATE**
 
 **STATE DEFINITION:**
-```
 dp[i] = number of distinct ways to reach state i
-```
 
 **RECURRENCE:**
-```
 dp[i] = dp[i-k₁] + dp[i-k₂] + ... + dp[i-kₙ]
-```
 
 **BASE CASE:**
-```
 dp[0] = 1 (exactly ONE way to do nothing / reach start)
-```
 
 **TEMPLATE:**
 
-```cpp
 int countWays(int target, vector<int>& options) {
+```
 vector<long long> dp(target + 1, 0);          
 dp[0] = 1;  // ONE way to make 0 / reach start
 
@@ -1162,9 +1148,9 @@ for (int i = 1; i <= target; i++) {
 }                                             
 
 return dp[target];                            
+```
 
 }
-```
 
 ### ** COMMON PITFALLS**
 
@@ -1176,13 +1162,15 @@ If dp[0] = 0, everything becomes 0!
 - Outer loop on TARGET > Permutations (order matters)
 - Outer loop on ITEMS  > Combinations (order doesn't matter)
 
-```
 // ORDER MATTERS (Combination Sum IV): 1+2+1 ! 2+1+1
 for (int i = 1; i <= target; i++)
+```
    for (int coin : coins) ...
+```
 
 // ORDER DOESN'T MATTER (Coin Change II): 1+2+1 = 2+1+1
 for (int coin : coins)
+```
    for (int i = coin; i <= target; i++) ...
 ```
 
@@ -1198,8 +1186,8 @@ PROBLEM: Count ways to climb n stairs (1 or 2 steps at a time)
  **KEY INSIGHT**: This is Fibonacci!
 Ways to reach step n = ways to reach (n-1) + ways to reach (n-2)
 
-```cpp
 int climbStairs(int n) {
+```
 if (n <= 2) return n;                
 
 vector<int> dp(n + 1);               
@@ -1211,11 +1199,19 @@ for (int i = 3; i <= n; i++) {
 }                                    
 
 return dp[n];                        
-
-}
 ```
 
+}
+
 TIME: O(N)  |  SPACE: O(N) > Can optimize to O(1)!
+
+ **WHY THIS BASE CASE?**
+dp[1] = 1, dp[2] = 2
+> 1 stair: only 1 way (take 1 step). Trivially true.
+> 2 stairs: 2 ways (1+1 or 2). You can verify by hand.
+> dp[0] is not used because "0 stairs" has no physical meaning here.
+> This is Fibonacci shifted: ways(n) = ways(n-1) + ways(n-2).
+You MUST know two base values to start the chain.
 
 ### **PROBLEM: Unique Paths (LC 62)** 
 
@@ -1223,10 +1219,10 @@ PROBLEM: Count paths from top-left to bottom-right (only right/down)
 
  **KEY INSIGHT**:
 Ways to reach (i,j) = ways from left + ways from top
-```cpp
 dp[i][j] = dp[i-1][j] + dp[i][j-1]
 
 int uniquePaths(int m, int n) {
+```
 vector<vector<int>> dp(m, vector<int>(n, 1));
 
 // First row and column all 1 (only one way) 
@@ -1238,18 +1234,26 @@ for (int i = 1; i < m; i++) {
 }                                            
 
 return dp[m-1][n-1];                         
-
-}
 ```
 
+}
+
 TIME: O(M x N)  |  SPACE: O(M x N) > Can optimize to O(N)!
+
+ **WHY THIS BASE CASE?**
+All cells initialized to 1 (first row and first column = 1)
+> First row: can ONLY move right > exactly 1 path to each cell.
+> First column: can ONLY move down > exactly 1 path to each cell.
+> Interior cells: dp[i][j] = dp[i-1][j] + dp[i][j-1] (from top + from left).
+> Initializing all to 1 works because the loop starts at (1,1) and
+overwrites interior cells. First row & column stay as 1.
 
 ### **PROBLEM: Combination Sum IV (LC 377)** 
 
 PROBLEM: Count combinations to make target (ORDER MATTERS!)
 
-```cpp
 int combinationSum4(vector<int>& nums, int target) {
+```
 vector<unsigned int> dp(target + 1, 0);  // Unsigned to avoid overflow
 dp[0] = 1;                                                            
 
@@ -1262,11 +1266,21 @@ for (int i = 1; i <= target; i++) {
 }                                                                     
 
 return dp[target];                                                    
-
-}
 ```
 
+}
+
  **CRITICAL**: Use unsigned int to handle overflow!
+
+ **WHY THIS BASE CASE?**
+dp[0] = 1
+> "How many ways to make target 0?" > Exactly 1: pick nothing.
+> This is the COUNT pattern: dp[0] = 1, NOT 0!
+> If dp[0] = 0, then dp[i] += dp[0] adds nothing, and EVERY
+state stays 0. The whole DP collapses.
+
+dp[1..target] = 0
+> "No ways found yet." We'll accumulate ways during iteration.
 
 ### **DETAILED EXAMPLE: Target Sum (LC 494)**  UNIQUE!
 
@@ -1286,9 +1300,7 @@ Problem becomes: "Count subsets with sum = P"
 
 **STEP-BY-STEP DERIVATION:**
 
-```
 nums = [1, 1, 1, 1, 1], target = 3
-```
 
 All numbers sum = 5
 We want: positive - negative = 3
@@ -1301,16 +1313,14 @@ P + N = 5  (all numbers)
 P - N = 3  (our target)
 ---------
 2P = 8
-```
 P = 4
-```
 
 So we need to find: "Count subsets with sum = 4"
 
 **COMPLETE SOLUTION:**
 
-```cpp
 int findTargetSumWays(vector<int>& nums, int target) {
+```
 int sum = accumulate(nums.begin(), nums.end(), 0);                                  
 
 // Edge cases                                                                       
@@ -1330,37 +1340,38 @@ for (int num : nums) {
 }                                                                                   
 
 return dp[P];                                                                       
-
-}
 ```
 
+}
+
 TIME: O(N x Sum)  |  SPACE: O(Sum)
+
+ **WHY THIS BASE CASE?**
+dp[0] = 1
+> "How many subsets sum to 0?" > Exactly 1: the empty subset {}.
+> This seeds the entire DP. Without it, dp[j-num] is always 0,
+so no subset is ever counted.
+
+> Edge cases handled BEFORE DP: if target > sum or target < -sum
+or (target+sum) is odd > return 0 immediately.
 
  **CRITICAL**: Inner loop goes BACKWARDS!
 Why? In 0/1 knapsack, each item used once.
 Forward would use same item multiple times!
 
 **EXAMPLE WALKTHROUGH:**
-```
 nums = [1, 1, 1], P = 2
-```
 
 Initial: dp = [1, 0, 0]
 
 After num=1: dp[2] += dp[1]=0, dp[1] += dp[0]=1
-```
 dp = [1, 1, 0]
-```
 
 After num=1: dp[2] += dp[1]=1, dp[1] += dp[0]=1
-```
 dp = [1, 2, 1]
-```
 
 After num=1: dp[2] += dp[1]=2, dp[1] += dp[0]=1
-```
 dp = [1, 3, 3]
-```
 
 Answer: dp[2] = 3 Y
 
@@ -1372,9 +1383,7 @@ PROBLEM: Can we partition array into two subsets with equal sum?
 
 **THOUGHT PROCESS:**
 
-```
 nums = [1, 5, 11, 5], sum = 22
-```
 
 Can we split into two sets with sum = 11 each?
 Set 1: [1, 5, 5] = 11 Y
@@ -1384,28 +1393,25 @@ Problem: "Can we pick numbers that sum to 11?"
 > Classic 0/1 Knapsack!
 
 **BASE CASES:**
-```
 sum = 0 > return true (pick nothing)
-```
-
 sum < 0 > return false (impossible)
-```
 i = n > return sum == 0
-```
 
 **TOP-DOWN:**
 
-```cpp
 bool canPartition(vector<int>& nums) {
+```
 int sum = accumulate(nums.begin(), nums.end(), 0);                
 if (sum % 2) return false;  // Odd sum can't be split equally     
 
 vector<vector<int>> memo(nums.size(), vector<int>(sum/2 + 1, -1));
 return helper(nums, 0, sum / 2, memo);                            
+```
 
 }
 
 bool helper(vector<int>& nums, int i, int target, vector<vector<int>>& memo) {
+```
 // Base cases                                           
 if (target == 0) return true;   // Found a valid subset!
 if (i == nums.size()) return false;  // No more elements
@@ -1418,14 +1424,14 @@ bool take = helper(nums, i + 1, target - nums[i], memo);
 bool skip = helper(nums, i + 1, target, memo);          
 
 return memo[i][target] = (take || skip);                
+```
 
 }
-```
 
 ### BOTTOM-UP (Space Optimized!):
 
-```cpp
 bool canPartition(vector<int>& nums) {
+```
 int sum = accumulate(nums.begin(), nums.end(), 0);      
 if (sum % 2) return false;                              
 
@@ -1440,36 +1446,39 @@ for (int num : nums) {
 }                                                       
 
 return dp[target];                                      
+```
 
 }
-```
 
 TIME: O(N x Sum)  |  SPACE: O(Sum)
 
+ **WHY THIS BASE CASE?**
+dp[0] = true > "Can we make sum 0?" > YES, pick nothing.
+dp[1..target] = false > "No way found yet."
+
+WHY reverse loop (j = target down to num)?
+> 0/1 Knapsack: each number used AT MOST ONCE.
+> Forward loop would let dp[j-num] use an already-updated value,
+effectively using the same number multiple times.
+
+> Backward loop reads dp[j-num] from the PREVIOUS item's row.
+
 **EXAMPLE TRACE:**
-```
 nums = [1, 5, 5], target = 11/2 = 5 (invalid, sum=11 is odd!)
 nums = [1, 2, 3, 4], target = 10/2 = 5
-```
 
 Initial: dp = [T, F, F, F, F, F]
 0  1  2  3  4  5
 
 After 1: dp[1] = dp[1] || dp[0] = T
-```
 dp = [T, T, F, F, F, F]
-```
 
 After 2: dp[3] = dp[3] || dp[1] = T
-```
 dp[2] = dp[2] || dp[0] = T
 dp = [T, T, T, T, F, F]
-```
 
 After 3: dp[5] = dp[5] || dp[2] = T Y
-```
 dp = [T, T, T, T, T, T]
-```
 
 Answer: dp[5] = true Y
 
@@ -1481,9 +1490,7 @@ PROBLEM: Minimum perfect squares that sum to n.
 
 **THOUGHT PROCESS:**
 
-```
 n = 12
-```
 
 Perfect squares < 12: [1, 4, 9]
 
@@ -1491,25 +1498,19 @@ Find minimum coins to make 12:
 12 = 4 + 4 + 4 (3 squares) Y
 12 = 9 + 1 + 1 + 1 (4 squares)
 
-```
 Minimum = 3
-```
 
 **BASE CASES:**
-```
 n = 0 > 0 (no squares needed)
 n = 1 > 1 (one square: 12)
-```
 
 **RECURRENCE:**
-```
 dp[n] = min(dp[n - i2] + 1) for all i where i2 < n
-```
 
 **COMPLETE SOLUTION:**
 
-```cpp
 int numSquares(int n) {
+```
 vector<int> dp(n + 1, INT_MAX);             
 dp[0] = 0;  // Base case                    
 
@@ -1521,29 +1522,36 @@ for (int i = 1; i <= n; i++) {
 }                                           
 
 return dp[n];                               
+```
 
 }
-```
 
 TIME: O(N x VN)  |  SPACE: O(N)
 
+ **WHY THIS BASE CASE?**
+dp[0] = 0
+> "Min squares to make 0" > Zero squares needed. Already at target.
+> Same logic as Coin Change: target reached, no more work.
+
+dp[1..n] = INT_MAX
+> "Unknown / impossible until proven otherwise."
+> Safe here because we check dp[i - j*j] and add 1. The +1 won't
+```python
+overflow INT_MAX since j*j <= i guarantees dp[i-j*j] was computed
+from dp[0] chain and is a small number.                          
+```
+
 ### DETAILED TRACE for n = 12:
 
-```
 dp[0] = 0
 dp[1] = dp[0] + 1 = 1              (12)
 dp[2] = dp[1] + 1 = 2              (12 + 12)
 dp[3] = dp[2] + 1 = 3              (12 + 12 + 12)
 dp[4] = min(dp[3]+1, dp[0]+1) = 1  (22)
 dp[5] = min(dp[4]+1, dp[1]+1) = 2  (22 + 12)
-```
-
 ...
-```
 dp[9] = dp[0] + 1 = 1              (32)
 dp[12] = min(dp[11]+1, dp[8]+1, dp[3]+1)
-```
-
 = min(3, 3, 4) = 3 Y        (22 + 22 + 22)
 
 **MORE PROBLEMS:**
@@ -1602,27 +1610,21 @@ right slice + cost of this cut, and pick the best cut point.
 ### ** UNIVERSAL TEMPLATE**
 
 **STATE DEFINITION:**
-```
 dp[i][j] = optimal answer for range [i, j]
-```
 
 **RECURRENCE:**
-```
 dp[i][j] = best(dp[i][k] + dp[k+1][j] + cost(i, k, j)) for all k
-```
 
 **BASE CASE:**
-```
 dp[i][i] = 0 or arr[i] (single element)
-```
 
  **CRITICAL: LOOP ORDER**
 Must iterate by LENGTH first! (small ranges before large)
 
 **TEMPLATE:**
 
-```cpp
 int solve(vector<int>& arr) {
+```
 int n = arr.size();                                                
 vector<vector<int>> dp(n, vector<int>(n, 0));                      
 
@@ -1641,9 +1643,9 @@ for (int len = 2; len <= n; len++) {           // length
 }                                                                  
 
 return dp[0][n-1];                                                 
+```
 
 }
-```
 
 ### ** COMMON PITFALLS**
 
@@ -1654,15 +1656,11 @@ which may not be computed yet!
 
  PITFALL 2: Off-by-one in split points
 k can range from i to j-1 (not j!)
-```
 dp[i][k] needs k < j so dp[k+1][j] is valid
-```
 
  PITFALL 3: Forgetting boundary handling
 In "Burst Balloons", add virtual 1s at boundaries
-```
 nums = [3,1,5] > nums = [1,3,1,5,1]
-```
 
  **COMPLEXITY**: Always O(N3) - three nested loops
 
@@ -1672,8 +1670,8 @@ nums = [3,1,5] > nums = [1,3,1,5,1]
 
 PROBLEM: Build binary tree minimizing sum of non-leaf nodes.
 
-```cpp
 int mctFromLeafValues(vector<int>& arr) {
+```
 int n = arr.size();                                                
 vector<vector<int>> dp(n, vector<int>(n, 0));                      
 
@@ -1699,11 +1697,18 @@ for (int l = 1; l < n; l++) {
 }                                                                  
 
 return dp[0][n-1];                                                 
-
-}
 ```
 
+}
+
 TIME: O(N3)  |  SPACE: O(N2)
+
+ **WHY THIS BASE CASE?**
+dp[i][i] = 0 (implicit, array initialized to 0)
+> A single leaf has no non-leaf node > cost = 0.
+> Only when we MERGE two groups do we create a non-leaf node.
+> The loop starts at len=1 (two elements), where the first
+merge happens and costs max(left) x max(right).
 
 ### **PROBLEM: Burst Balloons (LC 312)**  HARD
 
@@ -1711,8 +1716,8 @@ PROBLEM: Burst balloons to maximize coins (multiply adjacent values).
 
  **BRILLIANT INSIGHT**: Think backwards! Which balloon to burst LAST?
 
-```cpp
 int maxCoins(vector<int>& nums) {
+```
 int n = nums.size();                                        
 nums.insert(nums.begin(), 1);  // Add boundary balloons     
 nums.push_back(1);                                          
@@ -1733,13 +1738,23 @@ for (int l = 1; l <= n; l++) {
 }                                                           
 
 return dp[1][n];                                            
+```
 
 }
-```
 
  **WHY BACKWARDS?**
 Bursting changes neighbors > hard to track forward
 Bursting LAST > neighbors are fixed (i-1 and j+1)!
+
+ **WHY THIS BASE CASE?**
+dp[i][j] = 0 for all i, j (array init)
+> When range is empty (i > j), cost = 0. No balloons to burst.
+> Single balloon (i == j) is NOT 0 in the loop! When it's the
+LAST balloon burst in range [i,j], cost = nums[i-1]*nums[k]*nums[j+1].
+
+> Boundary balloons (value 1) are added at start and end. This handles
+edge cases: bursting the first/last real balloon always has a
+neighbor with value 1.
 
 ### **DETAILED EXAMPLE: Unique Binary Search Trees (LC 96)** 
 
@@ -1749,9 +1764,7 @@ PROBLEM: Count unique BSTs with n nodes (values 1 to n).
 
 **THOUGHT PROCESS:**
 
-```
 n = 3, values = [1, 2, 3]
-```
 
 Pick 1 as root:
 Left subtree: [] > 1 tree
@@ -1771,23 +1784,19 @@ Total: numTrees(2) x 1
 Answer: numTrees(2) + 1 + numTrees(2) = 2 + 1 + 2 = 5
 
 **BASE CASES:**
-```
 n = 0 > 1 (empty tree is valid)
 n = 1 > 1 (only one tree)
-```
 
 **RECURRENCE:**
 For each root k in [1, n]:
 left subtrees = numTrees(k - 1)
 right subtrees = numTrees(n - k)
-```
 total += left x right
-```
 
 **COMPLETE SOLUTION:**
 
-```cpp
 int numTrees(int n) {
+```
 vector<int> dp(n + 1, 0);                      
 dp[0] = 1;  // Empty tree                      
 dp[1] = 1;  // Single node                     
@@ -1801,15 +1810,27 @@ for (int nodes = 2; nodes <= n; nodes++) {
 }                                              
 
 return dp[n];                                  
+```
 
 }
-```
 
 TIME: O(N2)  |  SPACE: O(N)
 
+ **WHY THIS BASE CASE?**
+dp[0] = 1 > "How many BSTs with 0 nodes?" > 1: the empty tree.
+WHY 1 not 0? Because empty tree is a VALID subtree. When root=1,
+left subtree has 0 nodes > must count as 1 possibility, not 0.
+If dp[0] = 0, then dp[left] x dp[right] = 0 x anything = 0,
+and every answer collapses to 0.
+
+dp[1] = 1 > "How many BSTs with 1 node?" > 1: just that node.
+
+Catalan Number: dp[n] = Σ dp[k-1] x dp[n-k] for k=1..n
+Left subtree has k-1 nodes, right subtree has n-k nodes.
+Multiply because choices are INDEPENDENT.
+
 ### DETAILED TRACE for n = 4:
 
-```
 dp[0] = 1, dp[1] = 1
 
 dp[2]:
@@ -1829,7 +1850,6 @@ root=2: dp[1] x dp[2] = 1 x 2 = 2
 root=3: dp[2] x dp[1] = 2 x 1 = 2
 root=4: dp[3] x dp[0] = 5 x 1 = 5
 dp[4] = 14 Y
-```
 
 FUN FACT: This is the Catalan Number! C(n) = (2n)! / ((n+1)! x n!)
 
@@ -1844,9 +1864,7 @@ Check if (n-1) % (k-1) == 0, else impossible!
 
 **THOUGHT PROCESS:**
 
-```
 stones = [3, 2, 4, 1], k = 2
-```
 
 Can merge 4 piles into 1?
 (4-1) / (2-1) = 3 Y (need 3 merges)
@@ -1859,24 +1877,18 @@ Total: 5 + 9 + 10 = 24
 But is this optimal? Try other orders...
 
 **RECURRENCE:**
-```
 dp[i][j][m] = min cost to merge stones[i..j] into m piles
-```
 
 To merge into 1 pile:
-```
 dp[i][j][1] = dp[i][j][k] + sum[i..j]
-```
 
 To merge into m piles (m > 1):
-```
 dp[i][j][m] = min(dp[i][mid][1] + dp[mid+1][j][m-1])
-```
 
 **COMPLETE SOLUTION:**
 
-```cpp
 int mergeStones(vector<int>& stones, int k) {
+```
 int n = stones.size();                                                                 
 if ((n - 1) % (k - 1) != 0) return -1;  // Impossible!                                 
 
@@ -1913,11 +1925,19 @@ for (int len = 2; len <= n; len++) {
 }                                                                                      
 
 return dp[0][n-1][1];                                                                  
-
-}
 ```
 
+}
+
 TIME: O(N3 x K)  |  SPACE: O(N2 x K)
+
+ **WHY THIS BASE CASE?**
+dp[i][i][1] = 0 > A single pile is already 1 pile. No merge needed.
+dp[i][i][m] = INT_MAX for m > 1 > Can't split 1 pile into 2+. Impossible.
+(n-1) % (k-1) != 0 > return -1
+> Each merge reduces pile count by (k-1). Starting from n piles,
+after one merge: n-(k-1) piles. To reach 1 pile, need exactly
+(n-1)/(k-1) merges. If not divisible, impossible.
 
 **BRILLIANT OBSERVATION:**
 Must merge in steps of (k-1) intervals!
@@ -1970,14 +1990,9 @@ A v
 C     v
 T       v
 
-```
 v = match (diagonal move)
-```
-
 > = skip char in string1
-```
 v = skip char in string2
-```
 
  **TWO STRING VS ONE STRING**:
 ```
@@ -1994,8 +2009,8 @@ v = skip char in string2
 **TEMPLATE A: TWO STRINGS**
 ### STATE: dp[i][j] = answer for s1[0..i-1] and s2[0..j-1]
 
-```
 for (int i = 1; i <= n; i++) {
+```
 for (int j = 1; j <= m; j++) {                                         
     if (s1[i-1] == s2[j-1]) {                                          
         dp[i][j] = dp[i-1][j-1] + /* match bonus */;                   
@@ -2003,19 +2018,19 @@ for (int j = 1; j <= m; j++) {
         dp[i][j] = /* min/max */ (dp[i-1][j], dp[i][j-1]) + /* cost */;
     }                                                                  
 }                                                                      
+```
 
 }
-```
 
 **TEMPLATE B: SINGLE STRING PALINDROME**
 ### STATE: dp[i][j] = answer for substring s[i..j]
 
-```
 // Base: single chars are palindromes
 for (int i = 0; i < n; i++) dp[i][i] = 1;
 
 // Loop by LENGTH (interval DP style)
 for (int len = 2; len <= n; len++) {
+```
 for (int i = 0; i <= n - len; i++) {                            
     int j = i + len - 1;                                        
     if (s[i] == s[j]) {                                         
@@ -2024,25 +2039,19 @@ for (int i = 0; i <= n - len; i++) {
         dp[i][j] = max(dp[i+1][j], dp[i][j-1]);  // skip one end
     }                                                           
 }                                                               
+```
 
 }
-```
 
 ### ** COMMON PITFALLS**
 
  PITFALL 1: Off-by-one in string indexing
-```
 dp[i][j] represents s1[0..i-1] not s1[0..i]!
-```
-
 When comparing: s1[i-1] == s2[j-1], NOT s1[i] == s2[j]
 
  PITFALL 2: Wrong base case for edit distance
-```
 dp[i][0] = i (need i deletions to make empty)
 dp[0][j] = j (need j insertions from empty)
-```
-
 NOT dp[i][0] = 0!
 
  PITFALL 3: LCS vs substring
@@ -2064,8 +2073,8 @@ PROBLEM: Find longest subsequence common to both strings.
 If match: include this char + LCS of remaining
 If no match: max(skip from s1, skip from s2)
 
-```cpp
 int longestCommonSubsequence(string text1, string text2) {
+```
 int m = text1.size(), n = text2.size();                         
 vector<vector<int>> dp(m + 1, vector<int>(n + 1, 0));           
 
@@ -2080,11 +2089,27 @@ for (int i = 1; i <= m; i++) {
 }                                                               
 
 return dp[m][n];                                                
-
-}
 ```
 
+}
+
 TIME: O(M x N)  |  SPACE: O(M x N) > Can optimize to O(min(M,N))!
+
+ **WHY THIS BASE CASE?**
+dp[0][j] = 0 and dp[i][0] = 0 (array initialized to 0)
+> dp[0][j]: LCS of "" (empty) with text2[0..j-1] > 0. No common chars.
+> dp[i][0]: LCS of text1[0..i-1] with "" > 0. Same reason.
+> This is why size is (m+1) x (n+1): row 0 and col 0 represent
+"empty string" and hold the base case values (all zeros).
+
+> The actual characters start at index 1, so we compare
+text1[i-1] vs text2[j-1] (not text1[i] vs text2[j]).
+
+ SPACE OPTIMIZATION to O(N) with prev trick:
+> Row i only depends on row i-1. Use single array dp[n+1].
+> Diagonal dp[i-1][j-1] gets destroyed when dp[j-1] is overwritten.
+> Save it in a 'prev' variable before overwriting. See Space
+Optimization section below for full explanation.
 
 ### **PROBLEM: Edit Distance (LC 72)**  HARD
 
@@ -2094,8 +2119,8 @@ PROBLEM: Min operations (insert/delete/replace) to convert s1 to s2.
 Match: no operation needed, dp[i-1][j-1]
 No match: min of (insert, delete, replace) + 1
 
-```cpp
 int minDistance(string word1, string word2) {
+```
 int m = word1.size(), n = word2.size();                  
 vector<vector<int>> dp(m + 1, vector<int>(n + 1));       
 
@@ -2118,16 +2143,29 @@ for (int i = 1; i <= m; i++) {
 }                                                        
 
 return dp[m][n];                                         
+```
 
 }
-```
 
 TIME: O(M x N)  |  SPACE: O(M x N)
 
+ **WHY THIS BASE CASE?**
+dp[i][0] = i > "Convert word1[0..i-1] to empty string" > need i deletions.
+Delete every character one by one. 3 chars > 3 deletes.
+
+dp[0][j] = j > "Convert empty string to word2[0..j-1]" > need j insertions.
+Insert every character one by one. 4 chars > 4 inserts.
+
+dp[0][0] = 0 > "Convert empty to empty" > 0 operations.
+
+WHY NOT dp[i][0] = 0?
+> That would mean "converting 'abc' to '' costs 0", which is wrong.
+> You need exactly i delete operations to empty a string of length i.
+
 ### **PROBLEM: Palindromic Substrings (LC 647)**
 
-```cpp
 int countSubstrings(string s) {
+```
 int n = s.size();                                  
 vector<vector<bool>> dp(n, vector<bool>(n, false));
 int count = 0;                                     
@@ -2159,9 +2197,17 @@ for (int l = 3; l <= n; l++) {
 }                                                  
 
 return count;                                      
+```
 
 }
-```
+
+ **WHY THIS BASE CASE?**
+dp[i][i] = true > Every single character is a palindrome by itself.
+dp[i][i+1] = true only if s[i] == s[i+1] > Two-char palindrome.
+> Longer substrings dp[i][j] depend on dp[i+1][j-1] (inner substring).
+> For len=3, dp[i+1][j-1] = dp[i+1][i+1] (single char) > needs base.
+> For len=2, dp[i+1][j-1] = dp[i+1][i] where i+1 > i > would be
+invalid/uninitialized without the explicit len=2 base case.
 
 ### **DETAILED EXAMPLE: Longest Palindromic Subsequence (LC 516)** 
 
@@ -2172,9 +2218,7 @@ BUT we can solve directly with interval DP.
 
 **THOUGHT PROCESS:**
 
-```
 s = "bbbab"
-```
 
 If s[i] == s[j]: Include both! lps[i+1][j-1] + 2
 If s[i] != s[j]: Try skipping either end, take max
@@ -2184,20 +2228,16 @@ Single char: lps[i][i] = 1
 Two chars: lps[i][i+1] = (s[i] == s[i+1]) ? 2 : 1
 
 **RECURRENCE:**
-```
 if (s[i] == s[j]):
 dp[i][j] = dp[i+1][j-1] + 2
-```
 
 else:
-```
 dp[i][j] = max(dp[i+1][j], dp[i][j-1])
-```
 
 **COMPLETE SOLUTION:**
 
-```cpp
 int longestPalindromeSubseq(string s) {
+```
 int n = s.size();                                        
 vector<vector<int>> dp(n, vector<int>(n, 0));            
 
@@ -2220,11 +2260,22 @@ for (int len = 2; len <= n; len++) {
 }                                                        
 
 return dp[0][n-1];                                       
-
-}
 ```
 
+}
+
 TIME: O(N2)  |  SPACE: O(N2)
+
+ **WHY THIS BASE CASE?**
+dp[i][i] = 1 > A single character is a palindrome of length 1.
+dp[i][i+1] = 2 if s[i]==s[i+1], else 1
+> Two matching chars = palindrome of length 2.
+> Two non-matching chars = best palindrome is just 1 (either char).
+
+WHY loop by LENGTH?
+> dp[i][j] depends on dp[i+1][j-1] (shrink from both ends).
+> i+1 > i and j-1 < j, so we need SMALLER ranges computed first.
+> Looping by length (2, 3, 4...) guarantees this.
 
 ### DETAILED TRACE for s = "bbbab":
 
@@ -2232,7 +2283,6 @@ TIME: O(N2)  |  SPACE: O(N2)
 b   b   b   a   b
 
 Base (len=1):
-```
 dp[0][0]=1, dp[1][1]=1, dp[2][2]=1, dp[3][3]=1, dp[4][4]=1
 
 len=2:
@@ -2252,7 +2302,6 @@ dp[1][4]: s[1]==s[4]? YES > dp[1][4] = dp[2][3] + 2 = 3
 
 len=5:
 dp[0][4]: s[0]==s[4]? YES > dp[0][4] = dp[1][3] + 2 = 4 Y
-```
 
 Answer: 4 (subsequence "bbbb")
 
@@ -2264,9 +2313,7 @@ PROBLEM: Count distinct subsequences of s that equal t.
 
 **THOUGHT PROCESS:**
 
-```
 s = "rabbbit", t = "rabbit"
-```
 
 How many ways to form "rabbit" from "rabbbit"?
 
@@ -2284,8 +2331,8 @@ s is empty but t is not: 0 ways
 
 **COMPLETE SOLUTION:**
 
-```cpp
 int numDistinct(string s, string t) {
+```
 int m = s.size(), n = t.size();                                          
 vector<vector<unsigned long>> dp(m + 1, vector<unsigned long>(n + 1, 0));
 
@@ -2306,11 +2353,25 @@ for (int i = 1; i <= m; i++) {
 }                                                                        
 
 return dp[m][n];                                                         
-
-}
 ```
 
+}
+
 TIME: O(M x N)  |  SPACE: O(M x N)
+
+ **WHY THIS BASE CASE?**
+dp[i][0] = 1 for all i
+> "How many ways to form empty string t from s[0..i-1]?"
+> Exactly 1: delete everything from s. The empty subsequence always matches "".
+
+dp[0][j] = 0 for j > 0 (implicit, array initialized to 0)
+> "How many ways to form t[0..j-1] from empty string?"
+> Zero ways. Can't form a non-empty string from nothing.
+
+WHY dp[i][0] = 1 not 0?
+> This is the "successful match" base: we've matched ALL of t.
+> Every position i in s can reach this success state by skipping
+all remaining characters.
 
 ### DETAILED TRACE for s = "rabb", t = "rab":
 
@@ -2395,7 +2456,6 @@ Transitions: buy, sell, rest
 
 **TEMPLATE A: TAKE/SKIP (House Robber style)**
 
-```
 int prev2 = 0, prev1 = 0;  // dp[i-2] and dp[i-1]
 for (int num : nums) {
 int curr = max(prev1, prev2 + num);  // skip OR take
@@ -2404,26 +2464,24 @@ prev1 = curr;
 
 }
 return prev1;
-```
 
 **TEMPLATE B: 0/1 KNAPSACK (Subset Sum)**
 
-```cpp
 vector<bool> dp(target + 1, false);
 dp[0] = true;  // empty subset sums to 0
 
 for (int item : items) {
+```
 for (int j = target; j >= item; j--) {  //  BACKWARDS! 
     dp[j] = dp[j] || dp[j - item];      // skip OR take
 }                                                      
+```
 
 }
 return dp[target];
-```
 
 **TEMPLATE C: STOCK BUY/SELL (State Machine)**
 
-```
 int hold = -prices[0];  // max profit while holding stock
 int cash = 0;           // max profit without stock
 
@@ -2435,39 +2493,27 @@ cash = newCash;
 
 }
 return cash;
-```
 
 ### ** COMMON PITFALLS**
 
  PITFALL 1: Forward loop in 0/1 Knapsack
-```
 for (int j = item; j <= target; j++)  //  WRONG!
-```
-
 This uses same item multiple times! (Unbounded Knapsack)
 
  FIX: Loop BACKWARDS
-```
 for (int j = target; j >= item; j--)
-```
 
  PITFALL 2: Mixing up states in stock problems
-```
 hold = max(hold, hold - prices[i])  //  Can't buy if already holding!
-```
 
  FIX: Buy only from cash state
-```
 hold = max(hold, cash - prices[i])
-```
 
  PITFALL 3: House Robber II (circular array)
 Can't just apply House Robber directly!
 
  FIX: Run twice - exclude first house OR exclude last house
-```
 return max(rob(nums[1..n-1]), rob(nums[0..n-2]))
-```
 
  PITFALL 4: Forgetting "do nothing" as valid choice
 Sometimes optimal is to skip ALL elements (return 0)
@@ -2481,8 +2527,8 @@ PROBLEM: Max money robbing houses (can't rob adjacent houses).
  **KEY INSIGHT**:
 At each house: max(rob this + skip last, don't rob this)
 
-```cpp
 int rob(vector<int>& nums) {
+```
 int n = nums.size();                        
 if (n == 1) return nums[0];                 
 
@@ -2496,14 +2542,28 @@ for (int i = 2; i < n; i++) {
 }                                           
 
 return dp[n-1];                             
+```
 
 }
-```
+
+ **WHY THIS BASE CASE?**
+dp[0] = nums[0] > Only 1 house > must rob it (or skip for 0, but max is nums[0]).
+dp[1] = max(nums[0], nums[1]) > 2 houses > can only rob ONE (adjacent rule).
+Pick the richer house.
+
+WHY two base cases?
+> dp[i] = max(dp[i-1], dp[i-2] + nums[i]) looks back 2 steps.
+> Need dp[0] AND dp[1] defined before the loop starts at i=2.
+
+Space-optimized version uses prev2=0, prev1=0 (not nums[0], nums[1]):
+> This works because the loop processes nums[0] first, setting
+prev1 = max(0, 0+nums[0]) = nums[0]. Then nums[1] sets
+prev1 = max(nums[0], nums[1]). Same result, cleaner code.
 
 ### SPACE OPTIMIZED O(1):
 
-```cpp
 int rob(vector<int>& nums) {
+```
 int prev2 = 0, prev1 = 0;              
 
 for (int num : nums) {                 
@@ -2513,9 +2573,9 @@ for (int num : nums) {
 }                                      
 
 return prev1;                          
+```
 
 }
-```
 
 ### **PROBLEM: Best Time to Buy/Sell Stock with Cooldown (LC 309)** 
 
@@ -2524,8 +2584,8 @@ PROBLEM: Max profit with transactions, 1 day cooldown after selling.
  **STATE MACHINE**:
 3 states: hold stock, sold (cooldown), no stock
 
-```cpp
 int maxProfit(vector<int>& prices) {
+```
 int hold = -prices[0];  // Holding stock                                 
 int sold = 0;           // Just sold (cooldown)                          
 int rest = 0;           // Not holding, can buy                          
@@ -2541,9 +2601,21 @@ for (int i = 1; i < prices.size(); i++) {
 }                                                                        
 
 return max(sold, rest);                                                  
+```
 
 }
-```
+
+ **WHY THIS BASE CASE?**
+hold = -prices[0] > "Bought stock on day 0." Profit = -price (spent money).
+sold = 0 > "Just sold" state on day 0: can't sell without buying first.
+Effectively impossible, but 0 is safe because max() will skip it.
+
+rest = 0 > "Resting / doing nothing." Start with 0 profit.
+
+Three states form a state machine:
+rest > hold (buy) > sold (sell) > rest (cooldown) > ...
+
+Each state on day i depends on previous day's states.
 
 ### **DETAILED EXAMPLE: Best Time to Buy/Sell Stock IV (LC 188)**  HARD
 
@@ -2553,9 +2625,7 @@ PROBLEM: Max profit with at most K transactions.
 
 **THOUGHT PROCESS:**
 
-```
 prices = [3, 2, 6, 5, 0, 3], k = 2
-```
 
 States:
 - Day i
@@ -2574,18 +2644,16 @@ Day 0, has stock: profit = -prices[0]
 0 transactions left: can't trade anymore
 
 **RECURRENCE:**
-```
 buy[i][t] = max(buy[i-1][t], sell[i-1][t-1] - prices[i])
 // keep holding   or buy today
 
 sell[i][t] = max(sell[i-1][t], buy[i-1][t] + prices[i])
 // keep no stock   or sell today
-```
 
 **COMPLETE SOLUTION:**
 
-```cpp
 int maxProfit(int k, vector<int>& prices) {
+```
 int n = prices.size();                                               
 if (n == 0 || k == 0) return 0;                                      
 
@@ -2611,62 +2679,62 @@ for (int i = 1; i < n; i++) {
 }                                                                    
 
 return sell[n-1][k];                                                 
-
-}
 ```
 
+}
+
 TIME: O(N x K)  |  SPACE: O(N x K) > Can optimize to O(K)!
+
+ **WHY THIS BASE CASE?**
+buy[0][t] = -prices[0] for all t
+> "On day 0, if we hold stock, we must have bought at prices[0]."
+> Profit = -prices[0] (spent that money).
+> Same regardless of how many transactions allowed (t).
+
+sell[0][t] = 0 for all t
+> "On day 0, if we don't hold stock, profit = 0."
+> Can't have sold without buying first on day 0.
+
+k >= n/2 > unlimited transactions (greedy)
+> With enough transactions, grab EVERY upward price movement.
+> No DP needed, just sum positive differences.
 
 ### EXAMPLE TRACE for prices = [3,2,6,5,0,3], k = 2:
 
 Day 0 (price=3):
-```
 buy[0][1] = -3 (bought at 3)
 sell[0][1] = 0 (no action)
-```
 
 Day 1 (price=2):
-```
 buy[1][1] = max(-3, 0-2) = -2 (better to buy at 2)
 sell[1][1] = max(0, -3+2) = 0
-```
 
 Day 2 (price=6):
-```
 buy[2][1] = max(-2, 0-6) = -2
 sell[2][1] = max(0, -2+6) = 4 (sold at 6!)
 buy[2][2] = max(-3, 0-6) = -3
 sell[2][2] = max(0, -3+6) = 3
-```
 
 ...continue until day 5...
 
 Final: sell[5][2] = 7 Y
 Transaction 1: Buy at 2, sell at 6 > profit = 4
 Transaction 2: Buy at 0, sell at 3 > profit = 3
-```
 Total = 7
-```
 
 ### **DETAILED EXAMPLE: Shortest Common Supersequence (LC 1092)** 
 
 PROBLEM: Find shortest string containing both s1 and s2 as subsequences.
 
  **BRILLIANT INSIGHT**:
-```
 Length = s1.length + s2.length - LCS(s1, s2)
-```
-
 But we need the actual string, not just length!
 
 **THOUGHT PROCESS:**
 
-```
 s1 = "abac", s2 = "cab"
 
 LCS(s1, s2) = "ab" (length 2)
-```
-
 SCS length = 4 + 3 - 2 = 5
 
 One possible SCS: "cabac"
@@ -2683,8 +2751,8 @@ During backtracking:
 
 **COMPLETE SOLUTION:**
 
-```cpp
 string shortestCommonSupersequence(string s1, string s2) {
+```
 int m = s1.size(), n = s2.size();                     
 vector<vector<int>> dp(m + 1, vector<int>(n + 1, 0)); 
 
@@ -2722,11 +2790,25 @@ while (i > 0) result = s1[i-1] + result, i--;
 while (j > 0) result = s2[j-1] + result, j--;         
 
 return result;                                        
-
-}
 ```
 
+}
+
 TIME: O(M x N)  |  SPACE: O(M x N)
+
+ **WHY THIS BASE CASE?**
+Uses LCS table, so base cases are same as LCS:
+dp[0][j] = 0, dp[i][0] = 0 > LCS with empty string = 0.
+
+During backtracking to build the actual SCS string:
+> When i=0: remaining chars of s2 must be added.
+> When j=0: remaining chars of s1 must be added.
+> These handle the "one string exhausted" cases.
+
+KEY INSIGHT for SCS length:
+SCS length = len(s1) + len(s2) - LCS length
+> LCS chars appear ONCE (shared), non-LCS chars from both strings
+must all appear. So total = both lengths minus the overlap.
 
 ### BACKTRACKING VISUALIZATION for s1="ab", s2="ac":
 
@@ -2736,27 +2818,16 @@ TIME: O(M x N)  |  SPACE: O(M x N)
 a  0   1   1
 b  0   1   1
 
-```
 LCS = "a"
-```
 
 Backtrack from (2,2):
-```
 s1[1]='b' != s2[1]='c', dp[1][2]=1 > dp[2][1]=1
-```
-
 > Add 'c', move to (2,1)
 
-```
 s1[1]='b' != s2[0], dp[1][1]=1 > dp[2][0]=0
-```
-
 > Add 'b', move to (1,1)
 
-```
 s1[0]='a' == s2[0]='a'
-```
-
 > Add 'a', move to (0,0)
 
 Result: "abc" (built backwards, so "a" then "b" then "c")
@@ -2773,32 +2844,25 @@ PROBLEM: Check if s3 is formed by interleaving s1 and s2.
 
 **THOUGHT PROCESS:**
 
-```
 s1 = "aabcc", s2 = "dbbca", s3 = "aadbbcbcac"
-```
 
 At position k in s3:
 - Can we use s1[i]? Check if dp[i-1][j] is true
 - Can we use s2[j]? Check if dp[i][j-1] is true
 
 **BASE CASES:**
-```
 dp[0][0] = true (empty strings match)
 dp[i][0] = s1[0..i-1] == s3[0..i-1]
 dp[0][j] = s2[0..j-1] == s3[0..j-1]
-```
 
 **RECURRENCE:**
-```
 dp[i][j] = (dp[i-1][j] && s1[i-1] == s3[i+j-1]) ||
-```
-
 (dp[i][j-1] && s2[j-1] == s3[i+j-1])
 
 **COMPLETE SOLUTION:**
 
-```cpp
 bool isInterleave(string s1, string s2, string s3) {
+```
 int m = s1.size(), n = s2.size();                          
 if (m + n != s3.size()) return false;                      
 
@@ -2824,11 +2888,25 @@ for (int i = 1; i <= m; i++) {
 }                                                          
 
 return dp[m][n];                                           
-
-}
 ```
 
+}
+
 TIME: O(M x N)  |  SPACE: O(M x N) > Can optimize to O(N)!
+
+ **WHY THIS BASE CASE?**
+dp[0][0] = true
+> "Can empty s1 + empty s2 form empty s3?" > YES.
+
+dp[i][0] = dp[i-1][0] && s1[i-1] == s3[i-1]
+> Using ONLY s1 (no characters from s2). Check if s1[0..i-1] == s3[0..i-1].
+> The moment one char doesn't match, all further dp[i][0] are false.
+
+dp[0][j] = dp[0][j-1] && s2[j-1] == s3[j-1]
+> Using ONLY s2 (no characters from s1). Same logic.
+
+m + n != s3.size() > return false immediately
+> If lengths don't add up, interleaving is impossible.
 
 ### DETAILED TRACE for s1="aa", s2="ab", s3="aaba":
 
@@ -2839,10 +2917,7 @@ a  T   T   T
 ^   ^
 Match!
 
-```
 dp[2][2]:
-```
-
 Use s1[1]='a'? dp[1][2]=F, skip
 Use s2[1]='b'? dp[2][1]=T && s2[1]==s3[3]='b' > TRUE Y
 
@@ -2863,31 +2938,21 @@ PROBLEM: Implement regex matching with '.' and '*'.
 
 **THOUGHT PROCESS:**
 
-```
 s = "aa", p = "a*"
-```
 
 'a*' can match "", "a", "aa", "aaa"...
 So "aa" matches! Y
 
-```
 s = "ab", p = ".*"
-```
-
 '.*' matches any string! Y
 
 **BASE CASES:**
-```
 dp[0][0] = true (empty matches empty)
 dp[i][0] = false (non-empty s can't match empty pattern)
 dp[0][j] = true if pattern is like "a*b*c*" (all with *)
-```
 
 **RECURRENCE:**
-```
 if (p[j-1] == '*'):
-```
-
 - Match 0 times: dp[i][j-2]
 - Match 1+ times: dp[i-1][j] if s[i-1] matches p[j-2]
 
@@ -2896,8 +2961,8 @@ else:
 
 **COMPLETE SOLUTION:**
 
-```cpp
 bool isMatch(string s, string p) {
+```
 int m = s.size(), n = p.size();                            
 vector<vector<bool>> dp(m + 1, vector<bool>(n + 1, false));
 
@@ -2930,11 +2995,24 @@ for (int i = 1; i <= m; i++) {
 }                                                          
 
 return dp[m][n];                                           
-
-}
 ```
 
+}
+
 TIME: O(M x N)  |  SPACE: O(M x N)
+
+ **WHY THIS BASE CASE?**
+dp[0][0] = true > Empty string matches empty pattern. Trivially true.
+
+dp[i][0] = false (for i > 0)
+> Non-empty string can NEVER match empty pattern. Nothing to match against.
+
+dp[0][j]: Special! Can be true if pattern is "a*b*c*..."
+> "a*" can match ZERO 'a's, effectively vanishing.
+> dp[0][j] = dp[0][j-2] when p[j-1] == '*' (use '*' to match 0 times).
+> This handles patterns like "a*b*" matching empty string.
+> Without this, we'd miss valid matches where * consumes its
+preceding char zero times.
 
 ### DETAILED TRACE for s="aab", p="c*a*b":
 
@@ -2961,10 +3039,7 @@ Reuse "Largest Rectangle in Histogram" solution.
 
 **THOUGHT PROCESS:**
 
-```
 matrix = [
-```
-
 ["1","0","1","0","0"],
 ["1","0","1","1","1"],
 ["1","1","1","1","1"],
@@ -2981,8 +3056,8 @@ For each row, find largest rectangle using histogram method!
 
 **COMPLETE SOLUTION:**
 
-```cpp
 int maximalRectangle(vector<vector<char>>& matrix) {
+```
 if (matrix.empty()) return 0;                                   
 
 int m = matrix.size(), n = matrix[0].size();                    
@@ -3000,10 +3075,12 @@ for (int i = 0; i < m; i++) {
 }                                                               
 
 return maxArea;                                                 
+```
 
 }
 
 int largestRectangleArea(vector<int>& heights) {
+```
 stack<int> st;                                        
 int maxArea = 0;                                      
 int n = heights.size();                               
@@ -3022,9 +3099,9 @@ for (int i = 0; i <= n; i++) {
 }                                                     
 
 return maxArea;                                       
+```
 
 }
-```
 
 TIME: O(M x N)  |  SPACE: O(N)
 
@@ -3033,15 +3110,11 @@ TIME: O(M x N)  |  SPACE: O(N)
 At row 2: heights = [3, 1, 3, 2, 2]
 
 Process histogram:
-```
 i=0: push 0
 i=1: heights[0]=3 > heights[1]=1, pop 0
 height=3, width=1 > area=3
-```
-
 push 1
 
-```
 i=2: push 2 (heights[2]=3)
 i=3: push 3 (heights[3]=2)
 i=4: push 4 (heights[4]=2)
@@ -3049,7 +3122,6 @@ i=5 (end): pop all
 heights[4]=2, width=2 > area=4
 heights[3]=2, width=3 > area=6 Y
 heights[2]=3, width=4 > area=12? No, width calculation...
-```
 
 Largest rectangle in row 2's histogram = 6
 
@@ -3065,9 +3137,7 @@ Largest rectangle in row 2's histogram = 6
 
 **EXAMPLE:**
 [10, 9, 2, 5, 3, 7, 101, 18]
-```
 LIS = [2, 3, 7, 101] or [2, 5, 7, 101] > length 4
-```
 
  **THE "AHA" INSIGHT**:
 ```
@@ -3104,8 +3174,8 @@ STATE: dp[i] = length of LIS ending at index i
 RECURRENCE: dp[i] = max(dp[j] + 1) for all j < i where nums[j] < nums[i]
 BASE: dp[i] = 1 (each element is LIS of length 1)
 
-```cpp
 int lengthOfLIS(vector<int>& nums) {
+```
 int n = nums.size();                      
 vector<int> dp(n, 1);                     
 int maxLen = 1;                           
@@ -3120,11 +3190,20 @@ for (int i = 1; i < n; i++) {
 }                                         
 
 return maxLen;                            
-
-}
 ```
 
+}
+
 TIME: O(N2)  |  SPACE: O(N)
+
+ **WHY THIS BASE CASE?**
+dp[i] = 1 for all i
+> Every single element is an increasing subsequence of length 1.
+> Even if no element before i is smaller, the answer is at least 1
+(the element itself).
+
+> The loop then tries to EXTEND by looking at all j < i where
+nums[j] < nums[i]. If found, dp[i] = max(dp[i], dp[j]+1).
 
 ### **TEMPLATE 2: O(N log N) Binary Search** 
 
@@ -3140,8 +3219,8 @@ For each number:
 - Replacing with smaller value keeps more room for future elements
 - tails.size() = length of LIS
 
-```cpp
 int lengthOfLIS(vector<int>& nums) {
+```
 vector<int> tails;  // tails[i] = smallest tail of LIS with length i+1
 
 for (int num : nums) {                                                
@@ -3156,16 +3235,14 @@ for (int num : nums) {
 }                                                                     
 
 return tails.size();                                                  
+```
 
 }
-```
 
 TIME: O(N log N)  |  SPACE: O(N)
 
 **VISUALIZATION:**
-```
 nums = [10, 9, 2, 5, 3, 7, 101, 18]
-```
 
 10: tails = [10]
 9:  tails = [9]      (replace 10 with 9)
@@ -3176,14 +3253,12 @@ nums = [10, 9, 2, 5, 3, 7, 101, 18]
 101: tails = [2, 3, 7, 101] (extend)
 18: tails = [2, 3, 7, 18]   (replace 101 with 18)
 
-```
 Answer = 4
-```
 
 ## **SOLVED: Longest Increasing Subsequence (LC 300)** 
 
-```cpp
 int lengthOfLIS(vector<int>& nums) {
+```
 vector<int> tails;                                         
 for (int num : nums) {                                     
     auto it = lower_bound(tails.begin(), tails.end(), num);
@@ -3191,9 +3266,9 @@ for (int num : nums) {
     else *it = num;                                        
 }                                                          
 return tails.size();                                       
+```
 
 }
-```
 
 ## **SOLVED: Number of Longest Increasing Subsequence (LC 673)** 
 
@@ -3201,8 +3276,8 @@ PROBLEM: Count how many LIS exist.
 
 KEY INSIGHT: Track both length AND count for each position.
 
-```cpp
 int findNumberOfLIS(vector<int>& nums) {
+```
 int n = nums.size();                                                 
 vector<int> len(n, 1);    // len[i] = length of LIS ending at i      
 vector<int> cnt(n, 1);    // cnt[i] = count of LIS ending at i       
@@ -3227,11 +3302,20 @@ for (int i = 0; i < n; i++) {
     if (len[i] == maxLen) result += cnt[i];                          
 }                                                                    
 return result;                                                       
-
-}
 ```
 
+}
+
 TIME: O(N2)  |  SPACE: O(N)
+
+ **WHY THIS BASE CASE?**
+len[i] = 1, cnt[i] = 1 for all i
+> len[i] = 1: Each element alone is LIS of length 1 (same as standard LIS).
+> cnt[i] = 1: There's exactly 1 way to form LIS of length 1 at position i
+(just the element itself).
+
+> When len[j]+1 > len[i]: found a LONGER LIS > reset cnt[i] = cnt[j].
+> When len[j]+1 == len[i]: found ANOTHER way to get same length > cnt[i] += cnt[j].
 
 ## **SOLVED: Russian Doll Envelopes (LC 354)**  HARD
 
@@ -3242,8 +3326,8 @@ PROBLEM: Given envelopes [width, height], find max nested envelopes.
 2. For same width, sort by height DESCENDING (prevents using same width twice)
 3. Find LIS on heights!
 
-```cpp
 int maxEnvelopes(vector<vector<int>>& envelopes) {
+```
 // Sort: width ascending, height descending for same width     
 sort(envelopes.begin(), envelopes.end(), [](auto& a, auto& b) {
     return a[0] == b[0] ? a[1] > b[1] : a[0] < b[0];           
@@ -3259,9 +3343,9 @@ for (auto& env : envelopes) {
 }                                                              
 
 return tails.size();                                           
+```
 
 }
-```
 
 TIME: O(N log N)  |  SPACE: O(N)
 
@@ -3323,8 +3407,8 @@ If previous sum is POSITIVE > extend (positive prefix helps)
 
 **TEMPLATE A: MAX SUM**
 
-```cpp
 int maxSubArray(vector<int>& nums) {
+```
 int curr = nums[0], maxSum = nums[0];                          
 
 for (int i = 1; i < nums.size(); i++) {                        
@@ -3333,14 +3417,14 @@ for (int i = 1; i < nums.size(); i++) {
 }                                                              
 
 return maxSum;                                                 
+```
 
 }
-```
 
 **TEMPLATE B: MAX PRODUCT** (track both max AND min!)
 
-```cpp
 int maxProduct(vector<int>& nums) {
+```
 int maxProd = nums[0], minProd = nums[0], result = nums[0];     
 
 for (int i = 1; i < nums.size(); i++) {                         
@@ -3352,9 +3436,9 @@ for (int i = 1; i < nums.size(); i++) {
 }                                                               
 
 return result;                                                  
+```
 
 }
-```
 
 TIME: O(N)  |  SPACE: O(1)
 
@@ -3379,17 +3463,28 @@ Check problem constraints!
 
 ## **SOLVED: Maximum Subarray (LC 53)** 
 
-```cpp
 int maxSubArray(vector<int>& nums) {
+```
 int curr = nums[0], maxSum = nums[0];   
 for (int i = 1; i < nums.size(); i++) { 
     curr = max(nums[i], curr + nums[i]);
     maxSum = max(maxSum, curr);         
 }                                       
 return maxSum;                          
+```
 
 }
-```
+
+ **WHY THIS BASE CASE?**
+curr = nums[0], maxSum = nums[0]
+> Start with first element (not 0!).
+> WHY NOT 0? If all elements are negative (e.g. [-3, -2, -1]),
+starting at 0 would give maxSum = 0 (empty subarray), which is wrong.
+The problem requires at least 1 element.
+
+> curr tracks "best subarray ending HERE". At each step:
+curr = max(nums[i], curr + nums[i]) means "start fresh or extend".
+If previous sum was negative, starting fresh is better.
 
 ## **SOLVED: Maximum Sum Circular Subarray (LC 918)** 
 
@@ -3400,14 +3495,12 @@ Two cases:
 1. Max subarray is in the middle > standard Kadane
 2. Max subarray wraps around > total - minSubarray
 
-```
 Answer = max(maxSubarray, total - minSubarray)
-```
 
 EDGE CASE: If all negative, minSubarray = total > avoid returning 0!
 
-```cpp
 int maxSubarraySumCircular(vector<int>& nums) {
+```
 int total = 0;                                       
 int currMax = nums[0], maxSum = nums[0];             
 int currMin = nums[0], minSum = nums[0];             
@@ -3428,11 +3521,19 @@ for (int i = 0; i < nums.size(); i++) {
 if (maxSum < 0) return maxSum;                       
 
 return max(maxSum, total - minSum);                  
-
-}
 ```
 
+}
+
 TIME: O(N)  |  SPACE: O(1)
+
+ **WHY THIS BASE CASE?**
+All initialized with nums[0], same as Max Subarray.
+maxSum < 0 > return maxSum (edge case: ALL elements negative)
+> If all negative, total - minSum = 0 (empty subarray), which is wrong.
+> In this case, the max non-wrapping subarray is the answer.
+> The "wrap = total - minSubarray" trick only works when at least
+one element is non-negative.
 
 ## **SOLVED: Maximum Product Subarray (LC 152)** 
 
@@ -3442,8 +3543,8 @@ KEY INSIGHT: Track both MAX and MIN!
 - Negative * negative = positive
 - When we see negative, max and min swap roles
 
-```cpp
 int maxProduct(vector<int>& nums) {
+```
 int maxProd = nums[0], minProd = nums[0], result = nums[0];
 
 for (int i = 1; i < nums.size(); i++) {                    
@@ -3457,11 +3558,24 @@ for (int i = 1; i < nums.size(); i++) {
 }                                                          
 
 return result;                                             
-
-}
 ```
 
+}
+
 TIME: O(N)  |  SPACE: O(1)
+
+ **WHY THIS BASE CASE?**
+maxProd = nums[0], minProd = nums[0], result = nums[0]
+> Initialize with first element, not 0 or 1!
+> WHY track minProd? Because negative x negative = positive.
+e.g. [-2, 3, -4]: minProd after [-2,3] = -6, then -6 x -4 = 24!
+
+> WHY swap when nums[i] < 0? Multiplying by negative FLIPS signs:
+the old max becomes the new min and vice versa.
+
+> WHY NOT start at 1? Because [0.5, 0.1] would give wrong answer
+(though LeetCode uses integers). More importantly, empty product
+(value 1) isn't valid - problem requires at least 1 element.
 
 ### PRACTICE PROBLEMS - Kadane's Pattern:
 
@@ -3534,9 +3648,9 @@ Leaves compute first (base case), then their parents, up to root.
 
 ### **TEMPLATE: POST-ORDER DP**
 
-```cpp
 // General structure for Tree DP
 pair<int, int> dfs(TreeNode* node) {
+```
 if (!node) return {baseCase1, baseCase2};          
 
 auto [left1, left2] = dfs(node->left);             
@@ -3550,9 +3664,9 @@ int val2 = /* combine left2, right2, node->val */;
 globalAns = max(globalAns, /* some combination */);
 
 return {val1, val2};                               
+```
 
 }
-```
 
 ## **SOLVED: Binary Tree Maximum Path Sum (LC 124)**  HARD
 
@@ -3563,8 +3677,8 @@ For each node, compute:
 1. Max path sum PASSING THROUGH this node (update global answer)
 2. Max path sum STARTING from this node going down (return to parent)
 
-```cpp
 int maxPathSum(TreeNode* root) {
+```
 int maxSum = INT_MIN;                                          
 
 function<int(TreeNode*)> dfs = [&](TreeNode* node) -> int {    
@@ -3584,11 +3698,25 @@ function<int(TreeNode*)> dfs = [&](TreeNode* node) -> int {
 
 dfs(root);                                                     
 return maxSum;                                                 
-
-}
 ```
 
+}
+
 TIME: O(N)  |  SPACE: O(H) where H = height
+
+ **WHY THIS BASE CASE?**
+if (!node) return 0 > Null node contributes 0 gain.
+maxSum = INT_MIN (global) > Must handle all-negative trees.
+
+leftGain = max(0, dfs(left)) > WHY max with 0?
+> If a subtree's best path is NEGATIVE, don't include it!
+> Taking a negative path would reduce our sum. Better to skip.
+> max(0, gain) effectively says "use this subtree or don't".
+
+Return: node->val + max(leftGain, rightGain) > WHY only one side?
+> Parent can only use ONE path down from this node (can't fork).
+> But GLOBAL update uses BOTH sides (path passing through this node).
+> This "return vs update" distinction is the core of Tree DP.
 
 ## **SOLVED: Diameter of Binary Tree (LC 543)** 
 
@@ -3596,8 +3724,8 @@ PROBLEM: Longest path between any two nodes.
 
 KEY INSIGHT: Diameter through node = leftHeight + rightHeight
 
-```cpp
 int diameterOfBinaryTree(TreeNode* root) {
+```
 int diameter = 0;                                             
 
 function<int(TreeNode*)> height = [&](TreeNode* node) -> int {
@@ -3615,11 +3743,21 @@ function<int(TreeNode*)> height = [&](TreeNode* node) -> int {
 
 height(root);                                                 
 return diameter;                                              
-
-}
 ```
 
+}
+
 TIME: O(N)  |  SPACE: O(H)
+
+ **WHY THIS BASE CASE?**
+if (!node) return 0 > Null node has height 0.
+diameter = 0 (global) > Minimum possible diameter.
+
+Return: 1 + max(left, right) > Height of subtree rooted here.
+Update: diameter = max(diameter, left + right) > Path THROUGH this node.
+> Diameter through a node = left height + right height (edges, not nodes).
+> We return HEIGHT to parent but update DIAMETER globally.
+> Same "return vs update" pattern as Max Path Sum.
 
 ## **SOLVED: House Robber III (LC 337)** 
 
@@ -3627,8 +3765,8 @@ PROBLEM: Rob houses on tree, can't rob parent + child together.
 
 KEY INSIGHT: Return {robThis, skipThis} for each node.
 
-```cpp
 int rob(TreeNode* root) {
+```
 // Returns {rob this node, skip this node}                                     
 function<pair<int,int>(TreeNode*)> dfs = [&](TreeNode* node) -> pair<int,int> {
     if (!node) return {0, 0};                                                  
@@ -3647,11 +3785,25 @@ function<pair<int,int>(TreeNode*)> dfs = [&](TreeNode* node) -> pair<int,int> {
 
 auto [rob, skip] = dfs(root);                                                  
 return max(rob, skip);                                                         
-
-}
 ```
 
+}
+
 TIME: O(N)  |  SPACE: O(H)
+
+ **WHY THIS BASE CASE?**
+if (!node) return {0, 0} > Null node: 0 profit whether robbed or skipped.
+
+robThis = node->val + leftSkip + rightSkip
+> If we rob THIS node, we MUST skip both children (adjacency rule).
+
+skipThis = max(leftRob, leftSkip) + max(rightRob, rightSkip)
+> If we skip this node, each child independently chooses best option.
+> Children are NOT adjacent to each other, so both can be robbed.
+
+Return {robThis, skipThis} > Parent needs BOTH values to decide.
+> This "return a pair" pattern avoids recomputation. Each node
+computed exactly once in post-order traversal.
 
 ### PRACTICE PROBLEMS - Tree DP:
 
@@ -3713,25 +3865,23 @@ LOWEST set bit:           mask & (-mask)
 FULL mask for N items:    (1 << N) - 1
 
 ITERATE over set bits:
-```
 for (int i = 0; i < n; i++) {
+```
 if (mask & (1 << i)) {              
     // i-th element is in the subset
 }                                   
+```
 
 }
-```
 
 **STATE:**
-```
 dp[mask] = answer when subset represented by mask is processed
-```
 
 ### **TEMPLATE: TSP-STYLE**
 
-```cpp
 // dp[mask][i] = min cost to visit nodes in mask, ending at node i
 int tsp(vector<vector<int>>& dist) {
+```
 int n = dist.size();                                                   
 int fullMask = (1 << n) - 1;                                           
 
@@ -3762,11 +3912,18 @@ for (int last = 0; last < n; last++) {
     }                                                                  
 }                                                                      
 return ans;                                                            
-
-}
 ```
 
+}
+
 TIME: O(2^N x N2)  |  SPACE: O(2^N x N)
+
+ **WHY THIS BASE CASE?**
+dp[1][0] = 0 > "At node 0, having visited only node 0, cost = 0."
+> mask = 1 means binary 0...001 > only node 0 is visited.
+> We start the journey at node 0 with zero travel cost.
+> All other dp values = INT_MAX (unreachable until computed).
+> fullMask = (1<<n)-1 = all bits set = all nodes visited.
 
 ## **SOLVED: Shortest Path Visiting All Nodes (LC 847)** 
 
@@ -3774,8 +3931,8 @@ PROBLEM: Shortest path to visit all nodes (can revisit).
 
 KEY INSIGHT: BFS with state = (currentNode, visitedMask)
 
-```cpp
 int shortestPathLength(vector<vector<int>>& graph) {
+```
 int n = graph.size();                             
 int fullMask = (1 << n) - 1;                      
 
@@ -3810,18 +3967,26 @@ while (!q.empty()) {
 }                                                 
 
 return -1;                                        
-
-}
 ```
 
+}
+
 TIME: O(2^N x N2)  |  SPACE: O(2^N x N)
+
+ **WHY THIS BASE CASE?**
+Start BFS from EVERY node: q.push({i, 1 << i}) for all i.
+> Unlike TSP, there's no fixed start. Any node can be the start.
+> State = (currentNode, visitedMask). BFS finds shortest path.
+> mask == fullMask > all nodes visited > return steps.
+> "Can revisit nodes" > BFS handles this by tracking (node, mask)
+pairs, not just node. Same node with different masks = different states.
 
 ## **SOLVED: Partition to K Equal Sum Subsets (LC 698)** 
 
 PROBLEM: Partition array into K subsets with equal sum.
 
-```cpp
 int canPartitionKSubsets(vector<int>& nums, int k) {
+```
 int total = accumulate(nums.begin(), nums.end(), 0);                           
 if (total % k != 0) return false;                                              
 int target = total / k;                                                        
@@ -3845,11 +4010,22 @@ for (int mask = 0; mask < (1 << n); mask++) {
 }                                                                              
 
 return dp[(1 << n) - 1] == 0;                                                  
-
-}
 ```
 
+}
+
 TIME: O(N x 2^N)  |  SPACE: O(2^N)
+
+ **WHY THIS BASE CASE?**
+dp[0] = 0 > "Empty subset has current bucket sum = 0."
+> dp[mask] stores the current bucket's running sum (mod target).
+> When bucket fills up (sum == target), reset to 0 via % target.
+> dp[(1<<n)-1] == 0 means all elements used AND all buckets exactly full.
+
+total % k != 0 > return false
+> If total sum isn't divisible by k, equal partition is impossible.
+
+Sorting in descending order > optimization: large elements fail fast.
 
 ### PRACTICE PROBLEMS - Bitmask DP:
 
@@ -3919,11 +4095,11 @@ If I put 3: Still TIGHT, next position limited by N's next digit
 
 ### **TEMPLATE**
 
-```cpp
 string num;
 int memo[MAXLEN][STATES][2][2];  // pos, state, tight, started
 
 int solve(int pos, int state, bool tight, bool started) {
+```
 if (pos == num.size()) {                                     
     return started ? (validState(state) ? 1 : 0) : 0;        
 }                                                            
@@ -3945,17 +4121,19 @@ for (int d = 0; d <= limit; d++) {
 }                                                            
 
 return memo[pos][state][tight][started] = result;            
+```
 
 }
 
 // Count in range [1, n]
 int countInRange(string n) {
+```
 num = n;                                   
 memset(memo, -1, sizeof(memo));            
 return solve(0, initialState, true, false);
+```
 
 }
-```
 
 ## **SOLVED: Numbers With Repeated Digits (LC 1012)** 
 
@@ -3963,8 +4141,8 @@ PROBLEM: Count numbers in [1, n] with at least one repeated digit.
 
 TRICK: Count numbers with ALL UNIQUE digits, then subtract from n.
 
-```cpp
 int numDupDigitsAtMostN(int n) {
+```
 string s = to_string(n);                                                           
 int len = s.size();                                                                
 
@@ -3994,18 +4172,32 @@ function<int(int, int, bool, bool)> solve = [&](int pos, int mask,
 
 int uniqueCount = solve(0, 0, true, false);                                        
 return n - uniqueCount;                                                            
-
-}
 ```
 
+}
+
 TIME: O(10 x 2^10 x len)  |  SPACE: O(10 x 2^10)
+
+ **WHY THIS BASE CASE?**
+pos == len > return started ? 1 : 0
+> Reached end of number. If we actually started building (non-zero digit
+placed), count this as 1 valid number. If only leading zeros, don't count.
+
+mask tracks which digits are USED (bitmask of 10 digits).
+> If digit d's bit is already set in mask > skip (duplicate digit).
+> started = false: haven't placed non-zero digit yet (leading zeros).
+Can "skip" (keep adding leading zeros) or place first non-zero digit.
+
+WHY n - uniqueCount?
+> Easier to count numbers with ALL UNIQUE digits, then subtract.
+> "At least one repeated" = total - "all unique".
 
 ## **SOLVED: Count of Integers (LC 2719)** 
 
 PROBLEM: Count integers in [num1, num2] where digit sum is in [min_sum, max_sum].
 
-```cpp
 int count(string num1, string num2, int min_sum, int max_sum) {
+```javascript
 const int MOD = 1e9 + 7;                                                                        
 
 auto countUpTo = [&](string& s) -> long long {                                                  
@@ -4042,9 +4234,9 @@ auto subtractOne = [](string& s) {
 
 subtractOne(num1);                                                                              
 return ((countUpTo(num2) - countUpTo(num1)) % MOD + MOD) % MOD;                                 
+```
 
 }
-```
 
 ### PRACTICE PROBLEMS - Digit DP:
 
@@ -4133,20 +4325,16 @@ Problem asks "minimum/maximum"?
 
 ### MISTAKE 1: Using INT_MAX without overflow protection
 
-```
  dp[i] = INT_MAX;
 dp[i] = min(dp[i], dp[j] + 1);  // Overflow if dp[j] = INT_MAX!
 
  dp[i] = n + 1;  // Use impossible value instead
-```
 
 ### MISTAKE 2: Wrong base case initialization
 
 For "count ways" problems:
-```
  dp[0] = 0;  // Wrong!
  dp[0] = 1;  // One way to make 0
-```
 
 ### MISTAKE 3: Iterating in wrong order (Bottom-Up)
 
@@ -4154,10 +4342,8 @@ Dependencies matter! Make sure you compute smaller subproblems first.
 
 ### MISTAKE 4: Not handling negative indices
 
-```
  if (i - coin >= 0)  // After access!
  if (coin <= i)      // Before access
-```
 
 MISTAKE 5: Using memo without initialization
 ### Always initialize memo with -1 or special value!
@@ -4166,10 +4352,7 @@ MISTAKE 5: Using memo without initialization
 ### TECHNIQUE 1: Only keep what you need
 
 If dp[i] only depends on dp[i-1] and dp[i-2]:
-```cpp
  vector<int> dp(n);
-```
-
  Keep only prev1 and prev2
 
 ### TECHNIQUE 2: Reuse input array
@@ -4179,16 +4362,177 @@ If allowed, modify input grid/array in-place for DP!
 ### TECHNIQUE 3: Rolling array (2D > 1D)
 
 If dp[i][j] only depends on previous row:
-```cpp
 vector<vector<int>> dp(m, vector<int>(n));  // O(MN) space
-```
-
 > vector<int> dp(n);  // O(N) space
 Update in-place or use two rows alternating
 
-## **MENTAL MODEL: BASE CASES & ITERATION ORDER** 
+### **⚡ TECHNIQUE 4: 2D > 1D with 'prev' TRICK (THE DIAGONAL PROBLEM) ⚡**
+
+**WHEN TO USE:**
+When dp[i][j] depends on dp[i-1][j-1] (diagonal), dp[i-1][j] (top),
+AND dp[i][j-1] (left). This is the case for:
+> LCS, Edit Distance, Distinct Subsequences, Interleaving String, etc.
+
+**THE PROBLEM:**
+
+In 2D, dp[i][j] uses three cells:
 
 ```
+ j-1     j       
++-------+-------+
+```
+
+```
+i-1  | DIAG  |  TOP  |   DIAG = dp[i-1][j-1]
+     |       |       |   TOP  = dp[i-1][j]  
+     +-------+-------+   LEFT = dp[i][j-1]  
+ i   | LEFT  | HERE                        |
+     +-------+-----------------------------+
+```
+
+When we compress to 1D and overwrite left-to-right:
+dp[j-1] was ALREADY overwritten with row i's value (LEFT )
+dp[j] still holds row i-1's value (TOP )
+dp[i-1][j-1] is GONE! It was overwritten when we computed dp[j-1] 
+
+The diagonal value is DESTROYED. We need to SAVE it.
+
+### THE SOLUTION: 'prev' variable
+
+Before overwriting dp[j], save the OLD dp[j] in 'temp'.
+After overwriting, set prev = temp.
+Now 'prev' holds the old dp[j] = dp[i-1][j], which becomes
+dp[i-1][(j+1)-1] = the DIAGONAL for the NEXT iteration.
+
+**STEP-BY-STEP RECIPE:**
+
+1. Check: does row i only depend on row i-1? > YES, proceed.
+2. Replace 2D array with 1D array of size (n+1), initialized to base row.
+3. At start of each row: set prev = dp[0] (the column-0 base case).
+4. For each j from 1 to n:
+a. temp = dp[j]          < save old value (it's dp[i-1][j])
+b. compute new dp[j] using:
+- prev    = dp[i-1][j-1]  (diagonal)
+- dp[j]   = dp[i-1][j]    (top, not yet overwritten)
+- dp[j-1] = dp[i][j-1]    (left, already overwritten)
+c. prev = temp           < for next iteration's diagonal
+
+### WHY prev = 0 AT START OF EACH ROW?
+
+The first diagonal needed is dp[i-1][0].
+For LCS:   dp[i-1][0] = 0 (LCS of anything with empty string = 0)
+For Edit:  dp[i-1][0] = i-1 (need i-1 deletes to make empty)
+The value depends on the specific problem's column-0 base case.
+
+### FULL EXAMPLE: LCS Space-Optimized
+
+int longestCommonSubsequence(string text1, string text2) {
+```
+int m = text1.size(), n = text2.size();                          
+vector<int> dp(n + 1, 0);    // base row: all 0s (row 0)         
+
+for (int i = 1; i <= m; i++) {                                   
+    int prev = 0;             // dp[i-1][0] = 0                  
+    for (int j = 1; j <= n; j++) {                               
+        int temp = dp[j];     // save dp[i-1][j] before overwrite
+        if (text1[i-1] == text2[j-1]) {                          
+            dp[j] = prev + 1;            // DIAGONAL + 1         
+        } else {                                                 
+            dp[j] = max(dp[j], dp[j-1]); // max(TOP, LEFT)       
+        }                                                        
+        prev = temp;          // this becomes diagonal for j+1   
+    }                                                            
+}                                                                
+
+return dp[n];                                                    
+```
+
+}
+// TIME: O(M x N)  |  SPACE: O(N)
+
+### TRACE: text1 = "ac", text2 = "abc"
+
+dp starts as: [0, 0, 0, 0]   < base case (row 0)
+j=0 j=1 j=2 j=3
+
+i=1 (text1[0]='a'), prev=0:
+j=1: temp=0, 'a'=='a'? YES > dp[1]=0+1=1, prev=0
+j=2: temp=0, 'a'=='b'? NO  > dp[2]=max(0,1)=1, prev=0
+j=3: temp=0, 'a'=='c'? NO  > dp[3]=max(0,1)=1, prev=0
+dp = [0, 1, 1, 1]
+
+i=2 (text1[1]='c'), prev=0:
+j=1: temp=1, 'c'=='a'? NO  > dp[1]=max(1,0)=1, prev=1
+j=2: temp=1, 'c'=='b'? NO  > dp[2]=max(1,1)=1, prev=1
+j=3: temp=1, 'c'=='c'? YES > dp[3]=1+1=2, prev=1
+dp = [0, 1, 1, 2]
+
+Answer: dp[3] = 2 Y (LCS = "ac")
+
+### FULL EXAMPLE: Edit Distance Space-Optimized
+
+int minDistance(string word1, string word2) {
+```
+int m = word1.size(), n = word2.size();                                
+vector<int> dp(n + 1);                                                 
+
+// Base row: dp[0][j] = j (insert j chars into empty string)           
+for (int j = 0; j <= n; j++) dp[j] = j;                                
+
+for (int i = 1; i <= m; i++) {                                         
+    int prev = dp[0];    // dp[i-1][0] = i-1                           
+    dp[0] = i;           // dp[i][0] = i (delete i chars to make empty)
+
+    for (int j = 1; j <= n; j++) {                                     
+        int temp = dp[j];                                              
+        if (word1[i-1] == word2[j-1]) {                                
+            dp[j] = prev;              // DIAGONAL (no operation)      
+        } else {                                                       
+            dp[j] = 1 + min({prev,     // DIAGONAL (replace)           
+                             dp[j],    // TOP (delete)                 
+                             dp[j-1]});// LEFT (insert)                
+        }                                                              
+        prev = temp;                                                   
+    }                                                                  
+}                                                                      
+
+return dp[n];                                                          
+```
+
+}
+// TIME: O(M x N)  |  SPACE: O(N)
+
+NOTE: dp[0] = i updates the column-0 base case EACH ROW.
+> dp[i][0] = i means "delete all i chars of word1 to get empty string".
+
+```
++------------------------------------------------------------------------------+
+|                  WHEN TO USE WHICH TECHNIQUE                                 |
++------------------------------+-----------------------------------------------+
+| Dependency                   | Technique                                     |
++------------------------------+-----------------------------------------------+
+| dp[i-1] and dp[i-2] only    | Two variables (prev1, prev2)                   |
+| (Fibonacci, House Robber)    | Space: O(1)                                   |
++------------------------------+-----------------------------------------------+
+| dp[i-1][j] and dp[i][j-1]   | 1D array, overwrite left-to-right              |
+| NO diagonal needed           | Space: O(N)                                   |
+| (Unique Paths, Min Path Sum) |                                               |
++------------------------------+-----------------------------------------------+
+| dp[i-1][j-1], dp[i-1][j],   | 1D array + prev variable for diagonal          |
+| dp[i][j-1] (DIAGONAL needed)| Space: O(N)                                    |
+| (LCS, Edit Distance)        |                                                |
++------------------------------+-----------------------------------------------+
+| 0/1 Knapsack                 | 1D array, iterate BACKWARDS                   |
+| (Partition Subset, Target Sum| Space: O(target)                              |
++------------------------------+-----------------------------------------------+
+| Unbounded Knapsack           | 1D array, iterate FORWARDS                    |
+| (Coin Change, Coin Change II)| Space: O(target)                              |
++------------------------------+-----------------------------------------------+
+
+================================================================================
+        **MENTAL MODEL: BASE CASES & ITERATION ORDER**                          
+================================================================================
+
 +------------------------------------------------------------------------------+
 |                    FINDING BASE CASES                                        |
 +------------------------------------------------------------------------------+
@@ -4232,63 +4576,41 @@ Update in-place or use two rows alternating
 ```
 
 **PATTERN 1: MIN/MAX PATH**
-```
 dp[i] = min/max(dp[i-k]) + cost[i]
-```
-
 Base: dp[0] = 0
 Invalid: return INT_MAX or amount+1
 
 **PATTERN 2: DISTINCT WAYS**
-```
 dp[i] = sum(dp[i-k])
-```
-
 Base: dp[0] = 1   (one way to make 0)
 Invalid: return 0
 
 **PATTERN 3: MERGING INTERVALS**
-```
 dp[i][j] = best(dp[i][k] + dp[k+1][j])
-```
-
 Base: dp[i][i] = 0 or arr[i]
 Order: Loop by LENGTH first! 
 
 **PATTERN 4: DP ON STRINGS (Two Strings)**
-```
 if (s1[i] == s2[j])
 dp[i][j] = dp[i-1][j-1] + ...
-```
 
 else
-```
 dp[i][j] = max/min(dp[i-1][j], dp[i][j-1])
-```
 
 Base: dp[0][j] = 0, dp[i][0] = 0 (or i, j for edit distance)
 
 **PATTERN 5: DECISION MAKING**
-```
 dp[i] = max(take + dp[i-2], skip + dp[i-1])
-```
-
 Base: dp[0] = first element, dp[1] = max(first, second)
 
 **PATTERN 6: LIS (Longest Increasing Subsequence)** 
-```
 O(N2): dp[i] = max(dp[j] + 1) for j < i where nums[j] < nums[i]
 O(N log N): Binary search on tails array
-```
-
 Base: dp[i] = 1 (each element is LIS of length 1)
 
 **PATTERN 7: KADANE'S (Max Subarray)** 
-```
 curr = max(nums[i], curr + nums[i])
 globalMax = max(globalMax, curr)
-```
-
 For product: track both max AND min (negatives swap!)
 
 **PATTERN 8: TREE DP** 
@@ -4297,20 +4619,14 @@ Return {value1, value2} to parent
 Update global answer at each node
 
 **PATTERN 9: BITMASK DP**  (N < 20)
-```
 dp[mask] = answer for subset represented by mask
-```
-
 Check bit: mask & (1 << i)
 Set bit: mask | (1 << i)
 Time: O(2^N x N)
 
 **PATTERN 10: DIGIT DP** 
 Process digit by digit, track: pos, state, tight, started
-```
 tight=true: can only use digits < current digit of N
-```
-
 Count in [1, R]: solve(R) - solve(L-1)
 
 **CONVERSION CHECKLIST:** 
@@ -4357,19 +4673,28 @@ PROBLEM: Find max profit from ONE transaction (buy once, sell once).
  **KEY INSIGHT**: Track the minimum price seen so far, and at each day
 compute profit if we sold today. No need for full DP table!
 
-```cpp
 int maxProfit(vector<int>& prices) {
+```
 int minPrice = INT_MAX, maxProfit = 0;           
 for (int price : prices) {                       
     minPrice = min(minPrice, price);             
     maxProfit = max(maxProfit, price - minPrice);
 }                                                
 return maxProfit;                                
-
-}
 ```
 
+}
+
 TIME: O(N)  |  SPACE: O(1)
+
+ **WHY THIS BASE CASE?**
+minPrice = INT_MAX > "Haven't seen any price yet." First price will
+always be smaller, so it becomes the new minimum.
+
+maxProfit = 0 > "No transaction yet." Profit starts at 0.
+> This is greedy, not full DP. At each price: update min, compute
+potential profit. No table needed because we only look backwards
+at the single best buy point.
 
 ### **PROBLEM: Best Time to Buy and Sell Stock II (LC 122)** 
 
@@ -4381,8 +4706,8 @@ PROBLEM: Max profit with UNLIMITED transactions.
  **KEY INSIGHT**: Collect every upward price movement. If tomorrow's price
 is higher than today's, "buy today sell tomorrow" captures that profit.
 
-```cpp
 int maxProfit(vector<int>& prices) {
+```
 int profit = 0;                           
 for (int i = 1; i < prices.size(); i++) { 
     if (prices[i] > prices[i-1]) {        
@@ -4390,11 +4715,18 @@ for (int i = 1; i < prices.size(); i++) {
     }                                     
 }                                         
 return profit;                            
-
-}
 ```
 
+}
+
 TIME: O(N)  |  SPACE: O(1)
+
+ **WHY THIS BASE CASE?**
+profit = 0 > "No transactions made yet."
+> Greedy: sum every positive price increase.
+> prices[i] > prices[i-1] means price went up > capture that profit.
+> This works because buying/selling on consecutive days is equivalent
+to buying on the first day and selling on the last day of an uptrend.
 
 ### **PROBLEM: Best Time to Buy and Sell Stock III (LC 123)** 
 
@@ -4410,8 +4742,8 @@ sell, buy2 = best cost for second buy (using sell1 profit), sell2 = final.
  **WHY IT WORKS**: Each state builds on the previous. Processing all 4
 states in order for each price correctly propagates the optimal decisions.
 
-```cpp
 int maxProfit(vector<int>& prices) {
+```
 int buy1 = INT_MIN, sell1 = 0;       
 int buy2 = INT_MIN, sell2 = 0;       
 for (int price : prices) {           
@@ -4421,11 +4753,23 @@ for (int price : prices) {
     sell2 = max(sell2, buy2 + price);
 }                                    
 return sell2;                        
-
-}
 ```
 
+}
+
 TIME: O(N)  |  SPACE: O(1)
+
+ **WHY THIS BASE CASE?**
+buy1 = INT_MIN, sell1 = 0, buy2 = INT_MIN, sell2 = 0
+> buy1/buy2 = INT_MIN: "Haven't bought yet." Any real buy will be better.
+> sell1/sell2 = 0: "No profit from selling yet."
+
+4 states processed in ORDER for each price:
+> buy1 = max(buy1, -price) > Best first buy so far.
+> sell1 = max(sell1, buy1+price) > Best profit after first sell.
+> buy2 = max(buy2, sell1-price) > Second buy USES first sell's profit.
+> sell2 = max(sell2, buy2+price) > Final profit after second sell.
+> Each state builds on the previous. This chain is what makes it work.
 
 ### **PROBLEM: Best Time to Buy/Sell Stock with Transaction Fee (LC 714)** 
 
@@ -4437,19 +4781,27 @@ PROBLEM: Max profit with unlimited transactions, but each transaction costs a fe
  **KEY INSIGHT**: Same as unlimited transactions but subtract the fee when
 selling. Two states: cash (not holding) and hold (holding stock).
 
-```cpp
 int maxProfit(vector<int>& prices, int fee) {
+```
 int hold = -prices[0], cash = 0;             
 for (int i = 1; i < prices.size(); i++) {    
     cash = max(cash, hold + prices[i] - fee);
     hold = max(hold, cash - prices[i]);      
 }                                            
 return cash;                                 
-
-}
 ```
 
+}
+
 TIME: O(N)  |  SPACE: O(1)
+
+ **WHY THIS BASE CASE?**
+hold = -prices[0], cash = 0
+> hold: "Bought stock on day 0." Cost = -prices[0].
+> cash: "No stock held, no profit yet." = 0.
+> Fee is subtracted when SELLING: cash = max(cash, hold+price-fee).
+> This ensures fee is paid once per round-trip transaction.
+> Same state machine as Stock II, just with fee deducted at sell.
 
 ### **PROBLEM: Unique Paths II (LC 63)** 
 
@@ -4459,10 +4811,10 @@ PROBLEM: Count unique paths in grid with obstacles. Can only move right or down.
  TEMPLATE: dp[i][j] = dp[i-1][j] + dp[i][j-1], but 0 if obstacle
 
  **KEY INSIGHT**: Same as Unique Paths (LC 62) but dp[i][j] = 0 whenever
-```cpp
 grid[i][j] is an obstacle. Also check if start or end is blocked!
 
 int uniquePathsWithObstacles(vector<vector<int>>& grid) {
+```
 int m = grid.size(), n = grid[0].size();                 
 if (grid[0][0] == 1 || grid[m-1][n-1] == 1) return 0;    
 
@@ -4478,11 +4830,21 @@ for (int i = 0; i < m; i++) {
 }                                                        
 
 return dp[m-1][n-1];                                     
-
-}
 ```
 
+}
+
 TIME: O(M x N)  |  SPACE: O(M x N)
+
+ **WHY THIS BASE CASE?**
+dp[0][0] = 1 > Starting point (0,0) has exactly 1 path: already there.
+grid[0][0] == 1 or grid[m-1][n-1] == 1 > return 0
+> If start or end is blocked, no path exists. Check BEFORE DP.
+
+grid[i][j] == 1 > dp[i][j] = 0, skip
+> Obstacle cells are unreachable. Zero paths through them.
+> Unlike Unique Paths I where first row/col = 1, here an obstacle
+in first row BLOCKS all cells to its right (they stay 0).
 
 ### **PROBLEM: Word Break (LC 139)** 
 
@@ -4494,8 +4856,8 @@ PROBLEM: Can string s be segmented into words from dictionary?
  **KEY INSIGHT**: dp[i] = true if there exists j < i such that dp[j] is
 true AND s[j..i-1] is a word in the dictionary. Try all split points!
 
-```cpp
 bool wordBreak(string s, vector<string>& wordDict) {
+```
 unordered_set<string> dict(wordDict.begin(), wordDict.end());
 int n = s.size();                                            
 vector<bool> dp(n + 1, false);                               
@@ -4511,11 +4873,21 @@ for (int i = 1; i <= n; i++) {
 }                                                            
 
 return dp[n];                                                
-
-}
 ```
 
+}
+
 TIME: O(N2 x M)  |  SPACE: O(N)  where M = max word length
+
+ **WHY THIS BASE CASE?**
+dp[0] = true > "Empty string can be segmented." (Vacuously true.)
+> This seeds the DP: dp[i] = true if there exists j where dp[j] is true
+AND s[j..i-1] is a dictionary word.
+
+> Without dp[0] = true, the first word can never be recognized.
+e.g. s = "leet", dict = {"leet"}: dp[4] needs dp[0] = true.
+
+dp[1..n] = false > "Not yet proven to be segmentable."
 
 ### **PROBLEM: Word Break II (LC 140)** 
 
@@ -4528,15 +4900,17 @@ PROBLEM: Return ALL possible word break segmentations of string s.
 all solutions. Use backtracking from each index, trying every word that
 matches at that position, and memoize results per start index.
 
-```cpp
 vector<string> wordBreak(string s, vector<string>& wordDict) {
+```
 unordered_set<string> dict(wordDict.begin(), wordDict.end());
 unordered_map<int, vector<string>> memo;                     
 return backtrack(s, 0, dict, memo);                          
+```
 
 }
 
 vector<string> backtrack(string& s, int start,
+```
                      unordered_set<string>& dict,               
                      unordered_map<int, vector<string>>& memo) {
 if (memo.count(start)) return memo[start];                      
@@ -4554,11 +4928,18 @@ for (int end = start + 1; end <= s.size(); end++) {
 }                                                               
 
 return memo[start] = result;                                    
-
-}
 ```
 
+}
+
 TIME: O(N x 2^N) worst case  |  SPACE: O(N x 2^N)
+
+ **WHY THIS BASE CASE?**
+start == s.size() > return {""}
+> Reached end of string successfully. Return vector with empty string
+to signal "valid segmentation found". The caller prepends its word.
+
+> If we returned empty vector {}, no sentence would ever be built.
 
 ### **PROBLEM: Coin Change II (LC 518)** 
 
@@ -4572,8 +4953,8 @@ PROBLEM: Count number of combinations to make amount (coins can be reused).
 Compare with Combination Sum IV (LC 377) which loops amounts outside for
 permutations!
 
-```cpp
 int change(int amount, vector<int>& coins) {
+```
 vector<int> dp(amount + 1, 0);            
 dp[0] = 1;                                
 
@@ -4584,15 +4965,29 @@ for (int coin : coins) {
 }                                         
 
 return dp[amount];                        
+```
 
 }
-```
 
 TIME: O(N x amount)  |  SPACE: O(amount)
 
  CRITICAL DIFFERENCE:
 Combinations (this problem): outer loop = coins, inner = amounts
 Permutations (LC 377):       outer loop = amounts, inner = coins
+
+ **WHY THIS BASE CASE?**
+dp[0] = 1 > "1 way to make amount 0: use no coins."
+> Same as all COUNT problems: dp[0] = 1, not 0.
+
+WHY forward loop (j = coin to amount), not backward?
+> This is UNBOUNDED knapsack: coins can be reused!
+> Forward loop allows dp[j-coin] to use already-updated values
+```python
+from this row > same coin used multiple times. Exactly what we want.
+```
+
+> Compare with 0/1 Knapsack (Partition Subset) which loops BACKWARD
+to prevent reusing items.
 
 ### **PROBLEM: Palindrome Partitioning II (LC 132)** 
 
@@ -4605,8 +5000,8 @@ PROBLEM: Minimum cuts to partition string into all palindromes.
 substrings. Then dp[i] = min(dp[j-1] + 1) for all j where s[j..i] is
 a palindrome. If s[0..i] itself is a palindrome, dp[i] = 0 (no cuts).
 
-```cpp
 int minCut(string s) {
+```
 int n = s.size();                                             
 vector<vector<bool>> isPalin(n, vector<bool>(n, false));      
 
@@ -4630,16 +5025,28 @@ for (int i = 0; i < n; i++) {
 }                                                             
 
 return dp[n-1];                                               
+```
 
 }
-```
 
 TIME: O(N2)  |  SPACE: O(N2)
 
+ **WHY THIS BASE CASE?**
+isPalin[i][j]: precomputed palindrome table.
+> isPalin base: len <= 2 && s[i]==s[j] > true.
+
+dp[i] = INT_MAX > "Unknown minimum cuts."
+dp[i] = 0 if isPalin[0][i] > "Entire s[0..i] is a palindrome. No cuts needed."
+> This is the KEY optimization: if the whole prefix is already a
+palindrome, we skip the inner loop entirely.
+
+> Otherwise: dp[i] = min(dp[j-1] + 1) for all j where s[j..i] is palindrome.
+"Best cut = best answer for s[0..j-1] + 1 more cut before s[j..i]."
+
 ## **SOLVED: Super Egg Drop (LC 887)**  HARD
 
-```cpp
 int superEggDrop(int k, int n) {
+```
 // dp[m][k] = max floors checkable with m moves and k eggs
 vector<vector<int>> dp(n + 1, vector<int>(k + 1, 0));     
 int m = 0;                                                
@@ -4650,15 +5057,27 @@ while (dp[m][k] < n) {
     }                                                     
 }                                                         
 return m;                                                 
+```
 
 }
 // Time: O(N*K), Space: O(N*K)
-```
+
+ **WHY THIS BASE CASE?**
+dp[0][j] = 0 for all j > "0 moves, any eggs > can check 0 floors."
+dp[m][0] = 0 for all m > "Any moves, 0 eggs > can check 0 floors."
+
+REVERSE THINKING: Instead of "min moves for n floors", ask
+"max floors checkable with m moves and k eggs?"
+> dp[m][k] = dp[m-1][k-1] + dp[m-1][k] + 1
+> If egg breaks: check dp[m-1][k-1] floors below.
+> If egg survives: check dp[m-1][k] floors above.
+> +1 for the floor we just tested.
+> Stop when dp[m][k] >= n.
 
 ## **SOLVED: Maximum Profit in Job Scheduling (LC 1235)** 
 
-```cpp
 int jobScheduling(vector<int>& startTime, vector<int>& endTime, vector<int>& profit) {
+```
 int n = startTime.size();                                                                 
 vector<int> idx(n);                                                                       
 iota(idx.begin(), idx.end(), 0);                                                          
@@ -4675,10 +5094,19 @@ for (int i = 0; i < n; i++) {
     dp[i + 1] = max(dp[i], dp[j] + profit[idx[i]]);                                       
 }                                                                                         
 return dp[n];                                                                             
+```
 
 }
 // Time: O(N log N), Space: O(N)
-```
+
+ **WHY THIS BASE CASE?**
+dp[0] = 0 > "Before any job, profit = 0."
+> Jobs sorted by end time. dp[i+1] = max(dp[i], dp[j] + profit[i]).
+> dp[i] = "don't take job i" (carry forward previous best).
+> dp[j] + profit[i] = "take job i" (find last non-overlapping job j
+using binary search on end times).
+
+> Binary search: upper_bound finds first job ending AFTER current start.
 
 ## **COMPLETE PROBLEM LIST BY PATTERN**
 
@@ -4823,3 +5251,4 @@ return dp[n];
                                 **END**                                         
 ================================================================================
 ```
+
