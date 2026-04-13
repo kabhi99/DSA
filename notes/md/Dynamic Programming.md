@@ -884,6 +884,124 @@ return dp[n-1];
 }
 ```
 
+###  **INDEX SHIFT: WHY dp IS SIZE n? CAN WE USE n+1?**
+
+In recursion, base case is: if (i < 0) return 0
+But arrays can't have index -1! Two choices:
+
+### APPROACH 1 (size n) - Direct mapping, handle edges manually:
+
+```
+rob(i) > dp[i]     (same index)
+
+rob(-1) = 0  > CAN'T STORE! So handle dp[0], dp[1] manually:
+dp[0] = nums[0]                        // rob(0) = nums[0]
+dp[1] = max(nums[0], nums[1])          // rob(1) needs rob(-1)=0, done by hand
+```
+
+Loop: dp[i] = max(dp[i-1], dp[i-2] + nums[i])
+Answer: dp[n-1]
+
+ PROBLEM: Need if(n==0), if(n==1) edge cases before the loop.
+
+### APPROACH 2 (size n+1) - Shift by +1, base case fits naturally:
+
+SHIFT:  dp[i+1] = rob(i)     (every index moves right by 1)
+
+```
+rob(-1)=0  > dp[0] = 0     < NOW IT FITS! Index 0 = "no houses"
+rob(0)     > dp[1] = nums[0]
+rob(1)     > dp[2] = max(nums[0], nums[1])
+rob(i)     > dp[i+1]
+```
+
+Recurrence after shift:
+```
+rob(i) = max(rob(i-1), rob(i-2) + nums[i])
+dp[i+1] = max(dp[i], dp[i-1] + nums[i])
+```
+
+But we loop with i from 2 to n (dp indices), so substitute:
+```
+dp[i] = max(dp[i-1], dp[i-2] + nums[i-1])
+```
+
+^
+INDEX SHIFT: nums[i-1] not nums[i]
+because dp[i] = rob(i-1), so house index = i-1
+
+Answer: dp[n]
+
+ NO edge cases needed! dp[0]=0 and dp[1]=nums[0] handle everything.
+
+**SIDE BY SIDE:**
+
+SIZE n (direct):                    SIZE n+1 (shifted):
+-----------------                   ------------------
+```
+if (n==0) return 0;     < extra    // no edge cases needed!
+if (n==1) return nums[0]; < extra
+dp(n)                               dp(n+1, 0)
+dp[0] = nums[0]                     dp[0] = 0    < "no houses"
+dp[1] = max(nums[0],nums[1])        dp[1] = nums[0]
+```
+
+for i=2 to n-1:                     for i=2 to n:
+```
+dp[i]=max(dp[i-1],                  dp[i]=max(dp[i-1],
+dp[i-2]+nums[i])                    dp[i-2]+nums[i-1])
+
+return dp[n-1]                       return dp[n]
+```
+
+^ nums[i-1] is the only change
+
+### CODE (n+1 approach):
+
+```cpp
+int rob(vector<int>& nums) {
+int n = nums.size();                          
+vector<int> dp(n + 1, 0);                     
+dp[1] = nums[0];                              
+
+for (int i = 2; i <= n; i++) {                
+    dp[i] = max(dp[i-1], dp[i-2] + nums[i-1]);
+}                                             
+
+return dp[n];                                 
+
+}
+```
+
+WHY nums[i-1]? Because dp[i] means "best answer for first i houses",
+so the i-th house (1-indexed) is at nums[i-1] (0-indexed array).
+
+###  **CAN YOU ALWAYS USE n+1?** YES!
+
+The n+1 approach works for ANY DP problem. Benefits:
+ Base case (empty/zero state) always fits at dp[0]
+ No if(n==0), if(n==1) edge cases
+ Consistent pattern across all problems
+ Matches how LCS, Edit Distance, Coin Change already work
+
+The ONLY thing to remember:
+```
+dp[i] represents "first i elements", so element index = i-1
+```
+
+> Use nums[i-1], text[i-1], etc. in the loop
+
+Problems that ALREADY use n+1 naturally:
+Coin Change:   dp[0]=0 means "amount 0 needs 0 coins"
+LCS:           dp[0][j]=0 means "empty string has LCS 0"
+Edit Distance: dp[0][j]=j means "insert j chars into empty"
+Climbing Stairs: dp[0]=1 means "1 way to stay at ground"
+
+Problems where n+1 is OPTIONAL (both work):
+House Robber, Stock Buy/Sell, Delete and Earn
+> Direct mapping (size n) also works fine since dp[0] = nums[0]
+is already meaningful, but n+1 removes edge cases.
+
 ### STEP 7: Space Optimization (only need last 2 values):
 
 ```cpp
@@ -4798,34 +4916,34 @@ dp:     | i  | i  | i  | i  |i-1 |i-1 |i-1 |i-1        |
                (current row)         (previous row)     
 ```
 
-WALKTHROUGH — computing row 2 (i=2) left to right:
+WALKTHROUGH - computing row 2 (i=2) left to right:
 
-```
-Start of row 2:  dp = [ old, old, old, old ]    <-- ALL from row 1
+Start of row 2:  dp = [ old, old, old, old ]    < ALL from row 1
 
-Compute j=1:     dp = [ old, NEW, old, old ]    <-- dp[1] overwritten
-Compute j=2:     dp = [ old, NEW, NEW, old ]    <-- dp[2] overwritten
+Compute j=1:     dp = [ old, NEW, old, old ]    < dp[1] overwritten
+Compute j=2:     dp = [ old, NEW, NEW, old ]    < dp[2] overwritten
 Now at j=3:      dp = [ old, NEW, NEW, old ]
-                                   ^     ^
-                                 j-1=2  j=3
-```
+^     ^
+j-1=2  j=3
 
 At j=3:
-- dp[3] = "old"  --> we haven't touched it --> it's still row 1's value
-  --> dp[3] IS dp[i-1][3] IS dp[i-1][j]
+- dp[3] = "old"  > we haven't touched it > it's still row 1's value
+> dp[3] IS dp[i-1][3] IS dp[i-1][j]  
 
-- dp[2] = "NEW"  --> we just computed it in this row (at j=2)
-  --> dp[2] IS dp[i][2] IS dp[i][j-1]
+- dp[2] = "NEW"  > we just computed it in this row (at j=2)
+> dp[2] IS dp[i][2] IS dp[i][j-1]    
 
 That's it. No trick needed for these two:
-
 ```
 dp[j]   = dp[i-1][j]   because we haven't overwritten it yet
 dp[j-1] = dp[i][j-1]   because we already overwritten it this row
 ```
 
 The ONLY problem is dp[i-1][j-1] (the diagonal):
+```
 dp[j-1] was overwritten when we processed j-1, so the OLD value
+```
+
 (from row i-1) at position j-1 is GONE. That's why we need 'prev'.
 
 ### THE SOLUTION: 'prev' variable
@@ -4833,20 +4951,22 @@ dp[j-1] was overwritten when we processed j-1, so the OLD value
 Before overwriting dp[j], save the OLD dp[j] in 'temp'.
 After overwriting, set prev = temp.
 Now 'prev' holds the old dp[j] = dp[i-1][j], which becomes
+```
 dp[i-1][(j+1)-1] = the DIAGONAL for the NEXT iteration.
+```
 
 **STEP-BY-STEP RECIPE:**
 
-1. Check: does row i only depend on row i-1? --> YES, proceed.
+1. Check: does row i only depend on row i-1? > YES, proceed.
 2. Replace 2D array with 1D array of size (n+1), initialized to base row.
 3. At start of each row: set prev = dp[0] (the column-0 base case).
 4. For each j from 1 to n:
-   - a. temp = dp[j]          <-- save old value (it's dp[i-1][j])
-   - b. compute new dp[j] using:
-     - prev    = dp[i-1][j-1]  (diagonal)
-     - dp[j]   = dp[i-1][j]    (top, not yet overwritten)
-     - dp[j-1] = dp[i][j-1]    (left, already overwritten)
-   - c. prev = temp           <-- for next iteration's diagonal
+a. temp = dp[j]          < save old value (it's dp[i-1][j])
+b. compute new dp[j] using:
+- prev    = dp[i-1][j-1]  (diagonal)
+- dp[j]   = dp[i-1][j]    (top, not yet overwritten)
+- dp[j-1] = dp[i][j-1]    (left, already overwritten)
+c. prev = temp           < for next iteration's diagonal
 
 ### WHY prev = 0 AT START OF EACH ROW?
 
