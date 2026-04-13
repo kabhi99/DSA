@@ -4781,27 +4781,72 @@ dp[i-1][j-1] is GONE! It was overwritten when we computed dp[j-1]
 
 The diagonal value is DESTROYED. We need to SAVE it.
 
+###  **CORE INTUITION: WHY dp[i-1][j] = dp[j] AND dp[i][j-1] = dp[j-1]**
+
+KEY IDEA: We only have ONE array. When we finish row i-1 and start
+row i, the ENTIRE dp array still holds row i-1's values (nobody
+touched it yet). Then we overwrite cells one by one, left to right.
+
+At ANY point during the j-loop, the array looks like this:
+
+```
+Index:    0    1    2   j-1   j   j+1  ...   n          
+        +----+----+----+----+----+----+----+-----------+
+dp:     | i  | i  | i  | i  |i-1 |i-1 |i-1 |i-1        |
+        +----+----+----+----+----+----+----+-----------+
+         <-- already updated ->  <-- not yet touched -->
+               (current row)         (previous row)     
+```
+
+WALKTHROUGH — computing row 2 (i=2) left to right:
+
+```
+Start of row 2:  dp = [ old, old, old, old ]    <-- ALL from row 1
+
+Compute j=1:     dp = [ old, NEW, old, old ]    <-- dp[1] overwritten
+Compute j=2:     dp = [ old, NEW, NEW, old ]    <-- dp[2] overwritten
+Now at j=3:      dp = [ old, NEW, NEW, old ]
+                                   ^     ^
+                                 j-1=2  j=3
+```
+
+At j=3:
+- dp[3] = "old"  --> we haven't touched it --> it's still row 1's value
+  --> dp[3] IS dp[i-1][3] IS dp[i-1][j]
+
+- dp[2] = "NEW"  --> we just computed it in this row (at j=2)
+  --> dp[2] IS dp[i][2] IS dp[i][j-1]
+
+That's it. No trick needed for these two:
+
+```
+dp[j]   = dp[i-1][j]   because we haven't overwritten it yet
+dp[j-1] = dp[i][j-1]   because we already overwritten it this row
+```
+
+The ONLY problem is dp[i-1][j-1] (the diagonal):
+dp[j-1] was overwritten when we processed j-1, so the OLD value
+(from row i-1) at position j-1 is GONE. That's why we need 'prev'.
+
 ### THE SOLUTION: 'prev' variable
 
 Before overwriting dp[j], save the OLD dp[j] in 'temp'.
 After overwriting, set prev = temp.
 Now 'prev' holds the old dp[j] = dp[i-1][j], which becomes
-```
 dp[i-1][(j+1)-1] = the DIAGONAL for the NEXT iteration.
-```
 
 **STEP-BY-STEP RECIPE:**
 
-1. Check: does row i only depend on row i-1? > YES, proceed.
+1. Check: does row i only depend on row i-1? --> YES, proceed.
 2. Replace 2D array with 1D array of size (n+1), initialized to base row.
 3. At start of each row: set prev = dp[0] (the column-0 base case).
 4. For each j from 1 to n:
-a. temp = dp[j]          < save old value (it's dp[i-1][j])
-b. compute new dp[j] using:
-- prev    = dp[i-1][j-1]  (diagonal)
-- dp[j]   = dp[i-1][j]    (top, not yet overwritten)
-- dp[j-1] = dp[i][j-1]    (left, already overwritten)
-c. prev = temp           < for next iteration's diagonal
+   - a. temp = dp[j]          <-- save old value (it's dp[i-1][j])
+   - b. compute new dp[j] using:
+     - prev    = dp[i-1][j-1]  (diagonal)
+     - dp[j]   = dp[i-1][j]    (top, not yet overwritten)
+     - dp[j-1] = dp[i][j-1]    (left, already overwritten)
+   - c. prev = temp           <-- for next iteration's diagonal
 
 ### WHY prev = 0 AT START OF EACH ROW?
 
