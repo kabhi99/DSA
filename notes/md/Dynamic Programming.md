@@ -1404,6 +1404,65 @@ grid[0][0] stays as is
 > No "n+1" trick needed here because we modify the grid in-place
 and the grid itself already holds the starting values.
 
+### **PROBLEM: Super Egg Drop (LC 887)**  HARD
+
+PROBLEM: Min moves to find critical floor with k eggs and n floors.
+
+**RECURSIVE (Top-Down) — binary search optimization:**
+
+```cpp
+int superEggDrop(int k, int n) {
+    unordered_map<int, int> memo;
+    return solve(k, n, memo);
+}
+
+int solve(int k, int n, unordered_map<int, int>& memo) {
+    if (n <= 1 || k == 1) return n;
+    int key = n * 1000 + k;
+    if (memo.count(key)) return memo[key];
+
+    int lo = 1, hi = n;
+    while (lo + 1 < hi) {
+        int mid = (lo + hi) / 2;
+        int breakCase = solve(k-1, mid-1, memo);
+        int noBreak = solve(k, n-mid, memo);
+        if (breakCase < noBreak) lo = mid;
+        else hi = mid;
+    }
+    return memo[key] = 1 + min(max(solve(k-1, lo-1, memo), solve(k, n-lo, memo)),
+                                max(solve(k-1, hi-1, memo), solve(k, n-hi, memo)));
+}
+```
+
+**TABULATION (Bottom-Up) — reverse thinking:**
+
+```cpp
+int superEggDrop(int k, int n) {
+    vector<vector<int>> dp(n + 1, vector<int>(k + 1, 0));
+    int m = 0;
+    while (dp[m][k] < n) {
+        m++;
+        for (int j = 1; j <= k; j++)
+            dp[m][j] = dp[m-1][j-1] + dp[m-1][j] + 1;
+    }
+    return m;
+}
+```
+
+ **WHY THIS BASE CASE?**
+```
+dp[0][j] = 0 for all j → "0 moves, any eggs → can check 0 floors."
+dp[m][0] = 0 for all m → "Any moves, 0 eggs → can check 0 floors."
+```
+
+REVERSE THINKING: Instead of "min moves for n floors", ask
+"max floors checkable with m moves and k eggs?"
+> dp[m][k] = dp[m-1][k-1] + dp[m-1][k] + 1
+> If egg breaks: check dp[m-1][k-1] floors below.
+> If egg survives: check dp[m-1][k] floors above.
+> +1 for the floor we just tested.
+> Stop when dp[m][k] >= n.
+
 **MORE PROBLEMS IN THIS PATTERN:**
 - 931. Minimum Falling Path Sum
 - 983. Minimum Cost For Tickets
@@ -2028,6 +2087,119 @@ dp[12] = min(dp[11]+1, dp[8]+1, dp[3]+1)
 ```
 
 = min(3, 3, 4) = 3 Y        (22 + 22 + 22)
+
+### **PROBLEM: Unique Paths II (LC 63)** 
+
+PROBLEM: Count unique paths in grid with obstacles. Can only move right or down.
+
+ **KEY INSIGHT**: Same as Unique Paths (LC 62) but dp[i][j] = 0 whenever
+grid[i][j] is an obstacle. Also check if start or end is blocked!
+
+**RECURSIVE (Top-Down):**
+
+```cpp
+int uniquePathsWithObstacles(vector<vector<int>>& grid) {
+    int m = grid.size(), n = grid[0].size();
+    if (grid[0][0] == 1 || grid[m-1][n-1] == 1) return 0;
+    vector<vector<int>> memo(m, vector<int>(n, -1));
+    return solve(grid, m-1, n-1, memo);
+}
+
+int solve(vector<vector<int>>& grid, int i, int j, vector<vector<int>>& memo) {
+    if (i < 0 || j < 0 || grid[i][j] == 1) return 0;
+    if (i == 0 && j == 0) return 1;
+    if (memo[i][j] != -1) return memo[i][j];
+    return memo[i][j] = solve(grid, i-1, j, memo) + solve(grid, i, j-1, memo);
+}
+```
+
+**TABULATION (Bottom-Up):**
+
+```cpp
+int uniquePathsWithObstacles(vector<vector<int>>& grid) {
+    int m = grid.size(), n = grid[0].size();
+    if (grid[0][0] == 1 || grid[m-1][n-1] == 1) return 0;
+
+    vector<vector<long long>> dp(m, vector<long long>(n, 0));
+    dp[0][0] = 1;
+
+    for (int i = 0; i < m; i++) {
+        for (int j = 0; j < n; j++) {
+            if (grid[i][j] == 1) { dp[i][j] = 0; continue; }
+            if (i > 0) dp[i][j] += dp[i-1][j];
+            if (j > 0) dp[i][j] += dp[i][j-1];
+        }
+    }
+
+    return dp[m-1][n-1];
+}
+```
+
+ **WHY THIS BASE CASE?**
+```
+dp[0][0] = 1 → Starting point has exactly 1 path: already there.
+grid[i][j] == 1 → dp[i][j] = 0, obstacle is unreachable.
+```
+
+### **PROBLEM: Coin Change II (LC 518)** 
+
+PROBLEM: Count number of combinations to make amount (coins can be reused).
+
+ **KEY INSIGHT**: Loop coins OUTSIDE, amounts INSIDE to count combinations
+(not permutations). Each coin is considered once, avoiding duplicates.
+Compare with Combination Sum IV (LC 377) which loops amounts outside for
+permutations!
+
+**RECURSIVE (Top-Down):**
+
+```cpp
+int change(int amount, vector<int>& coins) {
+    vector<vector<int>> memo(coins.size(), vector<int>(amount + 1, -1));
+    return solve(coins, 0, amount, memo);
+}
+
+int solve(vector<int>& coins, int idx, int amt, vector<vector<int>>& memo) {
+    if (amt == 0) return 1;
+    if (idx == coins.size() || amt < 0) return 0;
+    if (memo[idx][amt] != -1) return memo[idx][amt];
+    return memo[idx][amt] = solve(coins, idx, amt - coins[idx], memo)
+                          + solve(coins, idx + 1, amt, memo);
+}
+```
+
+**TABULATION (Bottom-Up):**
+
+```cpp
+int change(int amount, vector<int>& coins) {
+    vector<int> dp(amount + 1, 0);
+    dp[0] = 1;
+
+    for (int coin : coins) {
+        for (int j = coin; j <= amount; j++) {
+            dp[j] += dp[j - coin];
+        }
+    }
+
+    return dp[amount];
+}
+```
+
+TIME: O(N x amount)  |  SPACE: O(amount)
+
+ CRITICAL DIFFERENCE:
+Combinations (this problem): outer loop = coins, inner = amounts
+Permutations (LC 377):       outer loop = amounts, inner = coins
+
+ **WHY THIS BASE CASE?**
+```
+dp[0] = 1 → "1 way to make amount 0: use no coins."
+```
+
+WHY forward loop (j = coin to amount), not backward?
+> This is UNBOUNDED knapsack: coins can be reused!
+> Forward loop allows dp[j-coin] to use already-updated values
+> from this row → same coin used multiple times.
+> Compare with 0/1 Knapsack (Partition Subset) which loops BACKWARD.
 
 **MORE PROBLEMS:**
 - 688. Knight Probability
@@ -3104,6 +3276,168 @@ b  1   1   1   2   (b matches b: use=1, skip=1, total=2) Y
 ^
 Two ways to form "rab"!
 
+### **PROBLEM: Word Break (LC 139)** 
+
+PROBLEM: Can string s be segmented into words from dictionary?
+
+ **KEY INSIGHT**: dp[i] = true if there exists j < i such that dp[j] is
+true AND s[j..i-1] is a word in the dictionary. Try all split points!
+
+**RECURSIVE (Top-Down):**
+
+```cpp
+bool wordBreak(string s, vector<string>& wordDict) {
+    unordered_set<string> dict(wordDict.begin(), wordDict.end());
+    vector<int> memo(s.size(), -1);
+    return solve(s, 0, dict, memo);
+}
+
+bool solve(string& s, int start, unordered_set<string>& dict, vector<int>& memo) {
+    if (start == s.size()) return true;
+    if (memo[start] != -1) return memo[start];
+    for (int end = start + 1; end <= s.size(); end++) {
+        if (dict.count(s.substr(start, end - start)) && solve(s, end, dict, memo))
+            return memo[start] = 1;
+    }
+    return memo[start] = 0;
+}
+```
+
+**TABULATION (Bottom-Up):**
+
+```cpp
+bool wordBreak(string s, vector<string>& wordDict) {
+    unordered_set<string> dict(wordDict.begin(), wordDict.end());
+    int n = s.size();
+    vector<bool> dp(n + 1, false);
+    dp[0] = true;
+
+    for (int i = 1; i <= n; i++) {
+        for (int j = 0; j < i; j++) {
+            if (dp[j] && dict.count(s.substr(j, i - j))) {
+                dp[i] = true;
+                break;
+            }
+        }
+    }
+
+    return dp[n];
+}
+```
+
+TIME: O(N^2 x M)  |  SPACE: O(N)  where M = max word length
+
+ **WHY THIS BASE CASE?**
+```
+dp[0] = true → "Empty string can be segmented." (Vacuously true.)
+```
+
+### **PROBLEM: Word Break II (LC 140)** 
+
+PROBLEM: Return ALL possible word break segmentations of string s.
+
+ **KEY INSIGHT**: Unlike Word Break I which only checks feasibility, we need
+all solutions. Use backtracking from each index, trying every word that
+matches at that position, and memoize results per start index.
+
+**RECURSIVE (Top-Down with backtracking):**
+
+```cpp
+vector<string> wordBreak(string s, vector<string>& wordDict) {
+    unordered_set<string> dict(wordDict.begin(), wordDict.end());
+    unordered_map<int, vector<string>> memo;
+    return backtrack(s, 0, dict, memo);
+}
+
+vector<string> backtrack(string& s, int start,
+                         unordered_set<string>& dict,
+                         unordered_map<int, vector<string>>& memo) {
+    if (memo.count(start)) return memo[start];
+    if (start == s.size()) return {""};
+
+    vector<string> result;
+    for (int end = start + 1; end <= s.size(); end++) {
+        string word = s.substr(start, end - start);
+        if (dict.count(word)) {
+            auto rest = backtrack(s, end, dict, memo);
+            for (auto& r : rest) {
+                result.push_back(word + (r.empty() ? "" : " " + r));
+            }
+        }
+    }
+
+    return memo[start] = result;
+}
+```
+
+TIME: O(N x 2^N) worst case  |  SPACE: O(N x 2^N)
+
+### **PROBLEM: Palindrome Partitioning II (LC 132)** 
+
+PROBLEM: Minimum cuts to partition string into all palindromes.
+
+ **KEY INSIGHT**: Two-phase DP. First precompute isPalin[i][j] for all
+substrings. Then dp[i] = min(dp[j-1] + 1) for all j where s[j..i] is
+a palindrome. If s[0..i] itself is a palindrome, dp[i] = 0 (no cuts).
+
+**RECURSIVE (Top-Down):**
+
+```cpp
+int minCut(string s) {
+    int n = s.size();
+    vector<vector<bool>> isPalin(n, vector<bool>(n, false));
+    for (int len = 1; len <= n; len++)
+        for (int i = 0; i <= n - len; i++) {
+            int j = i + len - 1;
+            if (s[i] == s[j] && (len <= 2 || isPalin[i+1][j-1]))
+                isPalin[i][j] = true;
+        }
+
+    vector<int> memo(n, -1);
+    return solve(s, 0, isPalin, memo);
+}
+
+int solve(string& s, int start, vector<vector<bool>>& isPalin, vector<int>& memo) {
+    if (start == s.size()) return -1;
+    if (memo[start] != -1) return memo[start];
+    int best = INT_MAX;
+    for (int end = start; end < s.size(); end++) {
+        if (isPalin[start][end])
+            best = min(best, 1 + solve(s, end + 1, isPalin, memo));
+    }
+    return memo[start] = best;
+}
+```
+
+**TABULATION (Bottom-Up):**
+
+```cpp
+int minCut(string s) {
+    int n = s.size();
+    vector<vector<bool>> isPalin(n, vector<bool>(n, false));
+
+    for (int len = 1; len <= n; len++)
+        for (int i = 0; i <= n - len; i++) {
+            int j = i + len - 1;
+            if (s[i] == s[j] && (len <= 2 || isPalin[i+1][j-1]))
+                isPalin[i][j] = true;
+        }
+
+    vector<int> dp(n, INT_MAX);
+    for (int i = 0; i < n; i++) {
+        if (isPalin[0][i]) { dp[i] = 0; continue; }
+        for (int j = 1; j <= i; j++) {
+            if (isPalin[j][i])
+                dp[i] = min(dp[i], dp[j-1] + 1);
+        }
+    }
+
+    return dp[n-1];
+}
+```
+
+TIME: O(N^2)  |  SPACE: O(N^2)
+
 **MORE PROBLEMS:**
 - 5. Longest Palindromic Substring
 - 1092. Shortest Common Supersequence
@@ -4036,6 +4370,233 @@ heights[2]=3, width=4 > area=12? No, width calculation...
 ```
 
 Largest rectangle in row 2's histogram = 6
+
+### **PROBLEM: Best Time to Buy and Sell Stock (LC 121)** 
+
+PROBLEM: Find max profit from ONE transaction (buy once, sell once).
+
+**RECURSIVE (Top-Down):**
+
+```cpp
+int maxProfit(vector<int>& prices) {
+    int n = prices.size();
+    vector<vector<int>> memo(n, vector<int>(2, -1));
+    return solve(prices, 0, 0, memo);
+}
+
+int solve(vector<int>& prices, int i, int holding, vector<vector<int>>& memo) {
+    if (i == prices.size()) return 0;
+    if (memo[i][holding] != -1) return memo[i][holding];
+    int doNothing = solve(prices, i+1, holding, memo);
+    if (holding)
+        return memo[i][holding] = max(doNothing, prices[i]);
+    else
+        return memo[i][holding] = max(doNothing,
+            -prices[i] + solve(prices, i+1, 1, memo));
+}
+```
+
+**TABULATION (Greedy O(1)):**
+
+```cpp
+int maxProfit(vector<int>& prices) {
+    int minPrice = INT_MAX, maxProfit = 0;
+    for (int price : prices) {
+        minPrice = min(minPrice, price);
+        maxProfit = max(maxProfit, price - minPrice);
+    }
+    return maxProfit;
+}
+```
+
+TIME: O(N)  |  SPACE: O(1)
+
+### **PROBLEM: Best Time to Buy and Sell Stock II (LC 122)** 
+
+PROBLEM: Max profit with UNLIMITED transactions.
+
+**RECURSIVE (Top-Down):**
+
+```cpp
+int maxProfit(vector<int>& prices) {
+    int n = prices.size();
+    vector<vector<int>> memo(n, vector<int>(2, -1));
+    return solve(prices, 0, 0, memo);
+}
+
+int solve(vector<int>& prices, int i, int holding, vector<vector<int>>& memo) {
+    if (i == prices.size()) return 0;
+    if (memo[i][holding] != -1) return memo[i][holding];
+    int doNothing = solve(prices, i+1, holding, memo);
+    if (holding)
+        return memo[i][holding] = max(doNothing,
+            prices[i] + solve(prices, i+1, 0, memo));
+    else
+        return memo[i][holding] = max(doNothing,
+            -prices[i] + solve(prices, i+1, 1, memo));
+}
+```
+
+**TABULATION (Greedy O(1)):**
+
+```cpp
+int maxProfit(vector<int>& prices) {
+    int profit = 0;
+    for (int i = 1; i < prices.size(); i++) {
+        if (prices[i] > prices[i-1])
+            profit += prices[i] - prices[i-1];
+    }
+    return profit;
+}
+```
+
+TIME: O(N)  |  SPACE: O(1)
+
+### **PROBLEM: Best Time to Buy and Sell Stock III (LC 123)** 
+
+PROBLEM: Max profit with at most 2 transactions.
+
+**RECURSIVE (Top-Down) — same as Stock IV with k=2:**
+
+```cpp
+int maxProfit(vector<int>& prices) {
+    int n = prices.size();
+    vector<vector<vector<int>>> memo(n, vector<vector<int>>(3, vector<int>(2, -1)));
+    return solve(prices, 0, 2, 0, memo);
+}
+
+int solve(vector<int>& prices, int i, int txLeft, int holding,
+          vector<vector<vector<int>>>& memo) {
+    if (i == prices.size() || txLeft == 0) return 0;
+    if (memo[i][txLeft][holding] != -1) return memo[i][txLeft][holding];
+    int doNothing = solve(prices, i+1, txLeft, holding, memo);
+    if (holding)
+        return memo[i][txLeft][holding] = max(doNothing,
+            prices[i] + solve(prices, i+1, txLeft-1, 0, memo));
+    else
+        return memo[i][txLeft][holding] = max(doNothing,
+            -prices[i] + solve(prices, i+1, txLeft, 1, memo));
+}
+```
+
+**TABULATION (State machine O(1)):**
+
+```cpp
+int maxProfit(vector<int>& prices) {
+    int buy1 = INT_MIN, sell1 = 0;
+    int buy2 = INT_MIN, sell2 = 0;
+    for (int price : prices) {
+        buy1 = max(buy1, -price);
+        sell1 = max(sell1, buy1 + price);
+        buy2 = max(buy2, sell1 - price);
+        sell2 = max(sell2, buy2 + price);
+    }
+    return sell2;
+}
+```
+
+TIME: O(N)  |  SPACE: O(1)
+
+### **PROBLEM: Best Time to Buy/Sell Stock with Transaction Fee (LC 714)** 
+
+PROBLEM: Max profit with unlimited transactions, but each transaction costs a fee.
+
+**RECURSIVE (Top-Down):**
+
+```cpp
+int maxProfit(vector<int>& prices, int fee) {
+    int n = prices.size();
+    vector<vector<int>> memo(n, vector<int>(2, -1));
+    return solve(prices, fee, 0, 0, memo);
+}
+
+int solve(vector<int>& prices, int fee, int i, int holding,
+          vector<vector<int>>& memo) {
+    if (i == prices.size()) return 0;
+    if (memo[i][holding] != -1) return memo[i][holding];
+    int doNothing = solve(prices, fee, i+1, holding, memo);
+    if (holding)
+        return memo[i][holding] = max(doNothing,
+            prices[i] - fee + solve(prices, fee, i+1, 0, memo));
+    else
+        return memo[i][holding] = max(doNothing,
+            -prices[i] + solve(prices, fee, i+1, 1, memo));
+}
+```
+
+**TABULATION (State machine O(1)):**
+
+```cpp
+int maxProfit(vector<int>& prices, int fee) {
+    int hold = -prices[0], cash = 0;
+    for (int i = 1; i < prices.size(); i++) {
+        cash = max(cash, hold + prices[i] - fee);
+        hold = max(hold, cash - prices[i]);
+    }
+    return cash;
+}
+```
+
+TIME: O(N)  |  SPACE: O(1)
+
+### **PROBLEM: Maximum Profit in Job Scheduling (LC 1235)** 
+
+PROBLEM: Max profit selecting non-overlapping jobs.
+
+**RECURSIVE (Top-Down):**
+
+```cpp
+int jobScheduling(vector<int>& startTime, vector<int>& endTime, vector<int>& profit) {
+    int n = startTime.size();
+    vector<int> idx(n);
+    iota(idx.begin(), idx.end(), 0);
+    sort(idx.begin(), idx.end(), [&](int a, int b) {
+        return startTime[a] < startTime[b];
+    });
+
+    vector<int> sortedStart;
+    for (int i : idx) sortedStart.push_back(startTime[i]);
+
+    vector<int> memo(n, -1);
+    return solve(0, idx, sortedStart, endTime, profit, memo);
+}
+
+int solve(int i, vector<int>& idx, vector<int>& sortedStart,
+          vector<int>& endTime, vector<int>& profit, vector<int>& memo) {
+    if (i >= idx.size()) return 0;
+    if (memo[i] != -1) return memo[i];
+    int next = lower_bound(sortedStart.begin(), sortedStart.end(),
+                           endTime[idx[i]]) - sortedStart.begin();
+    return memo[i] = max(solve(i+1, idx, sortedStart, endTime, profit, memo),
+                         profit[idx[i]] + solve(next, idx, sortedStart, endTime, profit, memo));
+}
+```
+
+**TABULATION (Bottom-Up):**
+
+```cpp
+int jobScheduling(vector<int>& startTime, vector<int>& endTime, vector<int>& profit) {
+    int n = startTime.size();
+    vector<int> idx(n);
+    iota(idx.begin(), idx.end(), 0);
+    sort(idx.begin(), idx.end(), [&](int a, int b) {
+        return endTime[a] < endTime[b];
+    });
+
+    vector<int> dp(n + 1, 0);
+    vector<int> ends;
+    for (int i : idx) ends.push_back(endTime[i]);
+
+    for (int i = 0; i < n; i++) {
+        int j = upper_bound(ends.begin(), ends.begin() + i,
+                            startTime[idx[i]]) - ends.begin();
+        dp[i + 1] = max(dp[i], dp[j] + profit[idx[i]]);
+    }
+    return dp[n];
+}
+```
+
+TIME: O(N log N)  |  SPACE: O(N)
 
 ## **PATTERN 6: LIS (Longest Increasing Subsequence)** 
 
@@ -5799,697 +6360,6 @@ Pattern 7:  Kadane's            > curr = max(nums[i], curr + nums[i])
 Pattern 8:  Tree DP             > Post-order DFS, return to parent
 Pattern 9:  Bitmask DP          > dp[mask], N < 20
 Pattern 10: Digit DP            > Digit by digit, tight bound
-
-### **PROBLEM: Best Time to Buy and Sell Stock (LC 121)** 
-
-PROBLEM: Find max profit from ONE transaction (buy once, sell once).
-
-**RECURSIVE (Top-Down):**
-
-```cpp
-int maxProfit(vector<int>& prices) {
-    int n = prices.size();
-    vector<vector<int>> memo(n, vector<int>(2, -1));
-    return solve(prices, 0, 0, memo);
-}
-
-int solve(vector<int>& prices, int i, int holding, vector<vector<int>>& memo) {
-    if (i == prices.size()) return 0;
-    if (memo[i][holding] != -1) return memo[i][holding];
-    int doNothing = solve(prices, i+1, holding, memo);
-    if (holding)
-        return memo[i][holding] = max(doNothing, prices[i]);
-    else
-        return memo[i][holding] = max(doNothing,
-            -prices[i] + solve(prices, i+1, 1, memo));
-}
-```
-
-**TABULATION (Greedy O(1)):**
-
-```cpp
-int maxProfit(vector<int>& prices) {
-    int minPrice = INT_MAX, maxProfit = 0;
-    for (int price : prices) {
-        minPrice = min(minPrice, price);
-        maxProfit = max(maxProfit, price - minPrice);
-    }
-    return maxProfit;
-}
-```
-
-TIME: O(N)  |  SPACE: O(1)
-
- **WHY THIS BASE CASE?**
-```
-minPrice = INT_MAX > "Haven't seen any price yet." First price will
-```
-
-always be smaller, so it becomes the new minimum.
-
-```
-maxProfit = 0 > "No transaction yet." Profit starts at 0.
-```
-
-> This is greedy, not full DP. At each price: update min, compute
-potential profit. No table needed because we only look backwards
-at the single best buy point.
-
-### **PROBLEM: Best Time to Buy and Sell Stock II (LC 122)** 
-
-PROBLEM: Max profit with UNLIMITED transactions.
-
-**RECURSIVE (Top-Down):**
-
-```cpp
-int maxProfit(vector<int>& prices) {
-    int n = prices.size();
-    vector<vector<int>> memo(n, vector<int>(2, -1));
-    return solve(prices, 0, 0, memo);
-}
-
-int solve(vector<int>& prices, int i, int holding, vector<vector<int>>& memo) {
-    if (i == prices.size()) return 0;
-    if (memo[i][holding] != -1) return memo[i][holding];
-    int doNothing = solve(prices, i+1, holding, memo);
-    if (holding)
-        return memo[i][holding] = max(doNothing,
-            prices[i] + solve(prices, i+1, 0, memo));
-    else
-        return memo[i][holding] = max(doNothing,
-            -prices[i] + solve(prices, i+1, 1, memo));
-}
-```
-
-**TABULATION (Greedy O(1)):**
-
-```cpp
-int maxProfit(vector<int>& prices) {
-    int profit = 0;
-    for (int i = 1; i < prices.size(); i++) {
-        if (prices[i] > prices[i-1])
-            profit += prices[i] - prices[i-1];
-    }
-    return profit;
-}
-```
-
-TIME: O(N)  |  SPACE: O(1)
-
- **WHY THIS BASE CASE?**
-```
-profit = 0 > "No transactions made yet."
-```
-
-> Greedy: sum every positive price increase.
-> prices[i] > prices[i-1] means price went up > capture that profit.
-> This works because buying/selling on consecutive days is equivalent
-to buying on the first day and selling on the last day of an uptrend.
-
-### **PROBLEM: Best Time to Buy and Sell Stock III (LC 123)** 
-
-PROBLEM: Max profit with at most 2 transactions.
-
-**RECURSIVE (Top-Down) — same as Stock IV with k=2:**
-
-```cpp
-int maxProfit(vector<int>& prices) {
-    int n = prices.size();
-    vector<vector<vector<int>>> memo(n, vector<vector<int>>(3, vector<int>(2, -1)));
-    return solve(prices, 0, 2, 0, memo);
-}
-
-int solve(vector<int>& prices, int i, int txLeft, int holding,
-          vector<vector<vector<int>>>& memo) {
-    if (i == prices.size() || txLeft == 0) return 0;
-    if (memo[i][txLeft][holding] != -1) return memo[i][txLeft][holding];
-    int doNothing = solve(prices, i+1, txLeft, holding, memo);
-    if (holding)
-        return memo[i][txLeft][holding] = max(doNothing,
-            prices[i] + solve(prices, i+1, txLeft-1, 0, memo));
-    else
-        return memo[i][txLeft][holding] = max(doNothing,
-            -prices[i] + solve(prices, i+1, txLeft, 1, memo));
-}
-```
-
-**TABULATION (State machine O(1)):**
-
-```cpp
-int maxProfit(vector<int>& prices) {
-    int buy1 = INT_MIN, sell1 = 0;
-    int buy2 = INT_MIN, sell2 = 0;
-    for (int price : prices) {
-        buy1 = max(buy1, -price);
-        sell1 = max(sell1, buy1 + price);
-        buy2 = max(buy2, sell1 - price);
-        sell2 = max(sell2, buy2 + price);
-    }
-    return sell2;
-}
-```
-
-TIME: O(N)  |  SPACE: O(1)
-
- **WHY THIS BASE CASE?**
-```
-buy1 = INT_MIN, sell1 = 0, buy2 = INT_MIN, sell2 = 0
-```
-
-> buy1/buy2 = INT_MIN: "Haven't bought yet." Any real buy will be better.
-> sell1/sell2 = 0: "No profit from selling yet."
-
-4 states processed in ORDER for each price:
-> buy1 = max(buy1, -price) > Best first buy so far.
-> sell1 = max(sell1, buy1+price) > Best profit after first sell.
-> buy2 = max(buy2, sell1-price) > Second buy USES first sell's profit.
-> sell2 = max(sell2, buy2+price) > Final profit after second sell.
-> Each state builds on the previous. This chain is what makes it work.
-
-### **PROBLEM: Best Time to Buy/Sell Stock with Transaction Fee (LC 714)** 
-
-PROBLEM: Max profit with unlimited transactions, but each transaction costs a fee.
-
-**RECURSIVE (Top-Down):**
-
-```cpp
-int maxProfit(vector<int>& prices, int fee) {
-    int n = prices.size();
-    vector<vector<int>> memo(n, vector<int>(2, -1));
-    return solve(prices, fee, 0, 0, memo);
-}
-
-int solve(vector<int>& prices, int fee, int i, int holding,
-          vector<vector<int>>& memo) {
-    if (i == prices.size()) return 0;
-    if (memo[i][holding] != -1) return memo[i][holding];
-    int doNothing = solve(prices, fee, i+1, holding, memo);
-    if (holding)
-        return memo[i][holding] = max(doNothing,
-            prices[i] - fee + solve(prices, fee, i+1, 0, memo));
-    else
-        return memo[i][holding] = max(doNothing,
-            -prices[i] + solve(prices, fee, i+1, 1, memo));
-}
-```
-
-**TABULATION (State machine O(1)):**
-
-```cpp
-int maxProfit(vector<int>& prices, int fee) {
-    int hold = -prices[0], cash = 0;
-    for (int i = 1; i < prices.size(); i++) {
-        cash = max(cash, hold + prices[i] - fee);
-        hold = max(hold, cash - prices[i]);
-    }
-    return cash;
-}
-```
-
-TIME: O(N)  |  SPACE: O(1)
-
- **WHY THIS BASE CASE?**
-```
-hold = -prices[0], cash = 0
-```
-
-> hold: "Bought stock on day 0." Cost = -prices[0].
-> cash: "No stock held, no profit yet." = 0.
-> Fee is subtracted when SELLING: cash = max(cash, hold+price-fee).
-> This ensures fee is paid once per round-trip transaction.
-> Same state machine as Stock II, just with fee deducted at sell.
-
-### **PROBLEM: Unique Paths II (LC 63)** 
-
-PROBLEM: Count unique paths in grid with obstacles. Can only move right or down.
-
- PATTERN: Distinct Ways (Pattern 2)
- TEMPLATE: dp[i][j] = dp[i-1][j] + dp[i][j-1], but 0 if obstacle
-
- **KEY INSIGHT**: Same as Unique Paths (LC 62) but dp[i][j] = 0 whenever
-grid[i][j] is an obstacle. Also check if start or end is blocked!
-
-**RECURSIVE (Top-Down):**
-
-```cpp
-int uniquePathsWithObstacles(vector<vector<int>>& grid) {
-    int m = grid.size(), n = grid[0].size();
-    if (grid[0][0] == 1 || grid[m-1][n-1] == 1) return 0;
-    vector<vector<int>> memo(m, vector<int>(n, -1));
-    return solve(grid, m-1, n-1, memo);
-}
-
-int solve(vector<vector<int>>& grid, int i, int j, vector<vector<int>>& memo) {
-    if (i < 0 || j < 0 || grid[i][j] == 1) return 0;
-    if (i == 0 && j == 0) return 1;
-    if (memo[i][j] != -1) return memo[i][j];
-    return memo[i][j] = solve(grid, i-1, j, memo) + solve(grid, i, j-1, memo);
-}
-```
-
-**TABULATION (Bottom-Up):**
-
-```cpp
-int uniquePathsWithObstacles(vector<vector<int>>& grid) {
-    int m = grid.size(), n = grid[0].size();
-    if (grid[0][0] == 1 || grid[m-1][n-1] == 1) return 0;
-
-    vector<vector<long long>> dp(m, vector<long long>(n, 0));
-    dp[0][0] = 1;
-
-    for (int i = 0; i < m; i++) {
-        for (int j = 0; j < n; j++) {
-            if (grid[i][j] == 1) { dp[i][j] = 0; continue; }
-            if (i > 0) dp[i][j] += dp[i-1][j];
-            if (j > 0) dp[i][j] += dp[i][j-1];
-        }
-    }
-
-    return dp[m-1][n-1];
-}
-```
-
-TIME: O(M x N)  |  SPACE: O(M x N)
-
- **WHY THIS BASE CASE?**
-```
-dp[0][0] = 1 > Starting point (0,0) has exactly 1 path: already there.
-grid[0][0] == 1 or grid[m-1][n-1] == 1 > return 0
-```
-
-> If start or end is blocked, no path exists. Check BEFORE DP.
-
-```
-grid[i][j] == 1 > dp[i][j] = 0, skip
-```
-
-> Obstacle cells are unreachable. Zero paths through them.
-> Unlike Unique Paths I where first row/col = 1, here an obstacle
-in first row BLOCKS all cells to its right (they stay 0).
-
-### **PROBLEM: Word Break (LC 139)** 
-
-PROBLEM: Can string s be segmented into words from dictionary?
-
- PATTERN: DP on Strings (Pattern 4)
- TEMPLATE: dp[i] = true if s[0..i-1] can be segmented
-
- **KEY INSIGHT**: dp[i] = true if there exists j < i such that dp[j] is
-true AND s[j..i-1] is a word in the dictionary. Try all split points!
-
-**RECURSIVE (Top-Down):**
-
-```cpp
-bool wordBreak(string s, vector<string>& wordDict) {
-    unordered_set<string> dict(wordDict.begin(), wordDict.end());
-    vector<int> memo(s.size(), -1);
-    return solve(s, 0, dict, memo);
-}
-
-bool solve(string& s, int start, unordered_set<string>& dict, vector<int>& memo) {
-    if (start == s.size()) return true;
-    if (memo[start] != -1) return memo[start];
-    for (int end = start + 1; end <= s.size(); end++) {
-        if (dict.count(s.substr(start, end - start)) && solve(s, end, dict, memo))
-            return memo[start] = 1;
-    }
-    return memo[start] = 0;
-}
-```
-
-**TABULATION (Bottom-Up):**
-
-```cpp
-bool wordBreak(string s, vector<string>& wordDict) {
-    unordered_set<string> dict(wordDict.begin(), wordDict.end());
-    int n = s.size();
-    vector<bool> dp(n + 1, false);
-    dp[0] = true;
-
-    for (int i = 1; i <= n; i++) {
-        for (int j = 0; j < i; j++) {
-            if (dp[j] && dict.count(s.substr(j, i - j))) {
-                dp[i] = true;
-                break;
-            }
-        }
-    }
-
-    return dp[n];
-}
-```
-
-TIME: O(N2 x M)  |  SPACE: O(N)  where M = max word length
-
- **WHY THIS BASE CASE?**
-```
-dp[0] = true > "Empty string can be segmented." (Vacuously true.)
-```
-
-> This seeds the DP: dp[i] = true if there exists j where dp[j] is true
-AND s[j..i-1] is a dictionary word.
-
-> Without dp[0] = true, the first word can never be recognized.
-e.g. s = "leet", dict = {"leet"}: dp[4] needs dp[0] = true.
-
-```
-dp[1..n] = false > "Not yet proven to be segmentable."
-```
-
-### **PROBLEM: Word Break II (LC 140)** 
-
-PROBLEM: Return ALL possible word break segmentations of string s.
-
- PATTERN: DP on Strings (Pattern 4) - Backtracking + Memoization
- TEMPLATE: Recursive DFS with memoization on start index
-
- **KEY INSIGHT**: Unlike Word Break I which only checks feasibility, we need
-all solutions. Use backtracking from each index, trying every word that
-matches at that position, and memoize results per start index.
-
-```cpp
-vector<string> wordBreak(string s, vector<string>& wordDict) {
-unordered_set<string> dict(wordDict.begin(), wordDict.end());
-unordered_map<int, vector<string>> memo;                     
-return backtrack(s, 0, dict, memo);                          
-
-}
-
-vector<string> backtrack(string& s, int start,
-                     unordered_set<string>& dict,               
-                     unordered_map<int, vector<string>>& memo) {
-if (memo.count(start)) return memo[start];                      
-if (start == s.size()) return {""};                             
-
-vector<string> result;                                          
-for (int end = start + 1; end <= s.size(); end++) {             
-    string word = s.substr(start, end - start);                 
-    if (dict.count(word)) {                                     
-        auto rest = backtrack(s, end, dict, memo);              
-        for (auto& r : rest) {                                  
-            result.push_back(word + (r.empty() ? "" : " " + r));
-        }                                                       
-    }                                                           
-}                                                               
-
-return memo[start] = result;                                    
-
-}
-```
-
-TIME: O(N x 2^N) worst case  |  SPACE: O(N x 2^N)
-
- **WHY THIS BASE CASE?**
-```
-start == s.size() > return {""}
-```
-
-> Reached end of string successfully. Return vector with empty string
-to signal "valid segmentation found". The caller prepends its word.
-
-> If we returned empty vector {}, no sentence would ever be built.
-
-### **PROBLEM: Coin Change II (LC 518)** 
-
-PROBLEM: Count number of combinations to make amount (coins can be reused).
-
- PATTERN: Distinct Ways (Pattern 2) - Unbounded Knapsack
- TEMPLATE: Outer loop = coins, inner loop = amounts (for combinations)
-
- **KEY INSIGHT**: Loop coins OUTSIDE, amounts INSIDE to count combinations
-(not permutations). Each coin is considered once, avoiding duplicates.
-Compare with Combination Sum IV (LC 377) which loops amounts outside for
-permutations!
-
-**RECURSIVE (Top-Down):**
-
-```cpp
-int change(int amount, vector<int>& coins) {
-    vector<vector<int>> memo(coins.size(), vector<int>(amount + 1, -1));
-    return solve(coins, 0, amount, memo);
-}
-
-int solve(vector<int>& coins, int idx, int amt, vector<vector<int>>& memo) {
-    if (amt == 0) return 1;
-    if (idx == coins.size() || amt < 0) return 0;
-    if (memo[idx][amt] != -1) return memo[idx][amt];
-    return memo[idx][amt] = solve(coins, idx, amt - coins[idx], memo)
-                          + solve(coins, idx + 1, amt, memo);
-}
-```
-
-**TABULATION (Bottom-Up):**
-
-```cpp
-int change(int amount, vector<int>& coins) {
-    vector<int> dp(amount + 1, 0);
-    dp[0] = 1;
-
-    for (int coin : coins) {
-        for (int j = coin; j <= amount; j++) {
-            dp[j] += dp[j - coin];
-        }
-    }
-
-    return dp[amount];
-}
-```
-
-TIME: O(N x amount)  |  SPACE: O(amount)
-
- CRITICAL DIFFERENCE:
-Combinations (this problem): outer loop = coins, inner = amounts
-Permutations (LC 377):       outer loop = amounts, inner = coins
-
- **WHY THIS BASE CASE?**
-```
-dp[0] = 1 > "1 way to make amount 0: use no coins."
-```
-
-> Same as all COUNT problems: dp[0] = 1, not 0.
-
-WHY forward loop (j = coin to amount), not backward?
-> This is UNBOUNDED knapsack: coins can be reused!
-> Forward loop allows dp[j-coin] to use already-updated values
-```python
-from this row > same coin used multiple times. Exactly what we want.
-```
-
-> Compare with 0/1 Knapsack (Partition Subset) which loops BACKWARD
-to prevent reusing items.
-
-### **PROBLEM: Palindrome Partitioning II (LC 132)** 
-
-PROBLEM: Minimum cuts to partition string into all palindromes.
-
- PATTERN: DP on Strings (Pattern 4)
- TEMPLATE: dp[i] = min cuts for s[0..i], precompute palindrome table
-
- **KEY INSIGHT**: Two-phase DP. First precompute isPalin[i][j] for all
-substrings. Then dp[i] = min(dp[j-1] + 1) for all j where s[j..i] is
-a palindrome. If s[0..i] itself is a palindrome, dp[i] = 0 (no cuts).
-
-**RECURSIVE (Top-Down):**
-
-```cpp
-int minCut(string s) {
-    int n = s.size();
-    vector<vector<bool>> isPalin(n, vector<bool>(n, false));
-    for (int len = 1; len <= n; len++)
-        for (int i = 0; i <= n - len; i++) {
-            int j = i + len - 1;
-            if (s[i] == s[j] && (len <= 2 || isPalin[i+1][j-1]))
-                isPalin[i][j] = true;
-        }
-
-    vector<int> memo(n, -1);
-    return solve(s, 0, isPalin, memo);
-}
-
-int solve(string& s, int start, vector<vector<bool>>& isPalin, vector<int>& memo) {
-    if (start == s.size()) return -1;
-    if (memo[start] != -1) return memo[start];
-    int best = INT_MAX;
-    for (int end = start; end < s.size(); end++) {
-        if (isPalin[start][end])
-            best = min(best, 1 + solve(s, end + 1, isPalin, memo));
-    }
-    return memo[start] = best;
-}
-```
-
-**TABULATION (Bottom-Up):**
-
-```cpp
-int minCut(string s) {
-    int n = s.size();
-    vector<vector<bool>> isPalin(n, vector<bool>(n, false));
-
-    for (int len = 1; len <= n; len++)
-        for (int i = 0; i <= n - len; i++) {
-            int j = i + len - 1;
-            if (s[i] == s[j] && (len <= 2 || isPalin[i+1][j-1]))
-                isPalin[i][j] = true;
-        }
-
-    vector<int> dp(n, INT_MAX);
-    for (int i = 0; i < n; i++) {
-        if (isPalin[0][i]) { dp[i] = 0; continue; }
-        for (int j = 1; j <= i; j++) {
-            if (isPalin[j][i])
-                dp[i] = min(dp[i], dp[j-1] + 1);
-        }
-    }
-
-    return dp[n-1];
-}
-```
-
-TIME: O(N2)  |  SPACE: O(N2)
-
- **WHY THIS BASE CASE?**
-```
-isPalin[i][j]: precomputed palindrome table.
-```
-
-> isPalin base: len <= 2 && s[i]==s[j] > true.
-
-```
-dp[i] = INT_MAX > "Unknown minimum cuts."
-dp[i] = 0 if isPalin[0][i] > "Entire s[0..i] is a palindrome. No cuts needed."
-```
-
-> This is the KEY optimization: if the whole prefix is already a
-palindrome, we skip the inner loop entirely.
-
-> Otherwise: dp[i] = min(dp[j-1] + 1) for all j where s[j..i] is palindrome.
-"Best cut = best answer for s[0..j-1] + 1 more cut before s[j..i]."
-
-## **SOLVED: Super Egg Drop (LC 887)**  HARD
-
-**RECURSIVE (Top-Down) — binary search optimization:**
-
-```cpp
-int superEggDrop(int k, int n) {
-    unordered_map<int, int> memo;
-    return solve(k, n, memo);
-}
-
-int solve(int k, int n, unordered_map<int, int>& memo) {
-    if (n <= 1 || k == 1) return n;
-    int key = n * 1000 + k;
-    if (memo.count(key)) return memo[key];
-
-    int lo = 1, hi = n;
-    while (lo + 1 < hi) {
-        int mid = (lo + hi) / 2;
-        int breakCase = solve(k-1, mid-1, memo);
-        int noBreak = solve(k, n-mid, memo);
-        if (breakCase < noBreak) lo = mid;
-        else hi = mid;
-    }
-    return memo[key] = 1 + min(max(solve(k-1, lo-1, memo), solve(k, n-lo, memo)),
-                                max(solve(k-1, hi-1, memo), solve(k, n-hi, memo)));
-}
-```
-
-**TABULATION (Bottom-Up) — reverse thinking:**
-
-```cpp
-int superEggDrop(int k, int n) {
-    vector<vector<int>> dp(n + 1, vector<int>(k + 1, 0));
-    int m = 0;
-    while (dp[m][k] < n) {
-        m++;
-        for (int j = 1; j <= k; j++)
-            dp[m][j] = dp[m-1][j-1] + dp[m-1][j] + 1;
-    }
-    return m;
-}
-```
-
- **WHY THIS BASE CASE?**
-```
-dp[0][j] = 0 for all j > "0 moves, any eggs > can check 0 floors."
-dp[m][0] = 0 for all m > "Any moves, 0 eggs > can check 0 floors."
-```
-
-REVERSE THINKING: Instead of "min moves for n floors", ask
-"max floors checkable with m moves and k eggs?"
-> dp[m][k] = dp[m-1][k-1] + dp[m-1][k] + 1
-> If egg breaks: check dp[m-1][k-1] floors below.
-> If egg survives: check dp[m-1][k] floors above.
-> +1 for the floor we just tested.
-> Stop when dp[m][k] >= n.
-
-## **SOLVED: Maximum Profit in Job Scheduling (LC 1235)** 
-
-**RECURSIVE (Top-Down):**
-
-```cpp
-int jobScheduling(vector<int>& startTime, vector<int>& endTime, vector<int>& profit) {
-    int n = startTime.size();
-    vector<int> idx(n);
-    iota(idx.begin(), idx.end(), 0);
-    sort(idx.begin(), idx.end(), [&](int a, int b) {
-        return startTime[a] < startTime[b];
-    });
-
-    vector<int> sortedStart;
-    for (int i : idx) sortedStart.push_back(startTime[i]);
-
-    vector<int> memo(n, -1);
-    return solve(0, idx, sortedStart, endTime, profit, memo);
-}
-
-int solve(int i, vector<int>& idx, vector<int>& sortedStart,
-          vector<int>& endTime, vector<int>& profit, vector<int>& memo) {
-    if (i >= idx.size()) return 0;
-    if (memo[i] != -1) return memo[i];
-    int next = lower_bound(sortedStart.begin(), sortedStart.end(),
-                           endTime[idx[i]]) - sortedStart.begin();
-    return memo[i] = max(solve(i+1, idx, sortedStart, endTime, profit, memo),
-                         profit[idx[i]] + solve(next, idx, sortedStart, endTime, profit, memo));
-}
-```
-
-**TABULATION (Bottom-Up):**
-
-```cpp
-int jobScheduling(vector<int>& startTime, vector<int>& endTime, vector<int>& profit) {
-    int n = startTime.size();
-    vector<int> idx(n);
-    iota(idx.begin(), idx.end(), 0);
-    sort(idx.begin(), idx.end(), [&](int a, int b) {
-        return endTime[a] < endTime[b];
-    });
-
-    vector<int> dp(n + 1, 0);
-    vector<int> ends;
-    for (int i : idx) ends.push_back(endTime[i]);
-
-    for (int i = 0; i < n; i++) {
-        int j = upper_bound(ends.begin(), ends.begin() + i,
-                            startTime[idx[i]]) - ends.begin();
-        dp[i + 1] = max(dp[i], dp[j] + profit[idx[i]]);
-    }
-    return dp[n];
-}
-```
-
- **WHY THIS BASE CASE?**
-```
-dp[0] = 0 > "Before any job, profit = 0."
-```
-
-> Jobs sorted by end time. dp[i+1] = max(dp[i], dp[j] + profit[i]).
-> dp[i] = "don't take job i" (carry forward previous best).
-> dp[j] + profit[i] = "take job i" (find last non-overlapping job j
-```
-using binary search on end times).
-```
-
-> Binary search: upper_bound finds first job ending AFTER current start.
 
 ## **COMPLETE PROBLEM LIST BY PATTERN**
 
