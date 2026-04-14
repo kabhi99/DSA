@@ -1259,6 +1259,91 @@ WHY size amount+1?
 > dp[i] = min coins for amount i. We need dp[0] through dp[amount].
 > Index 0 is the base case, index 'amount' is the answer.
 
+---
+
+### **"LOOP ALL CHOICES" vs "PICK/NOT-PICK" — TWO RECURSION STYLES**
+
+The recursive solution above uses "loop all coins" style. There's another
+way: "pick/not-pick" (index-based). Both are valid — here's the difference:
+
+**STYLE 1: "Loop all choices" (used above)**
+
+```cpp
+int solve(vector<int>& coins, int amt, vector<int>& memo) {
+    if (amt == 0) return 0;
+    if (amt < 0) return INT_MAX;
+    if (memo[amt] != -2) return memo[amt];
+
+    int best = INT_MAX;
+    for (int coin : coins) {                        // try EVERY coin at this state
+        int sub = solve(coins, amt - coin, memo);
+        if (sub != INT_MAX) best = min(best, sub + 1);
+    }
+    return memo[amt] = best;
+}
+// State: (amount) only → 1D memo
+// Reuse: coins automatically reusable (same coin appears in loop next call)
+```
+
+**STYLE 2: "Pick / Not-Pick" (index-based)**
+
+```cpp
+int solve(vector<int>& coins, int i, int amt, vector<vector<int>>& memo) {
+    if (amt == 0) return 0;
+    if (i == coins.size()) return INT_MAX;
+    if (memo[i][amt] != -2) return memo[i][amt];
+
+    int notPick = solve(coins, i + 1, amt, memo);   // SKIP coin[i], move to next
+    int pick = INT_MAX;
+    if (coins[i] <= amt) {
+        int sub = solve(coins, i, amt - coins[i], memo);  // USE coin[i], STAY at i
+        if (sub != INT_MAX) pick = sub + 1;
+    }
+    return memo[i][amt] = min(pick, notPick);
+}
+// State: (coin_index, amount) → 2D memo
+// Reuse: stay at index i (don't move to i+1) = unbounded
+//         move to i+1 after pick = 0/1 (each item once)
+```
+
+**COMPARISON:**
+
+```
++---------------------+----------------------------+----------------------------+
+| Aspect              | Loop All Choices           | Pick / Not-Pick            |
++---------------------+----------------------------+----------------------------+
+| State               | (amount) only              | (coin_index, amount)       |
+| Memo                | 1D: O(amount)              | 2D: O(coins x amount)      |
+| Decision at state   | Loop all coins             | Binary: use coin[i] or skip|
+| Reuse of items      | Automatic (loop repeats)   | Stay at i = unbounded      |
+|                     |                            | Move to i+1 = 0/1 knapsack |
++---------------------+----------------------------+----------------------------+
+```
+
+**WHEN TO USE WHICH?**
+
+```
+"Loop all choices" (Style 1):
+  Use when: items are UNBOUNDED (reuse freely) AND order doesn't matter
+  Simpler: 1D memo, less space
+  Examples: Coin Change, Perfect Squares, Combination Sum IV
+
+"Pick / Not-Pick" (Style 2):
+  Use when: items used ONCE (0/1 knapsack)
+            OR you need to track which items are chosen
+            OR counting COMBINATIONS not permutations
+  Required for: 0/1 Knapsack, Partition Subset Sum, Target Sum
+  Also works for: Coin Change II (combinations — need index to avoid
+                  counting [1,2] and [2,1] as different)
+```
+
+**KEY INSIGHT:** For Coin Change (LC 322), both styles give correct answer
+because coins are unbounded. Style 1 is simpler (1D vs 2D), so we prefer it.
+But for Coin Change II (LC 518) where we count COMBINATIONS, you MUST use
+Style 2 (pick/not-pick with index) to avoid duplicate counting.
+
+---
+
 ### **PROBLEM: Minimum Path Sum (LC 64)**
 
 PROBLEM: Min path sum from top-left to bottom-right (only right/down moves)
