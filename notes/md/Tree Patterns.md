@@ -342,7 +342,124 @@ return result;
 }
 ```
 
-## **PART 4: BINARY SEARCH TREE (BST)**
+## **SOLVED: Vertical Order Traversal (LC 987)** 
+
+ KEY INSIGHT: Track (column, row, value) and sort appropriately
+
+**SORTING TRICK:**
+- tuple<int,int,int> = {col, row, val}
+- Default tuple sort = by col first, then row, then val
+- This is EXACTLY the order the problem asks for!
+
+**VISUALIZATION:**
+1               col: 0
+/ \
+2   3             col: -1, +1
+/ \   \
+4   5   7           col: -2, 0, +2
+
+Nodes: {-2,2,4}, {-1,1,2}, {0,0,1}, {0,2,5}, {1,1,3}, {2,2,7}
+After sort (by col, row, val): same order
+Result: [[4], [2], [1,5], [3], [7]]
+
+```cpp
+void dfs(TreeNode* node, int col, int row, vector<tuple<int,int,int>>& nodes) {
+if (!node) return;                        
+nodes.push_back({col, row, node->val});   
+dfs(node->left, col - 1, row + 1, nodes); 
+dfs(node->right, col + 1, row + 1, nodes);
+
+}
+
+vector<vector<int>> verticalTraversal(TreeNode* root) {
+vector<tuple<int,int,int>> nodes;  // {col, row, val}
+dfs(root, 0, 0, nodes);                              
+
+sort(nodes.begin(), nodes.end());                    
+
+vector<vector<int>> result;                          
+int prevCol = INT_MIN;                               
+
+for (auto& [col, row, val] : nodes) {                
+    if (col != prevCol) {                            
+        result.push_back({});                        
+        prevCol = col;                               
+    }                                                
+    result.back().push_back(val);                    
+}                                                    
+
+return result;                                       
+
+}
+// Time: O(N log N), Space: O(N)
+```
+
+## **SOLVED: Binary Tree Top View / Bottom View** 
+
+ KEY INSIGHT: BFS with column tracking, first/last node per column
+
+```cpp
+// TOP VIEW: First node encountered at each column
+vector<int> topView(TreeNode* root) {
+if (!root) return {};                                
+
+map<int, int> columnMap;  // column -> node value    
+queue<pair<TreeNode*, int>> q;  // {node, column}    
+
+q.push({root, 0});                                   
+
+while (!q.empty()) {                                 
+    auto [node, col] = q.front();                    
+    q.pop();                                         
+
+    // Only add if column not seen (first node = top)
+    if (columnMap.find(col) == columnMap.end()) {    
+        columnMap[col] = node->val;                  
+    }                                                
+
+    if (node->left) q.push({node->left, col - 1});   
+    if (node->right) q.push({node->right, col + 1}); 
+}                                                    
+
+vector<int> result;                                  
+for (auto& [col, val] : columnMap) {                 
+    result.push_back(val);                           
+}                                                    
+return result;                                       
+
+}
+
+// BOTTOM VIEW: Last node at each column
+vector<int> bottomView(TreeNode* root) {
+if (!root) return {};                               
+
+map<int, int> columnMap;                            
+queue<pair<TreeNode*, int>> q;                      
+
+q.push({root, 0});                                  
+
+while (!q.empty()) {                                
+    auto [node, col] = q.front();                   
+    q.pop();                                        
+
+    // Always update (last node = bottom)           
+    columnMap[col] = node->val;                     
+
+    if (node->left) q.push({node->left, col - 1});  
+    if (node->right) q.push({node->right, col + 1});
+}                                                   
+
+vector<int> result;                                 
+for (auto& [col, val] : columnMap) {                
+    result.push_back(val);                          
+}                                                   
+return result;                                      
+
+}
+```
+
+
+## **PART 4: BINARY SEARCH TREE (BST)** 
 
 ### **BST PROPERTY** 
 
@@ -515,6 +632,84 @@ return root;
 
 }
 ```
+
+## **SOLVED: Recover Binary Search Tree (LC 99)** 
+
+PROBLEM: Two nodes swapped in BST, recover it.
+
+ KEY INSIGHT: Inorder traversal should be sorted.
+Find two violations (prev > curr) to identify swapped nodes.
+
+```cpp
+TreeNode* first = nullptr;
+TreeNode* second = nullptr;
+TreeNode* prev = nullptr;
+
+void recoverTree(TreeNode* root) {
+inorder(root);
+swap(first->val, second->val);
+
+}
+
+void inorder(TreeNode* node) {
+if (!node) return;                                           
+
+inorder(node->left);                                         
+
+if (prev && prev->val > node->val) {                         
+    if (!first) {                                            
+        first = prev;  // First violation                    
+    }                                                        
+    second = node;     // Second violation (or same as first)
+}                                                            
+prev = node;                                                 
+
+inorder(node->right);                                        
+
+}
+```
+
+## **SOLVED: BST Iterator (LC 173)** 
+
+ KEY INSIGHT: Controlled inorder traversal using stack
+
+```java
+class BSTIterator {
+stack<TreeNode*> st;           
+
+void pushLeft(TreeNode* node) {
+    while (node) {             
+        st.push(node);         
+        node = node->left;     
+    }                          
+}                              
+```
+
+public:
+```
+BSTIterator(TreeNode* root) { 
+    pushLeft(root);           
+}                             
+
+int next() {                  
+    TreeNode* node = st.top();
+    st.pop();                 
+    pushLeft(node->right);    
+    return node->val;         
+}                             
+
+bool hasNext() {              
+    return !st.empty();       
+}                             
+```
+
+```
+};
+
+// TIME: O(1) average for next()
+// SPACE: O(h) where h = height
+```
+
 
 ## **PART 5: LOWEST COMMON ANCESTOR (LCA)**
 
@@ -706,6 +901,49 @@ return max(left, right) + 1;
 }
 ```
 
+## **SOLVED: Flatten Binary Tree to Linked List (LC 114)** 
+
+ KEY INSIGHT: Post-order traversal in reverse (right, left, node)
+Or: Morris-like threading
+
+```cpp
+// Method 1: Reverse post-order with prev pointer
+TreeNode* prev = nullptr;
+
+void flatten(TreeNode* root) {
+if (!root) return;   
+
+flatten(root->right);
+flatten(root->left); 
+
+root->right = prev;  
+root->left = nullptr;
+prev = root;         
+
+}
+
+// Method 2: Iterative
+void flattenIterative(TreeNode* root) {
+while (root) {                                
+    if (root->left) {                         
+        // Find rightmost node in left subtree
+        TreeNode* rightmost = root->left;     
+        while (rightmost->right) {            
+            rightmost = rightmost->right;     
+        }                                     
+
+        // Connect rightmost to root's right  
+        rightmost->right = root->right;       
+        root->right = root->left;             
+        root->left = nullptr;                 
+    }                                         
+    root = root->right;                       
+}                                             
+
+}
+```
+
+
 ## **PART 7: TREE CONSTRUCTION**
 
 ### **PROBLEM: Construct from Preorder + Inorder (LC 105)** 
@@ -857,7 +1095,102 @@ TreeNode* buildTree(queue<string>& nodes) {
 // Time: O(N), Space: O(N)
 ```
 
+## **SOLVED: Convert Sorted List to BST (LC 109)** 
+
+ KEY INSIGHT: Use slow/fast pointers to find middle
+
+```cpp
+TreeNode* sortedListToBST(ListNode* head) {
+if (!head) return nullptr;                                  
+if (!head->next) return new TreeNode(head->val);            
+
+// Find middle and its previous node                        
+ListNode* slow = head;                                      
+ListNode* fast = head;                                      
+ListNode* prev = nullptr;                                   
+
+while (fast && fast->next) {                                
+    prev = slow;                                            
+    slow = slow->next;                                      
+    fast = fast->next->next;                                
+}                                                           
+
+// Disconnect left half                                     
+if (prev) prev->next = nullptr;                             
+
+// slow is the middle node (root)                           
+TreeNode* root = new TreeNode(slow->val);                   
+
+// Build subtrees                                           
+root->left = sortedListToBST(head == slow ? nullptr : head);
+root->right = sortedListToBST(slow->next);                  
+
+return root;                                                
+
+}
+```
+
+
 ## **PART 8: TREE PROPERTIES**
+
+## **SOLVED: Symmetric Tree (LC 101)** 
+
+ KEY INSIGHT: Compare left subtree with mirror of right subtree
+
+```cpp
+bool isSymmetric(TreeNode* root) {
+return isMirror(root, root);
+
+}
+
+bool isMirror(TreeNode* t1, TreeNode* t2) {
+if (!t1 && !t2) return true;           
+if (!t1 || !t2) return false;          
+
+return t1->val == t2->val &&           
+       isMirror(t1->left, t2->right) &&
+       isMirror(t1->right, t2->left);  
+
+}
+```
+
+## **SOLVED: Binary Tree Cameras (LC 968)** 
+
+ KEY INSIGHT: Greedy post-order. States: 0=needs coverage, 1=has camera, 2=covered
+
+```cpp
+int cameras = 0;
+
+int minCameraCover(TreeNode* root) {
+if (dfs(root) == 0) cameras++;  // Root needs coverage
+return cameras;                                       
+
+}
+
+// Returns: 0=needs camera, 1=has camera, 2=covered by child
+int dfs(TreeNode* node) {
+if (!node) return 2;  // Null is considered covered
+
+int left = dfs(node->left);                        
+int right = dfs(node->right);                      
+
+// If any child needs coverage, place camera here  
+if (left == 0 || right == 0) {                     
+    cameras++;                                     
+    return 1;  // Has camera                       
+}                                                  
+
+// If any child has camera, this node is covered   
+if (left == 1 || right == 1) {                     
+    return 2;  // Covered                          
+}                                                  
+
+// Both children are covered but no camera nearby  
+return 0;  // Needs coverage from parent           
+
+}
+```
+
 
 ### **MAX DEPTH / HEIGHT (LC 104)**
 
@@ -959,334 +1292,6 @@ if (isSameTree(root, subRoot)) return true;
 
 return isSubtree(root->left, subRoot) |  |
        isSubtree(root->right, subRoot);    
-
-}
-```
-
-## **SOLVED: Symmetric Tree (LC 101)** 
-
- KEY INSIGHT: Compare left subtree with mirror of right subtree
-
-```cpp
-bool isSymmetric(TreeNode* root) {
-return isMirror(root, root);
-
-}
-
-bool isMirror(TreeNode* t1, TreeNode* t2) {
-if (!t1 && !t2) return true;           
-if (!t1 || !t2) return false;          
-
-return t1->val == t2->val &&           
-       isMirror(t1->left, t2->right) &&
-       isMirror(t1->right, t2->left);  
-
-}
-```
-
-## **SOLVED: Flatten Binary Tree to Linked List (LC 114)** 
-
- KEY INSIGHT: Post-order traversal in reverse (right, left, node)
-Or: Morris-like threading
-
-```cpp
-// Method 1: Reverse post-order with prev pointer
-TreeNode* prev = nullptr;
-
-void flatten(TreeNode* root) {
-if (!root) return;   
-
-flatten(root->right);
-flatten(root->left); 
-
-root->right = prev;  
-root->left = nullptr;
-prev = root;         
-
-}
-
-// Method 2: Iterative
-void flattenIterative(TreeNode* root) {
-while (root) {                                
-    if (root->left) {                         
-        // Find rightmost node in left subtree
-        TreeNode* rightmost = root->left;     
-        while (rightmost->right) {            
-            rightmost = rightmost->right;     
-        }                                     
-
-        // Connect rightmost to root's right  
-        rightmost->right = root->right;       
-        root->right = root->left;             
-        root->left = nullptr;                 
-    }                                         
-    root = root->right;                       
-}                                             
-
-}
-```
-
-## **SOLVED: Vertical Order Traversal (LC 987)** 
-
- KEY INSIGHT: Track (column, row, value) and sort appropriately
-
-**SORTING TRICK:**
-- tuple<int,int,int> = {col, row, val}
-- Default tuple sort = by col first, then row, then val
-- This is EXACTLY the order the problem asks for!
-
-**VISUALIZATION:**
-1               col: 0
-/ \
-2   3             col: -1, +1
-/ \   \
-4   5   7           col: -2, 0, +2
-
-Nodes: {-2,2,4}, {-1,1,2}, {0,0,1}, {0,2,5}, {1,1,3}, {2,2,7}
-After sort (by col, row, val): same order
-Result: [[4], [2], [1,5], [3], [7]]
-
-```cpp
-void dfs(TreeNode* node, int col, int row, vector<tuple<int,int,int>>& nodes) {
-if (!node) return;                        
-nodes.push_back({col, row, node->val});   
-dfs(node->left, col - 1, row + 1, nodes); 
-dfs(node->right, col + 1, row + 1, nodes);
-
-}
-
-vector<vector<int>> verticalTraversal(TreeNode* root) {
-vector<tuple<int,int,int>> nodes;  // {col, row, val}
-dfs(root, 0, 0, nodes);                              
-
-sort(nodes.begin(), nodes.end());                    
-
-vector<vector<int>> result;                          
-int prevCol = INT_MIN;                               
-
-for (auto& [col, row, val] : nodes) {                
-    if (col != prevCol) {                            
-        result.push_back({});                        
-        prevCol = col;                               
-    }                                                
-    result.back().push_back(val);                    
-}                                                    
-
-return result;                                       
-
-}
-// Time: O(N log N), Space: O(N)
-```
-
-## **SOLVED: Binary Tree Top View / Bottom View** 
-
- KEY INSIGHT: BFS with column tracking, first/last node per column
-
-```cpp
-// TOP VIEW: First node encountered at each column
-vector<int> topView(TreeNode* root) {
-if (!root) return {};                                
-
-map<int, int> columnMap;  // column -> node value    
-queue<pair<TreeNode*, int>> q;  // {node, column}    
-
-q.push({root, 0});                                   
-
-while (!q.empty()) {                                 
-    auto [node, col] = q.front();                    
-    q.pop();                                         
-
-    // Only add if column not seen (first node = top)
-    if (columnMap.find(col) == columnMap.end()) {    
-        columnMap[col] = node->val;                  
-    }                                                
-
-    if (node->left) q.push({node->left, col - 1});   
-    if (node->right) q.push({node->right, col + 1}); 
-}                                                    
-
-vector<int> result;                                  
-for (auto& [col, val] : columnMap) {                 
-    result.push_back(val);                           
-}                                                    
-return result;                                       
-
-}
-
-// BOTTOM VIEW: Last node at each column
-vector<int> bottomView(TreeNode* root) {
-if (!root) return {};                               
-
-map<int, int> columnMap;                            
-queue<pair<TreeNode*, int>> q;                      
-
-q.push({root, 0});                                  
-
-while (!q.empty()) {                                
-    auto [node, col] = q.front();                   
-    q.pop();                                        
-
-    // Always update (last node = bottom)           
-    columnMap[col] = node->val;                     
-
-    if (node->left) q.push({node->left, col - 1});  
-    if (node->right) q.push({node->right, col + 1});
-}                                                   
-
-vector<int> result;                                 
-for (auto& [col, val] : columnMap) {                
-    result.push_back(val);                          
-}                                                   
-return result;                                      
-
-}
-```
-
-## **SOLVED: Recover Binary Search Tree (LC 99)** 
-
-PROBLEM: Two nodes swapped in BST, recover it.
-
- KEY INSIGHT: Inorder traversal should be sorted.
-Find two violations (prev > curr) to identify swapped nodes.
-
-```cpp
-TreeNode* first = nullptr;
-TreeNode* second = nullptr;
-TreeNode* prev = nullptr;
-
-void recoverTree(TreeNode* root) {
-inorder(root);
-swap(first->val, second->val);
-
-}
-
-void inorder(TreeNode* node) {
-if (!node) return;                                           
-
-inorder(node->left);                                         
-
-if (prev && prev->val > node->val) {                         
-    if (!first) {                                            
-        first = prev;  // First violation                    
-    }                                                        
-    second = node;     // Second violation (or same as first)
-}                                                            
-prev = node;                                                 
-
-inorder(node->right);                                        
-
-}
-```
-
-## **SOLVED: BST Iterator (LC 173)** 
-
- KEY INSIGHT: Controlled inorder traversal using stack
-
-```java
-class BSTIterator {
-stack<TreeNode*> st;           
-
-void pushLeft(TreeNode* node) {
-    while (node) {             
-        st.push(node);         
-        node = node->left;     
-    }                          
-}                              
-```
-
-public:
-```
-BSTIterator(TreeNode* root) { 
-    pushLeft(root);           
-}                             
-
-int next() {                  
-    TreeNode* node = st.top();
-    st.pop();                 
-    pushLeft(node->right);    
-    return node->val;         
-}                             
-
-bool hasNext() {              
-    return !st.empty();       
-}                             
-```
-
-```
-};
-
-// TIME: O(1) average for next()
-// SPACE: O(h) where h = height
-```
-
-## **SOLVED: Convert Sorted List to BST (LC 109)** 
-
- KEY INSIGHT: Use slow/fast pointers to find middle
-
-```cpp
-TreeNode* sortedListToBST(ListNode* head) {
-if (!head) return nullptr;                                  
-if (!head->next) return new TreeNode(head->val);            
-
-// Find middle and its previous node                        
-ListNode* slow = head;                                      
-ListNode* fast = head;                                      
-ListNode* prev = nullptr;                                   
-
-while (fast && fast->next) {                                
-    prev = slow;                                            
-    slow = slow->next;                                      
-    fast = fast->next->next;                                
-}                                                           
-
-// Disconnect left half                                     
-if (prev) prev->next = nullptr;                             
-
-// slow is the middle node (root)                           
-TreeNode* root = new TreeNode(slow->val);                   
-
-// Build subtrees                                           
-root->left = sortedListToBST(head == slow ? nullptr : head);
-root->right = sortedListToBST(slow->next);                  
-
-return root;                                                
-
-}
-```
-
-## **SOLVED: Binary Tree Cameras (LC 968)** 
-
- KEY INSIGHT: Greedy post-order. States: 0=needs coverage, 1=has camera, 2=covered
-
-```cpp
-int cameras = 0;
-
-int minCameraCover(TreeNode* root) {
-if (dfs(root) == 0) cameras++;  // Root needs coverage
-return cameras;                                       
-
-}
-
-// Returns: 0=needs camera, 1=has camera, 2=covered by child
-int dfs(TreeNode* node) {
-if (!node) return 2;  // Null is considered covered
-
-int left = dfs(node->left);                        
-int right = dfs(node->right);                      
-
-// If any child needs coverage, place camera here  
-if (left == 0 || right == 0) {                     
-    cameras++;                                     
-    return 1;  // Has camera                       
-}                                                  
-
-// If any child has camera, this node is covered   
-if (left == 1 || right == 1) {                     
-    return 2;  // Covered                          
-}                                                  
-
-// Both children are covered but no camera nearby  
-return 0;  // Needs coverage from parent           
 
 }
 ```
