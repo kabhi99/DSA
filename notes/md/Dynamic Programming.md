@@ -857,29 +857,25 @@ return memo[i] = max(robCurrent, skipCurrent);
 - Recurrence: max(nums[i] + dp[i-2], dp[i-1])
 - Direction: n > 0 (recursive)
 
-**CONVERT TO BOTTOM-UP:**
+**CONVERT TO BOTTOM-UP (strict conversion):**
 
 ```cpp
 int rob(vector<int>& nums) {
-int n = nums.size();                              
-if (n == 0) return 0;                             
-if (n == 1) return nums[0];  // STEP 3: Edge cases
+int n = nums.size();                                                
 
-// STEP 2: Create DP table                        
-vector<int> dp(n);                                
+// STEP 2: Create DP table                                         
+vector<int> dp(n, 0);                                              
 
-// STEP 3: Initialize base cases                  
-dp[0] = nums[0];                                  
-dp[1] = max(nums[0], nums[1]);                    
+// STEP 4: Determine order (forward! 0 > n)                       
+for (int i = 0; i < n; i++) {                                     
+    // STEP 3+5: Base case guards + recurrence in one loop         
+    int skip = (i >= 1) ? dp[i-1] : 0;                            
+    int take = ((i >= 2) ? dp[i-2] : 0) + nums[i];                
+    dp[i] = max(skip, take);                                      
+}                                                                  
 
-// STEP 4: Determine order (forward! 0 > n)       
-for (int i = 2; i < n; i++) {                     
-    // STEP 5: Convert recurrence                 
-    dp[i] = max(nums[i] + dp[i-2], dp[i-1]);      
-}                                                 
-
-// STEP 6: Return answer                          
-return dp[n-1];                                   
+// STEP 6: Return answer                                          
+return dp[n-1];                                                    
 
 }
 ```
@@ -889,20 +885,21 @@ return dp[n-1];
 In recursion, base case is: if (i < 0) return 0
 But arrays can't have index -1! Two choices:
 
-### APPROACH 1 (size n) - Direct mapping, handle edges manually:
+### APPROACH 1 (size n) - STRICT conversion with boundary guards:
 
 ```
 rob(i) > dp[i]     (same index)
 
-rob(-1) = 0  > CAN'T STORE! So handle dp[0], dp[1] manually:
-dp[0] = nums[0]                        // rob(0) = nums[0]
-dp[1] = max(nums[0], nums[1])          // rob(1) needs rob(-1)=0, done by hand
+rob(-1) = 0  > CAN'T STORE at dp[-1], so use GUARD inside loop:
+  (i >= 1) ? dp[i-1] : 0    (mirrors "if (i < 0) return 0")
+  (i >= 2) ? dp[i-2] : 0    (mirrors "if (i < 0) return 0")
 ```
 
-Loop: dp[i] = max(dp[i-1], dp[i-2] + nums[i])
+Loop from i=0: dp[i] = max((i>=1)?dp[i-1]:0, ((i>=2)?dp[i-2]:0) + nums[i])
 Answer: dp[n-1]
 
- PROBLEM: Need if(n==0), if(n==1) edge cases before the loop.
+ RECOMMENDED: This is the mechanical recursion > tabulation conversion.
+No manual base cases, no edge cases — boundaries handled inside the loop.
 
 ### APPROACH 2 (size n+1) - Shift by +1, base case fits naturally:
 
@@ -936,25 +933,20 @@ Answer: dp[n]
 
 **SIDE BY SIDE:**
 
-SIZE n (direct):                    SIZE n+1 (shifted):
------------------                   ------------------
+SIZE n (strict, PREFERRED):          SIZE n+1 (shifted):
+---------------------------          ------------------
 ```
-if (n==0) return 0;     < extra    // no edge cases needed!
-if (n==1) return nums[0]; < extra
-dp(n)                               dp(n+1, 0)
-dp[0] = nums[0]                     dp[0] = 0    < "no houses"
-dp[1] = max(nums[0],nums[1])        dp[1] = nums[0]
-```
-
-for i=2 to n-1:                     for i=2 to n:
-```
-dp[i]=max(dp[i-1],                  dp[i]=max(dp[i-1],
-dp[i-2]+nums[i])                    dp[i-2]+nums[i-1])
-
-return dp[n-1]                       return dp[n]
+dp(n, 0)                             dp(n+1, 0)
+                                      dp[1] = nums[0]
+for i=0 to n-1:                      for i=2 to n:
+  skip = (i>=1)?dp[i-1]:0              dp[i]=max(dp[i-1],
+  take = (i>=2)?dp[i-2]:0+nums[i]       dp[i-2]+nums[i-1])
+  dp[i] = max(skip, take)
+return dp[n-1]                        return dp[n]
 ```
 
-^ nums[i-1] is the only change
+Strict approach: boundary guards mirror `if (i < 0) return 0` from recursion.
+Shifted approach: index offset absorbs the base case into dp[0]=0.
 
 ### CODE (n+1 approach):
 
@@ -1366,43 +1358,38 @@ int solve(vector<vector<int>>& grid, int i, int j, vector<vector<int>>& memo) {
 }
 ```
 
-**TABULATION (Bottom-Up, in-place):**
+**TABULATION (Bottom-Up) — strict recursion-to-tabulation conversion:**
 
 ```cpp
 int minPathSum(vector<vector<int>>& grid) {
     int m = grid.size(), n = grid[0].size();
+    vector<vector<int>> dp(m, vector<int>(n, 0));
+    dp[0][0] = grid[0][0];
 
-    for (int i = 1; i < m; i++) grid[i][0] += grid[i-1][0];
-    for (int j = 1; j < n; j++) grid[0][j] += grid[0][j-1];
+    for (int i = 0; i < m; i++) {
+        for (int j = 0; j < n; j++) {
+            if (i == 0 && j == 0) continue;
 
-    for (int i = 1; i < m; i++) {
-        for (int j = 1; j < n; j++) {
-            grid[i][j] += min(grid[i-1][j], grid[i][j-1]);
+            int top  = (i > 0) ? dp[i-1][j] : INT_MAX;
+            int left = (j > 0) ? dp[i][j-1] : INT_MAX;
+            dp[i][j] = grid[i][j] + min(top, left);
         }
     }
 
-    return grid[m-1][n-1];
+    return dp[m-1][n-1];
 }
 ```
 
- **SPACE OPTIMIZATION**: Modify grid in-place!
+**Strict conversion mapping:**
 
- **WHY THIS BASE CASE?**
-First row: grid[0][j] += grid[0][j-1]
-> In the first row, you can ONLY come from the left (no row above).
-> So cost = sum of all cells to the left.
+| Recursion | Tabulation |
+|-----------|-----------|
+| `if (i==0 && j==0) return grid[0][0]` | `dp[0][0] = grid[0][0]` |
+| `if (i < 0 \|\| j < 0) return INT_MAX` | `(i > 0) ? dp[i-1][j] : INT_MAX` |
+| `grid[i][j] + min(solve(i-1,j), solve(i,j-1))` | `grid[i][j] + min(top, left)` |
 
-First column: grid[i][0] += grid[i-1][0]
-> In the first column, you can ONLY come from above (nothing to the left).
-> So cost = sum of all cells above.
-
-```
-grid[0][0] stays as is
-```
-
-> Starting point. Cost to reach start = the cell's own value.
-> No "n+1" trick needed here because we modify the grid in-place
-and the grid itself already holds the starting values.
+> No separate first-row/first-col loops needed.
+> The boundary check `INT_MAX` inside the loop is exactly the `i<0 || j<0` guard from recursion.
 
 ### **PROBLEM: Super Egg Drop (LC 887)**  HARD
 
@@ -1650,14 +1637,15 @@ int solve(int i, int j, vector<vector<int>>& memo) {
 }
 ```
 
-**TABULATION (Bottom-Up):**
+**TABULATION (Bottom-Up) — strict recursion-to-tabulation conversion:**
 
 ```cpp
 int uniquePaths(int m, int n) {
-    vector<vector<int>> dp(m, vector<int>(n, 1));
+    vector<vector<int>> dp(m, vector<int>(n, 0));
 
-    for (int i = 1; i < m; i++) {
-        for (int j = 1; j < n; j++) {
+    for (int i = 0; i < m; i++) {
+        for (int j = 0; j < n; j++) {
+            if (i == 0 || j == 0) { dp[i][j] = 1; continue; }
             dp[i][j] = dp[i-1][j] + dp[i][j-1];
         }
     }
@@ -1668,13 +1656,15 @@ int uniquePaths(int m, int n) {
 
 TIME: O(M x N)  |  SPACE: O(M x N) > Can optimize to O(N)!
 
- **WHY THIS BASE CASE?**
-All cells initialized to 1 (first row and first column = 1)
-> First row: can ONLY move right > exactly 1 path to each cell.
-> First column: can ONLY move down > exactly 1 path to each cell.
-> Interior cells: dp[i][j] = dp[i-1][j] + dp[i][j-1] (from top + from left).
-> Initializing all to 1 works because the loop starts at (1,1) and
-overwrites interior cells. First row & column stay as 1.
+**Strict conversion mapping:**
+
+| Recursion | Tabulation |
+|-----------|-----------|
+| `if (i == 0 \|\| j == 0) return 1` | `if (i == 0 \|\| j == 0) { dp[i][j] = 1; continue; }` |
+| `solve(i-1, j) + solve(i, j-1)` | `dp[i-1][j] + dp[i][j-1]` |
+
+> Single loop from (0,0). Base case handled inside loop — exactly mirrors recursion.
+> No separate first-row/first-col initialization needed.
 
 ### **PROBLEM: Combination Sum IV (LC 377)** 
 
@@ -3612,36 +3602,33 @@ int solve(vector<int>& nums, int i, vector<int>& memo) {
 }
 ```
 
-**TABULATION (Bottom-Up):**
+**TABULATION (Bottom-Up) — strict recursion-to-tabulation conversion:**
 
 ```cpp
 int rob(vector<int>& nums) {
     int n = nums.size();
-    if (n == 1) return nums[0];
+    vector<int> dp(n, 0);
 
-    vector<int> dp(n);
-    dp[0] = nums[0];
-    dp[1] = max(nums[0], nums[1]);
-
-    for (int i = 2; i < n; i++) {
-        dp[i] = max(dp[i-1], dp[i-2] + nums[i]);
+    for (int i = 0; i < n; i++) {
+        int skip = (i >= 1) ? dp[i-1] : 0;
+        int take = ((i >= 2) ? dp[i-2] : 0) + nums[i];
+        dp[i] = max(skip, take);
     }
 
     return dp[n-1];
 }
 ```
 
- **WHY THIS BASE CASE?**
-```
-dp[0] = nums[0] > Only 1 house > must rob it (or skip for 0, but max is nums[0]).
-dp[1] = max(nums[0], nums[1]) > 2 houses > can only rob ONE (adjacent rule).
-```
+**Strict conversion mapping:**
 
-Pick the richer house.
+| Recursion | Tabulation |
+|-----------|-----------|
+| `if (i < 0) return 0` | `(i >= 1) ? dp[i-1] : 0` and `(i >= 2) ? dp[i-2] : 0` |
+| `max(solve(i-1), solve(i-2) + nums[i])` | `max(skip, take)` |
 
-WHY two base cases?
-> dp[i] = max(dp[i-1], dp[i-2] + nums[i]) looks back 2 steps.
-> Need dp[0] AND dp[1] defined before the loop starts at i=2.
+> Single loop from i=0. Boundary guards inside loop — exactly mirrors `if (i < 0) return 0`.
+> i=0: max(0, 0+nums[0]) = nums[0]. i=1: max(nums[0], 0+nums[1]) = max(nums[0], nums[1]).
+> Same results as the shortcut, but mechanically derived from recursion.
 
 Space-optimized version uses prev2=0, prev1=0 (not nums[0], nums[1]):
 > This works because the loop processes nums[0] first, setting
@@ -3696,39 +3683,33 @@ int solve(vector<int>& prices, int i, int holding, vector<vector<int>>& memo) {
 }
 ```
 
-**TABULATION (Bottom-Up, O(1) space):**
+**TABULATION (Bottom-Up) — strict recursion-to-tabulation conversion:**
 
 ```cpp
 int maxProfit(vector<int>& prices) {
-    int hold = -prices[0], sold = 0, rest = 0;
+    int n = prices.size();
+    vector<vector<int>> dp(n + 2, vector<int>(2, 0));
 
-    for (int i = 1; i < prices.size(); i++) {
-        int prevHold = hold, prevSold = sold, prevRest = rest;
-        hold = max(prevHold, prevRest - prices[i]);
-        sold = prevHold + prices[i];
-        rest = max(prevRest, prevSold);
+    for (int i = n - 1; i >= 0; i--) {
+        dp[i][0] = max(dp[i+1][0], -prices[i] + dp[i+1][1]);
+        dp[i][1] = max(dp[i+1][1], prices[i] + dp[i+2][0]);
     }
 
-    return max(sold, rest);
+    return dp[0][0];
 }
 ```
 
- **WHY THIS BASE CASE?**
-```
-hold = -prices[0] > "Bought stock on day 0." Profit = -price (spent money).
-sold = 0 > "Just sold" state on day 0: can't sell without buying first.
-```
+**Strict conversion mapping:**
 
-Effectively impossible, but 0 is safe because max() will skip it.
+| Recursion | Tabulation |
+|-----------|-----------|
+| `if (i >= n) return 0` | `dp[n][*] = dp[n+1][*] = 0` (size n+2 for i+2 access) |
+| `max(doNothing, -prices[i] + solve(i+1, 1))` | `dp[i][0] = max(dp[i+1][0], -prices[i] + dp[i+1][1])` |
+| `max(doNothing, prices[i] + solve(i+2, 0))` | `dp[i][1] = max(dp[i+1][1], prices[i] + dp[i+2][0])` |
 
-```
-rest = 0 > "Resting / doing nothing." Start with 0 profit.
-```
-
-Three states form a state machine:
-rest > hold (buy) > sold (sell) > rest (cooldown) > ...
-
-Each state on day i depends on previous day's states.
+> Fill order: i from n-1 to 0 (depends on i+1 and i+2).
+> Size n+2 because sell triggers cooldown: solve(i+2, 0).
+> dp[i][0] = not holding, dp[i][1] = holding.
 
 ### **DETAILED EXAMPLE: Best Time to Buy/Sell Stock IV (LC 188)**  HARD
 
@@ -3791,80 +3772,57 @@ int solve(vector<int>& prices, int i, int txLeft, int holding,
 }
 ```
 
-**TABULATION (Bottom-Up):**
+**TABULATION (Bottom-Up) — strict recursion-to-tabulation conversion:**
 
 ```cpp
 int maxProfit(int k, vector<int>& prices) {
     int n = prices.size();
     if (n == 0 || k == 0) return 0;
 
-    if (k >= n / 2) {
-        int profit = 0;
-        for (int i = 1; i < n; i++) profit += max(0, prices[i] - prices[i-1]);
-        return profit;
-    }
+    vector<vector<vector<int>>> dp(n + 1,
+        vector<vector<int>>(k + 1, vector<int>(2, 0)));
 
-    vector<vector<int>> buy(n, vector<int>(k + 1, -prices[0]));
-    vector<vector<int>> sell(n, vector<int>(k + 1, 0));
-
-    for (int i = 1; i < n; i++) {
+    for (int i = n - 1; i >= 0; i--) {
         for (int t = 1; t <= k; t++) {
-            buy[i][t] = max(buy[i-1][t], sell[i-1][t-1] - prices[i]);
-            sell[i][t] = max(sell[i-1][t], buy[i-1][t] + prices[i]);
+            dp[i][t][0] = max(dp[i+1][t][0], -prices[i] + dp[i+1][t][1]);
+            dp[i][t][1] = max(dp[i+1][t][1], prices[i] + dp[i+1][t-1][0]);
         }
     }
 
-    return sell[n-1][k];
+    return dp[0][k][0];
 }
 ```
 
 TIME: O(N x K)  |  SPACE: O(N x K) > Can optimize to O(K)!
 
- **WHY THIS BASE CASE?**
-```
-buy[0][t] = -prices[0] for all t
-```
+**Strict conversion mapping:**
 
-> "On day 0, if we hold stock, we must have bought at prices[0]."
-> Profit = -prices[0] (spent that money).
-> Same regardless of how many transactions allowed (t).
+| Recursion | Tabulation |
+|-----------|-----------|
+| `if (i == n \|\| txLeft == 0) return 0` | `dp[n][*][*] = 0` and `dp[*][0][*] = 0` |
+| `max(doNothing, -prices[i] + solve(i+1, t, 1))` | `dp[i][t][0] = max(dp[i+1][t][0], -prices[i] + dp[i+1][t][1])` |
+| `max(doNothing, prices[i] + solve(i+1, t-1, 0))` | `dp[i][t][1] = max(dp[i+1][t][1], prices[i] + dp[i+1][t-1][0])` |
 
-```
-sell[0][t] = 0 for all t
-```
-
-> "On day 0, if we don't hold stock, profit = 0."
-> Can't have sold without buying first on day 0.
-
-k >= n/2 > unlimited transactions (greedy)
-> With enough transactions, grab EVERY upward price movement.
-> No DP needed, just sum positive differences.
+> Fill order: i from n-1 to 0 (depends on i+1), t from 1 to k.
+> dp[i][t][0] = not holding with t txns left, dp[i][t][1] = holding with t txns left.
 
 ### EXAMPLE TRACE for prices = [3,2,6,5,0,3], k = 2:
 
-Day 0 (price=3):
+Fill from i=5 backwards. dp[6][*][*] = 0 (base).
+
 ```
-buy[0][1] = -3 (bought at 3)
-sell[0][1] = 0 (no action)
+i=5 (price=3), t=1:
+  dp[5][1][0] = max(dp[6][1][0], -3 + dp[6][1][1]) = max(0, -3) = 0
+  dp[5][1][1] = max(dp[6][1][1], 3 + dp[6][0][0]) = max(0, 3) = 3
+
+i=4 (price=0), t=1:
+  dp[4][1][0] = max(dp[5][1][0], -0 + dp[5][1][1]) = max(0, 3) = 3
+  dp[4][1][1] = max(dp[5][1][1], 0 + dp[5][0][0]) = max(3, 0) = 3
+
+...continue backwards to i=0...
 ```
 
-Day 1 (price=2):
-```
-buy[1][1] = max(-3, 0-2) = -2 (better to buy at 2)
-sell[1][1] = max(0, -3+2) = 0
-```
-
-Day 2 (price=6):
-```
-buy[2][1] = max(-2, 0-6) = -2
-sell[2][1] = max(0, -2+6) = 4 (sold at 6!)
-buy[2][2] = max(-3, 0-6) = -3
-sell[2][2] = max(0, -3+6) = 3
-```
-
-...continue until day 5...
-
-Final: sell[5][2] = 7 Y
+Final: dp[0][2][0] = 7 Y
 Transaction 1: Buy at 2, sell at 6 > profit = 4
 Transaction 2: Buy at 0, sell at 3 > profit = 3
 ```
@@ -4031,23 +3989,21 @@ PROBLEM: Check if s3 is formed by interleaving s1 and s2.
 s1 = "aabcc", s2 = "dbbca", s3 = "aadbbcbcac"
 ```
 
-At position k in s3:
-- Can we use s1[i]? Check if dp[i-1][j] is true
-- Can we use s2[j]? Check if dp[i][j-1] is true
+At position i+j in s3:
+- Can we use s1[i]? Match s1[i] with s3[i+j], then solve(i+1, j)
+- Can we use s2[j]? Match s2[j] with s3[i+j], then solve(i, j+1)
 
-**BASE CASES:**
+**BASE CASE:**
 ```
-dp[0][0] = true (empty strings match)
-dp[i][0] = s1[0..i-1] == s3[0..i-1]
-dp[0][j] = s2[0..j-1] == s3[0..j-1]
-```
-
-**RECURRENCE:**
-```
-dp[i][j] = (dp[i-1][j] && s1[i-1] == s3[i+j-1]) ||
+if (i + j == s3.size()) return true > all chars consumed, interleaving complete
+dp[m][n] = true
 ```
 
-(dp[i][j-1] && s2[j-1] == s3[i+j-1])
+**RECURRENCE (at indices i in s1, j in s2):**
+```
+res = (i < m && s1[i] == s3[i+j] && dp[i+1][j]) ||
+      (j < n && s2[j] == s3[i+j] && dp[i][j+1])
+```
 
 **RECURSIVE (Top-Down):**
 
@@ -4069,77 +4025,63 @@ bool solve(string& s1, string& s2, string& s3, int i, int j,
 }
 ```
 
-**TABULATION (Bottom-Up):**
+**TABULATION (Bottom-Up) — strict recursion-to-tabulation conversion:**
 
 ```cpp
 bool isInterleave(string s1, string s2, string s3) {
     int m = s1.size(), n = s2.size();
-    if (m + n != s3.size()) return false;
+    if (m + n != (int)s3.size()) return false;
 
     vector<vector<bool>> dp(m + 1, vector<bool>(n + 1, false));
-    dp[0][0] = true;
+    dp[m][n] = true;
 
-    for (int i = 1; i <= m; i++) dp[i][0] = dp[i-1][0] && s1[i-1] == s3[i-1];
-    for (int j = 1; j <= n; j++) dp[0][j] = dp[0][j-1] && s2[j-1] == s3[j-1];
-
-    for (int i = 1; i <= m; i++) {
-        for (int j = 1; j <= n; j++) {
-            dp[i][j] = (dp[i-1][j] && s1[i-1] == s3[i+j-1]) ||
-                       (dp[i][j-1] && s2[j-1] == s3[i+j-1]);
+    for (int i = m; i >= 0; i--) {
+        for (int j = n; j >= 0; j--) {
+            if (i == m && j == n) continue;
+            bool res = false;
+            if (i < m && s1[i] == s3[i+j]) res = dp[i+1][j];
+            if (!res && j < n && s2[j] == s3[i+j]) res = dp[i][j+1];
+            dp[i][j] = res;
         }
     }
 
-    return dp[m][n];
+    return dp[0][0];
 }
 ```
 
 TIME: O(M x N)  |  SPACE: O(M x N) > Can optimize to O(N)!
 
- **WHY THIS BASE CASE?**
-```
-dp[0][0] = true
-```
+**Strict conversion mapping:**
 
-> "Can empty s1 + empty s2 form empty s3?" > YES.
+| Recursion | Tabulation |
+|-----------|-----------|
+| `if (i + j == s3.size()) return true` | `dp[m][n] = true` |
+| `i < s1.size() && s1[i] == s3[i+j]` | `i < m && s1[i] == s3[i+j]` |
+| `solve(i+1, j)` | `dp[i+1][j]` |
+| `solve(i, j+1)` | `dp[i][j+1]` |
 
-```
-dp[i][0] = dp[i-1][0] && s1[i-1] == s3[i-1]
-```
-
-> Using ONLY s1 (no characters from s2). Check if s1[0..i-1] == s3[0..i-1].
-> The moment one char doesn't match, all further dp[i][0] are false.
-
-```
-dp[0][j] = dp[0][j-1] && s2[j-1] == s3[j-1]
-```
-
-> Using ONLY s2 (no characters from s1). Same logic.
-
-m + n != s3.size() > return false immediately
-> If lengths don't add up, interleaving is impossible.
+> Fill order: i from m to 0, j from n to 0 (depends on i+1 and j+1).
+> Exact same state (i, j) = current index in s1, s2 as the recursion.
+> No separate first-row/first-col loops needed.
 
 ### DETAILED TRACE for s1="aa", s2="ab", s3="aaba":
 
-""  a   b
-"" T   F   F
-a  T   T   F
-a  T   T   T
-^   ^
-Match!
+dp[i][j] = "can s1[i..] and s2[j..] form s3[i+j..]?"
+Base: dp[2][2] = true (all consumed).
+Fill backwards from (2,2) to (0,0):
 
 ```
-dp[2][2]:
+dp[2][1]: s2[1]='b', s3[3]='a' > mismatch > false
+dp[2][0]: s2[0]='a', s3[2]='b' > mismatch > false
+dp[1][2]: s1[1]='a', s3[3]='a' > match, dp[2][2]=T > true
+dp[1][1]: s1[1]='a', s3[2]='b' > no. s2[1]='b', s3[2]='b' > match, dp[1][2]=T > true
+dp[1][0]: s1[1]='a', s3[1]='a' > match, dp[2][0]=F > no. s2[0]='a', s3[1]='a' > match, dp[1][1]=T > true
+dp[0][1]: s1[0]='a', s3[1]='a' > match, dp[1][1]=T > true
+dp[0][0]: s1[0]='a', s3[0]='a' > match, dp[1][0]=T > true Y
 ```
 
-Use s1[1]='a'? dp[1][2]=F, skip
-Use s2[1]='b'? dp[2][1]=T && s2[1]==s3[3]='b' > TRUE Y
-
-Answer: true
-Interleaving: s1[0] > s1[1] > s2[0] > s2[1]
-"a" + "a" + "a" + "b" = "aaab"
-
-Wait, s2="ab" has s2[0]='a' and s2[1]='b', so:
-"a"(s1[0]) + "a"(s1[1]) + "a"(s2[0]) + "b"(s2[1]) = "aaab" Y
+Answer: dp[0][0] = true
+Interleaving: s1[0] + s1[1] + s2[0] + s2[1] = "a" + "a" + "a" + "b" = "aaba" Y
 
 ### **ADVANCED EXAMPLE: Regular Expression Matching (LC 10)**  HARD
 
@@ -4166,21 +4108,21 @@ s = "ab", p = ".*"
 
 **BASE CASES:**
 ```
-dp[0][0] = true (empty matches empty)
-dp[i][0] = false (non-empty s can't match empty pattern)
-dp[0][j] = true if pattern is like "a*b*c*" (all with *)
+if (j == n) return (i == m)  > pattern exhausted: match only if string also exhausted
+dp[m][n] = true, dp[i][n] = false for i < m
 ```
 
-**RECURRENCE:**
+**RECURRENCE (at position i in string, j in pattern):**
 ```
-if (p[j-1] == '*'):
+first_match = (i < m) && (s[i] == p[j] || p[j] == '.')
 ```
 
-- Match 0 times: dp[i][j-2]
-- Match 1+ times: dp[i-1][j] if s[i-1] matches p[j-2]
+if p[j+1] == '*':
+- Match 0 times: dp[i][j+2] (skip char + star)
+- Match 1+ times: first_match && dp[i+1][j] (consume one char, keep star)
 
 else:
-- Direct match: dp[i-1][j-1] if s[i-1] matches p[j-1]
+- Direct match: first_match && dp[i+1][j+1]
 
 **RECURSIVE (Top-Down):**
 
@@ -4204,71 +4146,69 @@ bool solve(string& s, string& p, int i, int j, vector<vector<int>>& memo) {
 }
 ```
 
-**TABULATION (Bottom-Up):**
+**TABULATION (Bottom-Up) — strict recursion-to-tabulation conversion:**
 
 ```cpp
 bool isMatch(string s, string p) {
     int m = s.size(), n = p.size();
     vector<vector<bool>> dp(m + 1, vector<bool>(n + 1, false));
-    dp[0][0] = true;
+    dp[m][n] = true;
 
-    for (int j = 2; j <= n; j++) {
-        if (p[j-1] == '*') dp[0][j] = dp[0][j-2];
-    }
-
-    for (int i = 1; i <= m; i++) {
-        for (int j = 1; j <= n; j++) {
-            if (p[j-1] == '*') {
-                dp[i][j] = dp[i][j-2];
-                if (p[j-2] == s[i-1] || p[j-2] == '.')
-                    dp[i][j] = dp[i][j] || dp[i-1][j];
+    for (int i = m; i >= 0; i--) {
+        for (int j = n - 1; j >= 0; j--) {
+            bool first_match = (i < m) && (s[i] == p[j] || p[j] == '.');
+            if (j + 1 < n && p[j+1] == '*') {
+                dp[i][j] = dp[i][j+2] || (first_match && dp[i+1][j]);
             } else {
-                if (p[j-1] == s[i-1] || p[j-1] == '.')
-                    dp[i][j] = dp[i-1][j-1];
+                dp[i][j] = first_match && dp[i+1][j+1];
             }
         }
     }
 
-    return dp[m][n];
+    return dp[0][0];
 }
 ```
 
 TIME: O(M x N)  |  SPACE: O(M x N)
 
- **WHY THIS BASE CASE?**
-```
-dp[0][0] = true > Empty string matches empty pattern. Trivially true.
+**Strict conversion mapping:**
 
-dp[i][0] = false (for i > 0)
-```
+| Recursion | Tabulation |
+|-----------|-----------|
+| `if (j == p.size()) return i == s.size()` | `dp[m][n] = true`, all other `dp[*][n] = false` |
+| `first_match = (i < s.size()) && (s[i] == p[j] \|\| p[j] == '.')` | Same logic |
+| `solve(i, j+2)` (use * to match 0) | `dp[i][j+2]` |
+| `first_match && solve(i+1, j)` (use * to match 1+) | `first_match && dp[i+1][j]` |
+| `first_match && solve(i+1, j+1)` (direct match) | `first_match && dp[i+1][j+1]` |
 
-> Non-empty string can NEVER match empty pattern. Nothing to match against.
-
-```
-dp[0][j]: Special! Can be true if pattern is "a*b*c*..."
-```
-
-> "a*" can match ZERO 'a's, effectively vanishing.
-> dp[0][j] = dp[0][j-2] when p[j-1] == '*' (use '*' to match 0 times).
-> This handles patterns like "a*b*" matching empty string.
-> Without this, we'd miss valid matches where * consumes its
-preceding char zero times.
+> Fill order: i from m to 0, j from n-1 to 0 (depends on i+1, j+1, j+2).
+> Column n is the base case (pattern exhausted): only dp[m][n] = true.
+> No separate first-row initialization loop needed.
 
 ### DETAILED TRACE for s="aab", p="c*a*b":
 
-""  c   *   a   *   b
-"" T   F   T   F   T   F
-a  F   F   F   T   T   F
-a  F   F   F   F   T   F
-b  F   F   F   F   F   T
-^
-Match!
+dp[i][j] = "does s[i..] match p[j..]?"
+p[0]='c', p[1]='*', p[2]='a', p[3]='*', p[4]='b'
+Base: dp[3][5] = true. Fill backwards:
 
-Explanation:
-- "c*" matches "" (0 c's)
-- "a*" matches "aa" (2 a's)
-- "b" matches "b"
-> dp[3][5] = TRUE Y
+```
+j=4 (p[4]='b', no star after):
+  dp[2][4]: s[2]='b'==p[4]='b' > match, dp[3][5]=T > TRUE
+  dp[1][4]: s[1]='a'≠'b' > false. dp[0][4]: 'a'≠'b' > false
+
+j=2 (p[2]='a', p[3]='*' > star pair!):
+  dp[i][2] = dp[i][4] || (s[i]=='a' && dp[i+1][2])
+  dp[2][2]: dp[2][4]=T > TRUE
+  dp[1][2]: dp[1][4]=F || ('a'=='a' && dp[2][2]=T) > TRUE
+  dp[0][2]: dp[0][4]=F || ('a'=='a' && dp[1][2]=T) > TRUE
+
+j=0 (p[0]='c', p[1]='*' > star pair!):
+  dp[i][0] = dp[i][2] || (s[i]=='c' && dp[i+1][0])
+  dp[0][0]: dp[0][2]=T > TRUE Y
+```
+
+Final: dp[0][0] = TRUE Y
+Path: "c*" matches "" (0 c's) > "a*" matches "aa" (2 a's) > "b" matches "b"
 
 ### **ADVANCED EXAMPLE: Maximal Rectangle (LC 85)**  BRILLIANT!
 
@@ -4396,20 +4336,34 @@ int solve(vector<int>& prices, int i, int holding, vector<vector<int>>& memo) {
 }
 ```
 
-**TABULATION (Greedy O(1)):**
+**TABULATION (Bottom-Up) — strict recursion-to-tabulation conversion:**
 
 ```cpp
 int maxProfit(vector<int>& prices) {
-    int minPrice = INT_MAX, maxProfit = 0;
-    for (int price : prices) {
-        minPrice = min(minPrice, price);
-        maxProfit = max(maxProfit, price - minPrice);
+    int n = prices.size();
+    vector<vector<int>> dp(n + 1, vector<int>(2, 0));
+
+    for (int i = n - 1; i >= 0; i--) {
+        dp[i][0] = max(dp[i+1][0], -prices[i] + dp[i+1][1]);
+        dp[i][1] = max(dp[i+1][1], prices[i]);
     }
-    return maxProfit;
+
+    return dp[0][0];
 }
 ```
 
-TIME: O(N)  |  SPACE: O(1)
+**Strict conversion mapping:**
+
+| Recursion | Tabulation |
+|-----------|-----------|
+| `if (i == n) return 0` | `dp[n][0] = dp[n][1] = 0` |
+| `max(doNothing, -prices[i] + solve(i+1, 1))` | `dp[i][0] = max(dp[i+1][0], -prices[i] + dp[i+1][1])` |
+| `max(doNothing, prices[i])` (sell, done) | `dp[i][1] = max(dp[i+1][1], prices[i])` |
+
+> dp[i][0] = not holding, dp[i][1] = holding.
+> Sell returns just prices[i] (no further recursion) — ONE transaction only.
+
+TIME: O(N)  |  SPACE: O(N) > Can optimize to O(1) with two variables!
 
 ### **PROBLEM: Best Time to Buy and Sell Stock II (LC 122)** 
 
@@ -4437,20 +4391,34 @@ int solve(vector<int>& prices, int i, int holding, vector<vector<int>>& memo) {
 }
 ```
 
-**TABULATION (Greedy O(1)):**
+**TABULATION (Bottom-Up) — strict recursion-to-tabulation conversion:**
 
 ```cpp
 int maxProfit(vector<int>& prices) {
-    int profit = 0;
-    for (int i = 1; i < prices.size(); i++) {
-        if (prices[i] > prices[i-1])
-            profit += prices[i] - prices[i-1];
+    int n = prices.size();
+    vector<vector<int>> dp(n + 1, vector<int>(2, 0));
+
+    for (int i = n - 1; i >= 0; i--) {
+        dp[i][0] = max(dp[i+1][0], -prices[i] + dp[i+1][1]);
+        dp[i][1] = max(dp[i+1][1], prices[i] + dp[i+1][0]);
     }
-    return profit;
+
+    return dp[0][0];
 }
 ```
 
-TIME: O(N)  |  SPACE: O(1)
+**Strict conversion mapping:**
+
+| Recursion | Tabulation |
+|-----------|-----------|
+| `if (i == n) return 0` | `dp[n][0] = dp[n][1] = 0` |
+| `max(doNothing, -prices[i] + solve(i+1, 1))` | `dp[i][0] = max(dp[i+1][0], -prices[i] + dp[i+1][1])` |
+| `max(doNothing, prices[i] + solve(i+1, 0))` | `dp[i][1] = max(dp[i+1][1], prices[i] + dp[i+1][0])` |
+
+> dp[i][0] = not holding, dp[i][1] = holding.
+> Sell recurses with holding=0 — UNLIMITED transactions.
+
+TIME: O(N)  |  SPACE: O(N) > Can optimize to O(1) with two variables!
 
 ### **PROBLEM: Best Time to Buy and Sell Stock III (LC 123)** 
 
@@ -4479,23 +4447,36 @@ int solve(vector<int>& prices, int i, int txLeft, int holding,
 }
 ```
 
-**TABULATION (State machine O(1)):**
+**TABULATION (Bottom-Up) — strict recursion-to-tabulation conversion:**
 
 ```cpp
 int maxProfit(vector<int>& prices) {
-    int buy1 = INT_MIN, sell1 = 0;
-    int buy2 = INT_MIN, sell2 = 0;
-    for (int price : prices) {
-        buy1 = max(buy1, -price);
-        sell1 = max(sell1, buy1 + price);
-        buy2 = max(buy2, sell1 - price);
-        sell2 = max(sell2, buy2 + price);
+    int n = prices.size();
+    vector<vector<vector<int>>> dp(n + 1,
+        vector<vector<int>>(3, vector<int>(2, 0)));
+
+    for (int i = n - 1; i >= 0; i--) {
+        for (int t = 1; t <= 2; t++) {
+            dp[i][t][0] = max(dp[i+1][t][0], -prices[i] + dp[i+1][t][1]);
+            dp[i][t][1] = max(dp[i+1][t][1], prices[i] + dp[i+1][t-1][0]);
+        }
     }
-    return sell2;
+
+    return dp[0][2][0];
 }
 ```
 
-TIME: O(N)  |  SPACE: O(1)
+**Strict conversion mapping:**
+
+| Recursion | Tabulation |
+|-----------|-----------|
+| `if (i == n \|\| txLeft == 0) return 0` | `dp[n][*][*] = 0` and `dp[*][0][*] = 0` |
+| `max(doNothing, -prices[i] + solve(i+1, t, 1))` | `dp[i][t][0] = max(dp[i+1][t][0], -prices[i] + dp[i+1][t][1])` |
+| `max(doNothing, prices[i] + solve(i+1, t-1, 0))` | `dp[i][t][1] = max(dp[i+1][t][1], prices[i] + dp[i+1][t-1][0])` |
+
+> Same structure as Stock IV with k=2. 3D DP: dp[day][txLeft][holding].
+
+TIME: O(N)  |  SPACE: O(N) > Can optimize to O(1) since only 3 tx values!
 
 ### **PROBLEM: Best Time to Buy/Sell Stock with Transaction Fee (LC 714)** 
 
@@ -4524,20 +4505,33 @@ int solve(vector<int>& prices, int fee, int i, int holding,
 }
 ```
 
-**TABULATION (State machine O(1)):**
+**TABULATION (Bottom-Up) — strict recursion-to-tabulation conversion:**
 
 ```cpp
 int maxProfit(vector<int>& prices, int fee) {
-    int hold = -prices[0], cash = 0;
-    for (int i = 1; i < prices.size(); i++) {
-        cash = max(cash, hold + prices[i] - fee);
-        hold = max(hold, cash - prices[i]);
+    int n = prices.size();
+    vector<vector<int>> dp(n + 1, vector<int>(2, 0));
+
+    for (int i = n - 1; i >= 0; i--) {
+        dp[i][0] = max(dp[i+1][0], -prices[i] + dp[i+1][1]);
+        dp[i][1] = max(dp[i+1][1], prices[i] - fee + dp[i+1][0]);
     }
-    return cash;
+
+    return dp[0][0];
 }
 ```
 
-TIME: O(N)  |  SPACE: O(1)
+**Strict conversion mapping:**
+
+| Recursion | Tabulation |
+|-----------|-----------|
+| `if (i == n) return 0` | `dp[n][0] = dp[n][1] = 0` |
+| `max(doNothing, -prices[i] + solve(i+1, 1))` | `dp[i][0] = max(dp[i+1][0], -prices[i] + dp[i+1][1])` |
+| `max(doNothing, prices[i] - fee + solve(i+1, 0))` | `dp[i][1] = max(dp[i+1][1], prices[i] - fee + dp[i+1][0])` |
+
+> Same as Stock II but fee deducted on sell.
+
+TIME: O(N)  |  SPACE: O(N) > Can optimize to O(1) with two variables!
 
 ### **PROBLEM: Maximum Profit in Job Scheduling (LC 1235)** 
 
@@ -4991,15 +4985,34 @@ Check problem constraints!
 
 ## **SOLVED: Maximum Subarray (LC 53)** 
 
-**TABULATION (dp[] version):**
+**RECURSIVE (Top-Down):**
 
 ```cpp
 int maxSubArray(vector<int>& nums) {
     int n = nums.size();
-    vector<int> dp(n);
-    dp[0] = nums[0];
+    vector<int> memo(n, INT_MIN);
+    int result = INT_MIN;
+    for (int i = 0; i < n; i++)
+        result = max(result, solve(nums, i, memo));
+    return result;
+}
 
-    for (int i = 1; i < n; i++) {
+int solve(vector<int>& nums, int i, vector<int>& memo) {
+    if (i == 0) return nums[0];
+    if (memo[i] != INT_MIN) return memo[i];
+    return memo[i] = max(nums[i], solve(nums, i-1, memo) + nums[i]);
+}
+```
+
+**TABULATION (Bottom-Up) — strict recursion-to-tabulation conversion:**
+
+```cpp
+int maxSubArray(vector<int>& nums) {
+    int n = nums.size();
+    vector<int> dp(n, 0);
+
+    for (int i = 0; i < n; i++) {
+        if (i == 0) { dp[i] = nums[i]; continue; }
         dp[i] = max(nums[i], dp[i-1] + nums[i]);
     }
 
@@ -5972,6 +5985,8 @@ If dp[i] only depends on dp[i-1] and dp[i-2]:
 ### TECHNIQUE 2: Reuse input array
 
 If allowed, modify input grid/array in-place for DP!
+NOTE: This is a shortcut optimization, NOT strict recursion > tabulation conversion.
+For learning, always do strict conversion first, then optimize.
 
 ### TECHNIQUE 3: Rolling array (2D > 1D)
 
@@ -6287,7 +6302,7 @@ Base: dp[0][j] = 0, dp[i][0] = 0 (or i, j for edit distance)
 dp[i] = max(take + dp[i-2], skip + dp[i-1])
 ```
 
-Base: dp[0] = first element, dp[1] = max(first, second)
+Base (strict): guards inside loop — (i>=1)?dp[i-1]:0, (i>=2)?dp[i-2]:0
 
 **PATTERN 6: LIS (Longest Increasing Subsequence)** 
 ```
