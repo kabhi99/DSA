@@ -1718,7 +1718,7 @@ PROBLEM: Count paths from top-left to bottom-right (only right/down)
 Ways to reach (i,j) = ways from left + ways from top
 dp[i][j] = dp[i-1][j] + dp[i][j-1]
 
-**RECURSIVE (Top-Down):**
+**RECURSIVE (Top-Down) — Approach 1: stops at boundary**
 
 ```cpp
 int uniquePaths(int m, int n) {
@@ -1733,7 +1733,39 @@ int solve(int i, int j, vector<vector<int>>& memo) {
 }
 ```
 
-**TABULATION (Bottom-Up) — strict recursion-to-tabulation conversion:**
+> Stops at first row/col (i==0 or j==0) → knows exactly 1 path remains.
+> i ranges 0..m-1 → memo size m x n is enough.
+
+**RECURSIVE (Top-Down) — Approach 2: goes past boundary**
+
+```cpp
+int uniquePaths(int m, int n) {
+    vector<vector<int>> memo(m + 1, vector<int>(n + 1, -1));
+    return solve(m, n, memo);
+}
+
+int solve(int m, int n, vector<vector<int>>& memo) {
+    if (m == 1 && n == 1) return 1;
+    if (m <= 0 || n <= 0) return 0;
+    if (memo[m][n] != -1) return memo[m][n];
+    return memo[m][n] = solve(m - 1, n, memo) + solve(m, n - 1, memo);
+}
+```
+
+> Goes past boundary (m<=0 or n<=0 → return 0), only counts at destination (1,1).
+> m ranges 0..m → memo size (m+1) x (n+1) needed.
+
+**TWO APPROACHES COMPARED:**
+```
+Approach 1 (stop at boundary):       Approach 2 (go past boundary):
+  if (i==0 || j==0) return 1           if (m==1 && n==1) return 1
+  never reaches -1                      if (m<=0 || n<=0) return 0
+  memo: m x n                           memo: (m+1) x (n+1)
+  starts at (m-1, n-1)                  starts at (m, n)
+```
+Both are correct. Approach 2 does slightly more work (recurses one level deeper).
+
+**TABULATION — strict conversion of Approach 1:**
 
 ```cpp
 int uniquePaths(int m, int n) {
@@ -1750,17 +1782,38 @@ int uniquePaths(int m, int n) {
 }
 ```
 
-TIME: O(M x N)  |  SPACE: O(M x N) > Can optimize to O(N)!
-
-**Strict conversion mapping:**
-
 | Recursion | Tabulation |
 |-----------|-----------|
 | `if (i == 0 \|\| j == 0) return 1` | `if (i == 0 \|\| j == 0) { dp[i][j] = 1; continue; }` |
 | `solve(i-1, j) + solve(i, j-1)` | `dp[i-1][j] + dp[i][j-1]` |
 
-> Single loop from (0,0). Base case handled inside loop — exactly mirrors recursion.
-> No separate first-row/first-col initialization needed.
+**TABULATION — strict conversion of Approach 2:**
+
+```cpp
+int uniquePaths(int m, int n) {
+    vector<vector<int>> dp(m + 1, vector<int>(n + 1, 0));
+    dp[1][1] = 1;
+
+    for (int i = 1; i <= m; i++) {
+        for (int j = 1; j <= n; j++) {
+            if (i == 1 && j == 1) continue;
+            int top  = (i > 1) ? dp[i-1][j] : 0;
+            int left = (j > 1) ? dp[i][j-1] : 0;
+            dp[i][j] = top + left;
+        }
+    }
+
+    return dp[m][n];
+}
+```
+
+| Recursion | Tabulation |
+|-----------|-----------|
+| `if (m == 1 && n == 1) return 1` | `dp[1][1] = 1` |
+| `if (m <= 0 \|\| n <= 0) return 0` | `(i > 1) ? dp[i-1][j] : 0` |
+| `solve(m-1, n) + solve(m, n-1)` | `top + left` |
+
+TIME: O(M x N)  |  SPACE: O(M x N) > Can optimize to O(N)!
 
 ### **PROBLEM: Combination Sum IV (LC 377)** 
 
