@@ -1464,8 +1464,8 @@ int solve(int k, int n, vector<vector<int>>& memo) {
 | `if (n <= 1) return n` | 0 floors = 0 drops, 1 floor = 1 drop |
 | `if (k == 1) return n` | 1 egg = must try every floor linearly |
 | `for x = 1 to n` | Try dropping from every floor |
-| `solve(k-1, x-1)` | Egg breaks: fewer eggs, check floors below x |
-| `solve(k, n-x)` | Egg survives: same eggs, check floors above x |
+| `solve(k-1, x-1)` | Egg breaks: fewer eggs, x-1 floors below (1 to x-1) |
+| `solve(k, n-x)` | Egg survives: same eggs, n-x floors above (x+1 to n). Only COUNT matters, not actual floor numbers |
 | `1 + max(breaks, survives)` | 1 drop used + adversary picks worse branch |
 | `min(best, worst)` | We pick the floor that minimizes worst case |
 
