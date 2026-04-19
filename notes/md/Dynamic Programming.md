@@ -1892,14 +1892,31 @@ Loop all choices (CORRECT):    Pick/not-pick (WRONG):
 once you skip nums[i], you never go back. So [2,1] is impossible
 after choosing [1,2] — it prevents revisiting earlier elements.
 
-**RULE:**
 ```
-ORDER MATTERS (permutations) → loop all choices (1D memo on target)
-ORDER DOESN'T MATTER (combinations) → pick/not-pick with index (2D memo)
++===========================================================================+
+||  PERMUTATION vs COMBINATION — WHICH APPROACH TO USE?                    ||
++===========================================================================+
+||                                                                         ||
+||  COMBINATIONS (order doesn't matter):                                   ||
+||    → Pick/not-pick with index                                           ||
+||    → 2D memo: memo[idx][target]                                         ||
+||    → Index moves forward, can't revisit earlier elements                ||
+||    → [1,2] and [2,1] counted as SAME                                   ||
+||    → Examples: Coin Change II, Subset Sum, 0/1 Knapsack                 ||
+||                                                                         ||
+||  PERMUTATIONS (order matters):                                          ||
+||    → Loop all choices (no index)                                        ||
+||    → 1D memo: memo[target]                                              ||
+||    → Every step restarts from ALL elements                              ||
+||    → [1,2] and [2,1] counted as DIFFERENT                              ||
+||    → Examples: Combination Sum IV, Decode Ways                          ||
+||                                                                         ||
+||  MIN/MAX (order irrelevant):                                            ||
+||    → Either approach works (both give same min/max)                     ||
+||    → Examples: Coin Change I, Perfect Squares                           ||
+||                                                                         ||
++===========================================================================+
 ```
-
-> Combination Sum IV = order matters → loop all choices ✓
-> Coin Change II (LC 518) = order doesn't matter → pick/not-pick ✓
 
  **WHY THIS BASE CASE?**
 ```
