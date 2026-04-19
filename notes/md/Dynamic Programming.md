@@ -1395,7 +1395,88 @@ int minPathSum(vector<vector<int>>& grid) {
 
 PROBLEM: Min moves to find critical floor with k eggs and n floors.
 
+ **UNDERSTANDING THE PROBLEM:**
+
+There's a building with n floors. A "critical floor" f exists (0 <= f <= n):
+- Drop egg from floor > f → egg BREAKS
+- Drop egg from floor <= f → egg SURVIVES (reusable)
+
+You don't know f. Find it with CERTAINTY using minimum drops in WORST CASE.
+
+ **EXAMPLE: k=2 eggs, n=10 floors**
+
+If you had infinite eggs → binary search (log2(10) ≈ 4 drops).
+If you had 1 egg → must go linear: 1, 2, 3... (worst = 10 drops).
+
+With 2 eggs → smarter strategy:
+```
+Drop egg1 from floor 4:
+  BREAKS → f is in 1-3. Use egg2 linearly: 1, 2, 3. Worst = 1+3 = 4
+  SURVIVES → jump to floor 7:
+    BREAKS → check 5, 6 linearly. Worst = 2+2 = 4
+    SURVIVES → jump to floor 9:
+      BREAKS → check 8. Worst = 3+1 = 4
+      SURVIVES → check 10. Worst = 4
+```
+Answer: 4 drops. Gaps decrease (4,3,2,1) so every path = same worst case.
+
+ **THE KEY INSIGHT — MINIMAX:**
+```
+You pick a floor x to drop from.
+An adversary picks the WORST outcome (break or survive) to maximize your drops.
+You want to MINIMIZE what the adversary can force.
+
+At floor x:
+  Egg breaks   → you have k-1 eggs, x-1 floors below to check
+  Egg survives → you have k eggs, n-x floors above to check
+  Worst case   = max(breaks, survives)     ← adversary picks worse
+  You pick x that MINIMIZES this worst case
+```
+
+**RECURSIVE (Top-Down) — simple, try every floor:**
+
+```cpp
+int superEggDrop(int k, int n) {
+    vector<vector<int>> memo(k + 1, vector<int>(n + 1, -1));
+    return solve(k, n, memo);
+}
+
+int solve(int k, int n, vector<vector<int>>& memo) {
+    if (n <= 1) return n;
+    if (k == 1) return n;
+    if (memo[k][n] != -1) return memo[k][n];
+
+    int best = n;
+    for (int x = 1; x <= n; x++) {
+        int breaks   = solve(k - 1, x - 1, memo);
+        int survives = solve(k, n - x, memo);
+        int worst    = 1 + max(breaks, survives);
+        best = min(best, worst);
+    }
+    return memo[k][n] = best;
+}
+```
+
+**Strict conversion mapping:**
+
+| Line | Meaning |
+|------|---------|
+| `if (n <= 1) return n` | 0 floors = 0 drops, 1 floor = 1 drop |
+| `if (k == 1) return n` | 1 egg = must try every floor linearly |
+| `for x = 1 to n` | Try dropping from every floor |
+| `solve(k-1, x-1)` | Egg breaks: fewer eggs, check floors below x |
+| `solve(k, n-x)` | Egg survives: same eggs, check floors above x |
+| `1 + max(breaks, survives)` | 1 drop used + adversary picks worse branch |
+| `min(best, worst)` | We pick the floor that minimizes worst case |
+
+ TIME: O(k x n^2) — TLE on LeetCode for large n.
+
 **RECURSIVE (Top-Down) — binary search optimization:**
+
+The inner loop tries all floors 1..n. But notice:
+- `solve(k-1, x-1)` INCREASES as x increases (more floors below)
+- `solve(k, n-x)` DECREASES as x increases (fewer floors above)
+We want the x where `max(breaks, survives)` is minimized → binary search!
 
 ```cpp
 int superEggDrop(int k, int n) {
@@ -1421,7 +1502,11 @@ int solve(int k, int n, unordered_map<int, int>& memo) {
 }
 ```
 
+ TIME: O(k x n x log n) — passes LeetCode.
+
 **TABULATION (Bottom-Up) — reverse thinking:**
+
+Instead of "min drops for n floors?" → ask "max floors checkable with m moves and k eggs?"
 
 ```cpp
 int superEggDrop(int k, int n) {
@@ -1442,13 +1527,24 @@ dp[0][j] = 0 for all j → "0 moves, any eggs → can check 0 floors."
 dp[m][0] = 0 for all m → "Any moves, 0 eggs → can check 0 floors."
 ```
 
-REVERSE THINKING: Instead of "min moves for n floors", ask
-"max floors checkable with m moves and k eggs?"
-> dp[m][k] = dp[m-1][k-1] + dp[m-1][k] + 1
-> If egg breaks: check dp[m-1][k-1] floors below.
-> If egg survives: check dp[m-1][k] floors above.
-> +1 for the floor we just tested.
-> Stop when dp[m][k] >= n.
+**WHY REVERSE THINKING?**
+```
+dp[m][k] = floors_below + 1 + floors_above
+         = dp[m-1][k-1]  + 1 + dp[m-1][k]
+           ↑ egg breaks         ↑ egg survives
+           (k-1 eggs,            (k eggs,
+            m-1 moves left)       m-1 moves left)
+```
+> Pick any floor. If breaks: check dp[m-1][k-1] floors below.
+> If survives: check dp[m-1][k] floors above. +1 for tested floor.
+> Increment m until dp[m][k] >= n. That m is the answer.
+
+ TIME: O(k x n) — optimal! No inner loop over floors.
+
+ NOTE: The tabulation here is NOT a strict conversion of the recursion.
+It uses a DIFFERENT formulation (reverse question). This is one of the
+rare cases where rethinking the problem gives a more efficient solution
+that doesn't mechanically map from the recursive version.
 
 **MORE PROBLEMS IN THIS PATTERN:**
 - 931. Minimum Falling Path Sum
