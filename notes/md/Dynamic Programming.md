@@ -1859,6 +1859,48 @@ int combinationSum4(vector<int>& nums, int target) {
 
  **CRITICAL**: Use unsigned int to handle overflow!
 
+ **WHY NOT PICK/NOT-PICK HERE?**
+
+Pick/not-pick uses an index to decide "use nums[i] or skip to nums[i+1]":
+
+```cpp
+// WRONG for this problem — gives COMBINATIONS not PERMUTATIONS
+int solve(vector<int>& nums, int idx, int target, vector<vector<int>>& memo) {
+    if (target == 0) return 1;
+    if (target < 0 || idx == nums.size()) return 0;
+    if (memo[idx][target] != -1) return memo[idx][target];
+    return memo[idx][target] = solve(nums, idx, target - nums[idx], memo)  // pick (stay at idx)
+                              + solve(nums, idx + 1, target, memo);         // not pick
+}
+```
+
+```
+nums = [1,2,3], target = 4
+
+Loop all choices (CORRECT):    Pick/not-pick (WRONG):
+  [1,1,2] ✓                     [1,1,2] ✓
+  [1,2,1] ✓                     [1,3]   ✓
+  [2,1,1] ✓                     [2,2]   ✓
+  [1,3]   ✓                     [1,1,1,1] ✓
+  [3,1]   ✓                     = 4 (combinations only!)
+  [2,2]   ✓
+  [1,1,1,1] ✓
+  = 7 (permutations!)
+```
+
+**WHY?** Pick/not-pick with index forces an ORDER on choices:
+once you skip nums[i], you never go back. So [2,1] is impossible
+after choosing [1,2] — it prevents revisiting earlier elements.
+
+**RULE:**
+```
+ORDER MATTERS (permutations) → loop all choices (1D memo on target)
+ORDER DOESN'T MATTER (combinations) → pick/not-pick with index (2D memo)
+```
+
+> Combination Sum IV = order matters → loop all choices ✓
+> Coin Change II (LC 518) = order doesn't matter → pick/not-pick ✓
+
  **WHY THIS BASE CASE?**
 ```
 dp[0] = 1
