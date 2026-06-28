@@ -242,47 +242,6 @@ return /* sorting criterion */;
 // Then make greedy choices
 ```
 
-## **SOLVED PROBLEM 2.1: Assign Cookies (LC 455)**
-
-PROBLEM: Assign cookies to children. Child i needs size >= greed[i].
-Maximize satisfied children.
-
-**EXAMPLE:**
-Input: greed = [1,2,3], cookies = [1,1]
-Output: 1
-
-**APPROACH:**
-Sort both. Give smallest sufficient cookie to smallest-greed child.
-
-```java
-class Solution {
-```
-
-public:
-```
-int findContentChildren(vector<int>& g, vector<int>& s) {
-    sort(g.begin(), g.end());  // Children greed         
-    sort(s.begin(), s.end());  // Cookie sizes           
-
-    int child = 0, cookie = 0;                           
-
-    while (child < g.size() && cookie < s.size()) {      
-        if (s[cookie] >= g[child]) {                     
-            child++;  // Child satisfied                 
-        }                                                
-        cookie++;  // Cookie used or too small           
-    }                                                    
-
-    return child;                                        
-}                                                        
-```
-
-```
-};
-```
-
-TIME: O(N log N)  |  SPACE: O(1)
-
 ## **SOLVED PROBLEM 2.2: Queue Reconstruction by Height (LC 406)** 
 
 PROBLEM: People with [height, k] where k = people taller in front.
@@ -372,93 +331,6 @@ TIME: O(N log N)  |  SPACE: O(1)
 
 CORE IDEA: Sort by value/weight ratio, pick highest ratio first
 KEY: Works when we can take fractions. 0/1 version needs DP!
-
-## **SOLVED PROBLEM 3.1: Maximum Ice Cream Bars (LC 1833)**
-
-PROBLEM: Buy max ice cream bars with given coins.
-
-**EXAMPLE:**
-Input: costs = [1,3,2,4,1], coins = 7
-Output: 4 (buy bars at index 0,1,2,4)
-
-**APPROACH:**
-Sort by cost. Buy cheapest first (maximize count with limited budget).
-
-```java
-class Solution {
-```
-
-public:
-```
-int maxIceCream(vector<int>& costs, int coins) {
-    sort(costs.begin(), costs.end());           
-
-    int count = 0;                              
-    for (int cost : costs) {                    
-        if (coins >= cost) {                    
-            coins -= cost;                      
-            count++;                            
-        } else {                                
-            break;                              
-        }                                       
-    }                                           
-
-    return count;                               
-}                                               
-```
-
-```
-};
-```
-
-TIME: O(N log N)  |  SPACE: O(1)
-
-## **SOLVED PROBLEM 3.2: Maximum Bags With Full Capacity (LC 2279)**
-
-PROBLEM: Fill bags to capacity using additional rocks. Return max full bags.
-
-**EXAMPLE:**
-Input: capacity = [2,3,4,5], rocks = [1,2,4,4], additionalRocks = 2
-Output: 3
-
-**APPROACH:**
-Calculate space needed for each bag. Sort. Fill bags needing least first.
-
-```java
-class Solution {
-```
-
-public:
-```
-int maximumBags(vector<int>& capacity, vector<int>& rocks, int additionalRocks) {
-    int n = capacity.size();                                                     
-    vector<int> needed(n);                                                       
-
-    for (int i = 0; i < n; i++) {                                                
-        needed[i] = capacity[i] - rocks[i];                                      
-    }                                                                            
-
-    sort(needed.begin(), needed.end());                                          
-
-    int count = 0;                                                               
-    for (int need : needed) {                                                    
-        if (need <= additionalRocks) {                                           
-            additionalRocks -= need;                                             
-            count++;                                                             
-        } else {                                                                 
-            break;                                                               
-        }                                                                        
-    }                                                                            
-
-    return count;                                                                
-}                                                                                
-```
-
-```
-};
-```
-
-TIME: O(N log N)  |  SPACE: O(N)
 
 ## **SOLVED PROBLEM 3.3: Maximum Units on a Truck (LC 1710)**
 
@@ -745,53 +617,6 @@ string reorganizeString(string s) {
 
 TIME: O(N log 26) = O(N)  |  SPACE: O(26) = O(1)
 
-## **SOLVED PROBLEM 5.3: Reduce Array Size to Half (LC 1481)**
-
-PROBLEM: Remove minimum types of numbers to reduce array to at most half size.
-
-**EXAMPLE:**
-Input: [3,3,3,3,5,5,5,2,2,7]
-Output: 2 (remove 3s and 5s)
-
-**APPROACH:**
-Remove most frequent numbers first.
-
-```java
-class Solution {
-```
-
-public:
-```
-int minSetSize(vector<int>& arr) {                           
-    unordered_map<int, int> freq;                            
-    for (int num : arr) freq[num]++;                         
-
-    vector<int> counts;                                      
-    for (auto& [num, cnt] : freq) {                          
-        counts.push_back(cnt);                               
-    }                                                        
-
-    sort(counts.rbegin(), counts.rend());  // Sort descending
-
-    int removed = 0, types = 0;                              
-    int target = arr.size() / 2;                             
-
-    for (int cnt : counts) {                                 
-        removed += cnt;                                      
-        types++;                                             
-        if (removed >= target) break;                        
-    }                                                        
-
-    return types;                                            
-}                                                            
-```
-
-```
-};
-```
-
-TIME: O(N log N)  |  SPACE: O(N)
-
 ### **PATTERN 6: COIN CHANGE (GREEDY VARIANT)** 
 
 CORE IDEA: Use largest denomination first
@@ -891,38 +716,6 @@ int minDeletions(string s) {
 ```
 
 TIME: O(N + 26 log 26) = O(N)  |  SPACE: O(26) = O(1)
-
-## **SOLVED PROBLEM 6.3: Minimum Moves to Make Array Equal (LC 1551)**
-
-PROBLEM: Array [1,2,3,...,n]. In one move: pick two elements, +1 to one, -1 to other.
-Min moves to make all equal.
-
-**EXAMPLE:**
-Input: n = 3 > [1,2,3]
-Output: 2 (move from 3 to 1 twice)
-
-**APPROACH:**
-Target is middle value. Pair smallest with largest.
-
-```java
-class Solution {
-```
-
-public:
-```
-int minMoves(int n) {                                
-    // Pair 1 with n, 2 with n-1, etc.               
-    // Each pair needs (n-1), (n-3), (n-5), ... moves
-    // Sum = n2/4 for even n, (n2-1)/4 for odd n     
-    return n * n / 4;                                
-}                                                    
-```
-
-```
-};
-```
-
-TIME: O(1)  |  SPACE: O(1)
 
 ### **PATTERN 7: PREFIX/SUFFIX GREEDY (JUMP GAME)** 
 
@@ -1041,147 +834,6 @@ int maxSubArray(vector<int>& nums) {
 
 TIME: O(N)  |  SPACE: O(1)
 
-## **SOLVED PROBLEM 7.4: Jump Game III (LC 1306)** 
-
-PROBLEM: Can you reach any index with value 0? Start at index, jump +arr[i] or -arr[i].
-
-**EXAMPLE:**
-Input: arr = [4,2,3,0,3,1,2], start = 5
-Output: true (5>4>1>3, arr[3]=0)
-
-```java
-class Solution {
-```
-
-public:
-```
-bool canReach(vector<int>& arr, int start) {              
-    int n = arr.size();                                   
-    queue<int> q;                                         
-    q.push(start);                                        
-    vector<bool> visited(n, false);                       
-    visited[start] = true;                                
-
-    while (!q.empty()) {                                  
-        int i = q.front(); q.pop();                       
-        if (arr[i] == 0) return true;                     
-
-        for (int next : {i + arr[i], i - arr[i]}) {       
-            if (next >= 0 && next < n && !visited[next]) {
-                visited[next] = true;                     
-                q.push(next);                             
-            }                                             
-        }                                                 
-    }                                                     
-    return false;                                         
-}                                                         
-```
-
-```
-};
-```
-
-TIME: O(N)  |  SPACE: O(N)
-
-## **SOLVED PROBLEM 7.5: Jump Game IV (LC 1345)** 
-
-PROBLEM: Min jumps to reach last index. Can jump to i-1, i+1, or any j where arr[j]==arr[i].
-
-**EXAMPLE:**
-Input: arr = [100,-23,-23,404,100,23,23,23,3,404]
-Output: 3 (0>4>3>9)
-
-```java
-class Solution {
-```
-
-public:
-```
-int minJumps(vector<int>& arr) {                           
-    int n = arr.size();                                    
-    if (n == 1) return 0;                                  
-
-    unordered_map<int, vector<int>> graph;                 
-    for (int i = 0; i < n; i++) graph[arr[i]].push_back(i);
-
-    vector<bool> visited(n, false);                        
-    queue<int> q;                                          
-    q.push(0);                                             
-    visited[0] = true;                                     
-    int steps = 0;                                         
-
-    while (!q.empty()) {                                   
-        int sz = q.size();                                 
-        while (sz--) {                                     
-            int i = q.front(); q.pop();                    
-            if (i == n - 1) return steps;                  
-
-            vector<int>& neighbors = graph[arr[i]];        
-            neighbors.push_back(i - 1);                    
-            neighbors.push_back(i + 1);                    
-
-            for (int j : neighbors) {                      
-                if (j >= 0 && j < n && !visited[j]) {      
-                    visited[j] = true;                     
-                    q.push(j);                             
-                }                                          
-            }                                              
-            neighbors.clear();                             
-        }                                                  
-        steps++;                                           
-    }                                                      
-    return -1;                                             
-}                                                          
-```
-
-```
-};
-```
-
-TIME: O(N)  |  SPACE: O(N)
-
-## **SOLVED PROBLEM 7.6: Jump Game V (LC 1340)** 
-
-PROBLEM: Max indices you can visit. From i, jump to any j in [i-d, i+d] if arr[i] > all between.
-
-**EXAMPLE:**
-Input: arr = [6,4,14,6,8,13,9,7,10,6,12], d = 2
-Output: 4
-
-```java
-class Solution {
-```
-
-public:
-```
-int maxJumps(vector<int>& arr, int d) {                                          
-    int n = arr.size();                                                          
-    vector<int> dp(n, 0);                                                        
-
-    function<int(int)> solve = [&](int i) -> int {                               
-        if (dp[i]) return dp[i];                                                 
-        dp[i] = 1;                                                               
-        for (int dir : {-1, 1}) {                                                
-            for (int j = i + dir; j >= 0 && j < n && abs(j - i) <= d; j += dir) {
-                if (arr[j] >= arr[i]) break;                                     
-                dp[i] = max(dp[i], 1 + solve(j));                                
-            }                                                                    
-        }                                                                        
-        return dp[i];                                                            
-    };                                                                           
-
-    int ans = 0;                                                                 
-    for (int i = 0; i < n; i++) ans = max(ans, solve(i));                        
-    return ans;                                                                  
-}                                                                                
-```
-
-```
-};
-```
-
-TIME: O(N*d)  |  SPACE: O(N)
-
 ## **SOLVED PROBLEM 7.7: Jump Game VI (LC 1696)** 
 
 PROBLEM: Max score reaching last index. Jump at most k steps. DP + Monotonic Deque.
@@ -1212,51 +864,6 @@ int maxResult(vector<int>& nums, int k) {
 
     return dp[n - 1];                                               
 }                                                                   
-```
-
-```
-};
-```
-
-TIME: O(N)  |  SPACE: O(N)
-
-## **SOLVED PROBLEM 7.8: Jump Game VII (LC 1871)** 
-
-PROBLEM: Can reach last index? Jump minJump to maxJump steps, only land on '0'.
-
-**EXAMPLE:**
-Input: s = "011010", minJump = 2, maxJump = 3
-Output: true (0>2>5)
-
-```java
-class Solution {
-```
-
-public:
-```
-bool canReach(string s, int minJump, int maxJump) {
-    int n = s.size();                              
-    if (s[n-1] == '1') return false;               
-
-    queue<int> q;                                  
-    q.push(0);                                     
-    int farthest = 0;                              
-
-    while (!q.empty()) {                           
-        int i = q.front(); q.pop();                
-        int start = max(i + minJump, farthest + 1);
-        int end = min(i + maxJump, n - 1);         
-
-        for (int j = start; j <= end; j++) {       
-            if (s[j] == '0') {                     
-                if (j == n - 1) return true;       
-                q.push(j);                         
-            }                                      
-        }                                          
-        farthest = max(farthest, end);             
-    }                                              
-    return false;                                  
-}                                                  
 ```
 
 ```
@@ -1319,48 +926,6 @@ int findMaximizedCapital(int k, int w, vector<int>& profits, vector<int>& capita
 ```
 
 TIME: O(N log N)  |  SPACE: O(N)
-
-## **SOLVED PROBLEM 8.2: Remove Stones to Minimize Total (LC 1962)**
-
-PROBLEM: k times: pick pile, remove floor(pile/2) stones. Minimize remaining.
-
-**EXAMPLE:**
-Input: piles = [5,4,9], k = 2
-Output: 12 (9>5, 5>3 > [5,4,5])
-
-**APPROACH:**
-Always reduce largest pile (saves most stones).
-
-```java
-class Solution {
-```
-
-public:
-```
-int minStoneSum(vector<int>& piles, int k) {                
-    priority_queue<int> maxHeap(piles.begin(), piles.end());
-
-    while (k--) {                                           
-        int top = maxHeap.top();                            
-        maxHeap.pop();                                      
-        maxHeap.push(top - top / 2);  // Remove floor(top/2)
-    }                                                       
-
-    int sum = 0;                                            
-    while (!maxHeap.empty()) {                              
-        sum += maxHeap.top();                               
-        maxHeap.pop();                                      
-    }                                                       
-
-    return sum;                                             
-}                                                           
-```
-
-```
-};
-```
-
-TIME: O(N + K log N)  |  SPACE: O(N)
 
 ## **SOLVED PROBLEM 8.3: Single-Threaded CPU (LC 1834)**
 
@@ -1828,45 +1393,6 @@ int maximumSwap(int num) {
 
 TIME: O(N)  |  SPACE: O(N)
 
-## **SOLVED PROBLEM 11.3: Monotone Increasing Digits (LC 738)**
-
-PROBLEM: Largest number < n with monotone increasing digits.
-
-**EXAMPLE:**
-Input: 332
-Output: 299
-
-```java
-class Solution {
-```
-
-public:
-```
-int monotoneIncreasingDigits(int n) {       
-    string s = to_string(n);                
-    int mark = s.size();                    
-
-    for (int i = s.size() - 1; i > 0; i--) {
-        if (s[i] < s[i-1]) {                
-            s[i-1]--;                       
-            mark = i;                       
-        }                                   
-    }                                       
-
-    for (int i = mark; i < s.size(); i++) { 
-        s[i] = '9';                         
-    }                                       
-
-    return stoi(s);                         
-}                                           
-```
-
-```
-};
-```
-
-TIME: O(N)  |  SPACE: O(N)
-
 ### **PATTERN 12: GREEDY STRING CONSTRUCTION** 
 
 CORE IDEA: Build lexicographically smallest/largest string
@@ -1971,44 +1497,6 @@ string longestDiverseString(int a, int b, int c) {
 
 TIME: O(a + b + c)  |  SPACE: O(1)
 
-## **SOLVED PROBLEM 12.3: Break a Palindrome (LC 1328)**
-
-PROBLEM: Replace one char to make it not a palindrome. Return lex smallest.
-
-**EXAMPLE:**
-Input: "abccba"
-Output: "aaccba"
-
-```java
-class Solution {
-```
-
-public:
-```
-string breakPalindrome(string palindrome) {           
-    int n = palindrome.size();                        
-    if (n == 1) return "";                            
-
-    // Find first non-'a' in first half, change to 'a'
-    for (int i = 0; i < n / 2; i++) {                 
-        if (palindrome[i] != 'a') {                   
-            palindrome[i] = 'a';                      
-            return palindrome;                        
-        }                                             
-    }                                                 
-
-    // All 'a's in first half, change last to 'b'     
-    palindrome[n - 1] = 'b';                          
-    return palindrome;                                
-}                                                     
-```
-
-```
-};
-```
-
-TIME: O(N)  |  SPACE: O(1)
-
 ### **PATTERN 13: OPTIMAL PARTITIONING** 
 
 CORE IDEA: Find optimal way to partition array/string
@@ -2112,50 +1600,6 @@ bool canSplit(vector<int>& nums, int k, long long maxSum) {
 
 TIME: O(N log sum)  |  SPACE: O(1)
 
-## **SOLVED PROBLEM 13.3: Minimum Time to Make Rope Colorful (LC 1578)**
-
-PROBLEM: Remove balloons so no two adjacent have same color. Minimize time.
-
-**EXAMPLE:**
-Input: colors = "abaac", neededTime = [1,2,3,4,5]
-Output: 3 (remove 'a' with time 1 and 'a' with time 3)
-
-APPROACH: For consecutive same colors, keep max time, remove others.
-
-```java
-class Solution {
-```
-
-public:
-```
-int minCost(string colors, vector<int>& neededTime) {            
-    int totalCost = 0;                                           
-    int i = 0, n = colors.size();                                
-
-    while (i < n) {                                              
-        int maxTime = 0;                                         
-        int sumTime = 0;                                         
-
-        char c = colors[i];                                      
-        while (i < n && colors[i] == c) {                        
-            sumTime += neededTime[i];                            
-            maxTime = max(maxTime, neededTime[i]);               
-            i++;                                                 
-        }                                                        
-
-        totalCost += sumTime - maxTime;  // Remove all except max
-    }                                                            
-
-    return totalCost;                                            
-}                                                                
-```
-
-```
-};
-```
-
-TIME: O(N)  |  SPACE: O(1)
-
 ### **PATTERN 14: GREEDY BASED ON PARITY/CONTRIBUTION** 
 
 CORE IDEA: Use parity invariant or contribution analysis
@@ -2201,88 +1645,6 @@ int largestSumAfterKNegations(vector<int>& nums, int k) {
 ```
 
 TIME: O(N log N)  |  SPACE: O(1)
-
-## **SOLVED PROBLEM 14.2: Minimize Maximum Pair Sum (LC 1877)** 
-
-PROBLEM: Pair elements. Minimize the maximum pair sum.
-
-**EXAMPLE:**
-Input: [3,5,2,3]
-Output: 7 (pairs: (2,5), (3,3))
-
-APPROACH: Pair smallest with largest.
-
-```java
-class Solution {
-```
-
-public:
-```
-int minPairSum(vector<int>& nums) {                    
-    sort(nums.begin(), nums.end());                    
-
-    int maxSum = 0;                                    
-    int left = 0, right = nums.size() - 1;             
-
-    while (left < right) {                             
-        maxSum = max(maxSum, nums[left] + nums[right]);
-        left++;                                        
-        right--;                                       
-    }                                                  
-
-    return maxSum;                                     
-}                                                      
-```
-
-```
-};
-```
-
-TIME: O(N log N)  |  SPACE: O(1)
-
-## **SOLVED PROBLEM 14.3: Maximum Matrix Sum (LC 1975)** 
-
-PROBLEM: Flip signs of 2 adjacent cells any times. Maximize sum.
-
-**EXAMPLE:**
-Input: [[1,-1],[-1,1]]
-Output: 4
-
-KEY INSIGHT: Parity of negatives is invariant! If odd, one negative remains.
-
-```java
-class Solution {
-```
-
-public:
-```
-long long maxMatrixSum(vector<vector<int>>& matrix) { 
-    long long sum = 0;                                
-    int minAbs = INT_MAX;                             
-    int negCount = 0;                                 
-
-    for (auto& row : matrix) {                        
-        for (int val : row) {                         
-            sum += abs(val);                          
-            minAbs = min(minAbs, abs(val));           
-            if (val < 0) negCount++;                  
-        }                                             
-    }                                                 
-
-    // If odd negatives, force smallest to be negative
-    if (negCount % 2 == 1) {                          
-        sum -= 2LL * minAbs;                          
-    }                                                 
-
-    return sum;                                       
-}                                                     
-```
-
-```
-};
-```
-
-TIME: O(MN)  |  SPACE: O(1)
 
 ### **PATTERN 15: GREEDY SELECTION WITH CONSTRAINTS** 
 
@@ -2371,46 +1733,6 @@ int bagOfTokensScore(vector<int>& tokens, int power) {
 
 TIME: O(N log N)  |  SPACE: O(1)
 
-## **SOLVED PROBLEM 15.3: Minimum Number of Arrows to Burst Balloons (LC 452)**
-
-PROBLEM: Balloons as intervals. Arrow at x bursts all containing x. Min arrows?
-
-**EXAMPLE:**
-Input: [[10,16],[2,8],[1,6],[7,12]]
-Output: 2
-
-```java
-class Solution {
-```
-
-public:
-```
-int findMinArrowShots(vector<vector<int>>& points) {   
-    if (points.empty()) return 0;                      
-
-    sort(points.begin(), points.end(),                 
-         [](auto& a, auto& b) { return a[1] < b[1]; });
-
-    int arrows = 1;                                    
-    int arrowPos = points[0][1];                       
-
-    for (int i = 1; i < points.size(); i++) {          
-        if (points[i][0] > arrowPos) {                 
-            arrows++;                                  
-            arrowPos = points[i][1];                   
-        }                                              
-    }                                                  
-
-    return arrows;                                     
-}                                                      
-```
-
-```
-};
-```
-
-TIME: O(N log N)  |  SPACE: O(1)
-
 ## **PART 3: PROOF TECHNIQUES FOR GREEDY**
 
 METHOD 1: GREEDY STAYS AHEAD
@@ -2444,35 +1766,3 @@ Assume greedy isn't optimal, derive contradiction.
 13. Optimal Partitioning    split, partition            Binary search
 14. Parity/Contribution     negations, parity           Count negatives
 15. Selection + Constraint  capacity, limit             Two pointers
-
-## **PART 5: COMPLETE PROBLEM LIST BY CATEGORY**
-
-**INTERVAL**: 56, 57, 252, 253, 435, 452, 646, 986, 1024, 1326
-**JUMP GAME**: 45, 55, 1306, 1340, 1345, 1654, 1696, 1871
-**STOCK**: 121, 122, 123, 188, 309, 714
-**SORTING+GREEDY**: 406, 455, 630, 659, 763, 826, 870, 881, 945, 948, 1029
-**STRING/DIGIT**: 316, 321, 402, 556, 670, 738, 1081, 1405
-**PARTITION**: 410, 763, 1011, 1231, 1481, 1578
-**PRIORITY QUEUE**: 253, 502, 621, 767, 846, 871, 1167, 1834, 2542
-**GRAPH**: 743, 778, 787, 1489, 1584, 1631
-**PARITY**: 945, 1005, 1561, 1877, 1962, 1975
-
-## **15 PATTERNS QUICK REFERENCE**
-
-1. Interval Scheduling    > Sort by END time
-2. Sorting + Greedy       > Sort + assign/pair
-3. Fractional Knapsack    > Sort by ratio
-4. Job Sequencing         > Sort by deadline + heap
-5. Frequency Merging      > Min heap, merge smallest
-6. Coin Change            > Canonical coins only!
-7. Prefix/Suffix          > Track farthest
-8. Priority Queue         > Pick best available
-9. Graph                  > Dijkstra/Prim
-10. Exchange Argument      > Prove by contradiction
-11. Digit Construction     > Monotonic stack
-12. String Construction    > Monotonic stack + track last
-13. Optimal Partitioning   > Binary search + greedy validate
-14. Parity/Contribution    > Count negatives, use parity
-15. Selection + Constraint > Two pointers with state
-
-## **END**

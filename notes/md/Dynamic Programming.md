@@ -439,20 +439,7 @@ Let's see this with COMPLETE EXAMPLES!
 
 ### **EXAMPLE 1: Fibonacci (Simple 1D)**
 
-**TOP-DOWN:**
-
-```cpp
-int fib(int n, vector<int>& memo) {
-if (n <= 1) return n;                    // < Base case
-if (memo[n] != -1) return memo[n];                     
-
-return memo[n] = fib(n-1, memo) + fib(n-2, memo);      
-                 // ^ Recurrence relation              
-
-}
-```
-
-**CONVERSION STEPS:**
+(Full code in Part 1 above. Showing conversion steps only.)
 
 STEP 1: States > Just "n" (1 parameter)
 STEP 2: DP table > vector<int> dp(n+1)
@@ -460,180 +447,30 @@ STEP 3: Base cases > dp[0] = 0, dp[1] = 1
 STEP 4: Order > i from 2 to n (depends on i-1, i-2, so build forward)
 STEP 5: Recurrence > dp[i] = dp[i-1] + dp[i-2]
 STEP 6: Return > dp[n]
-
-**BOTTOM-UP:**
-
-```cpp
-int fib(int n) {
-if (n <= 1) return n;                            
-
-vector<int> dp(n + 1);                           
-dp[0] = 0;  // Base                              
-dp[1] = 1;  // Base                              
-
-for (int i = 2; i <= n; i++) {  // Order: forward
-    dp[i] = dp[i-1] + dp[i-2];  // Recurrence    
-}                                                
-
-return dp[n];  // Answer                         
-
-}
-```
-
-### STEP 7: Space optimization > Only need prev2 and prev1!
-
-```
-int fib(int n) {
-if (n <= 1) return n;         
-int prev2 = 0, prev1 = 1;     
-for (int i = 2; i <= n; i++) {
-    int curr = prev1 + prev2; 
-    prev2 = prev1;            
-    prev1 = curr;             
-}                             
-return prev1;                 
-
-}
-```
+STEP 7: Space > Only need prev2, prev1 (O(1))
 
 ### **EXAMPLE 2: Coin Change (1D with Loop)**
 
-**TOP-DOWN:**
-
-```cpp
-int coinChange(int amount, vector<int>& coins, vector<int>& memo) {
-if (amount == 0) return 0;           // < Base: valid      
-if (amount < 0) return INT_MAX;      // < Base: invalid    
-if (memo[amount] != -1) return memo[amount];               
-
-int result = INT_MAX;                                      
-for (int coin : coins) {                                   
-    int subResult = coinChange(amount - coin, coins, memo);
-    if (subResult != INT_MAX) {                            
-        result = min(result, subResult + 1);               
-    }                                                      
-}                                                          
-
-return memo[amount] = result;                              
-
-}
-```
-
-**CONVERSION STEPS:**
+(Full code in Pattern 1 below. Showing conversion steps only.)
 
 STEP 1: States > amount (1 parameter)
 STEP 2: DP table > vector<int> dp(amount+1)
-STEP 3: Base > dp[0] = 0, others = amount+1 (impossible value)
+STEP 3: Base > dp[0] = 0, others = amount+1 (impossible value, avoids INT_MAX overflow)
 STEP 4: Order > i from 1 to amount (depends on smaller amounts)
 STEP 5: Recurrence > dp[i] = min(dp[i], dp[i-coin] + 1) for each coin
 STEP 6: Return > dp[amount] > amount ? -1 : dp[amount]
 
-**BOTTOM-UP:**
-
-```cpp
-int coinChange(vector<int>& coins, int amount) {
-vector<int> dp(amount + 1, amount + 1);  // Init with impossible  
-dp[0] = 0;  // Base case                                          
-
-for (int i = 1; i <= amount; i++) {      // Build from 1 to amount
-    for (int coin : coins) {                                      
-        if (coin <= i) {                                          
-            dp[i] = min(dp[i], dp[i - coin] + 1);                 
-        }                                                         
-    }                                                             
-}                                                                 
-
-return dp[amount] > amount ? -1 : dp[amount];                     
-
-}
-```
-
- **KEY INSIGHT**:
-Top-Down goes amount > 0 (recursive)
-Bottom-Up goes 0 > amount (iterative)
-Same logic, opposite direction!
-
 ### **EXAMPLE 3: Longest Common Subsequence (2D)**
 
-**TOP-DOWN:**
-
-```cpp
-int lcs(string& s1, string& s2, int i, int j, vector<vector<int>>& memo) {
-if (i == 0 || j == 0) return 0;  // < Base: empty string
-if (memo[i][j] != -1) return memo[i][j];                
-
-if (s1[i-1] == s2[j-1]) {                               
-    return memo[i][j] = 1 + lcs(s1, s2, i-1, j-1, memo);
-} else {                                                
-    return memo[i][j] = max(lcs(s1, s2, i-1, j, memo),  
-                            lcs(s1, s2, i, j-1, memo)); 
-}                                                       
-
-}
-```
-
-**CONVERSION STEPS:**
+(Full code in Pattern 4 below. Showing conversion steps only.)
 
 STEP 1: States > i, j (2 parameters)
 STEP 2: DP table > vector<vector<int>> dp(m+1, vector<int>(n+1))
-STEP 3: Base > dp[0][j] = 0, dp[i][0] = 0 (empty string)
+STEP 3: Base > dp[0][j] = 0, dp[i][0] = 0 (empty string → LCS = 0)
 STEP 4: Order > i from 1 to m, j from 1 to n (depends on i-1, j-1)
-STEP 5: Recurrence >
-```
-    if (s1[i-1] == s2[j-1]) dp[i][j] = dp[i-1][j-1] + 1
-    else dp[i][j] = max(dp[i-1][j], dp[i][j-1])        
-```
-
+STEP 5: Recurrence > match: dp[i-1][j-1]+1, else: max(dp[i-1][j], dp[i][j-1])
 STEP 6: Return > dp[m][n]
-
-**BOTTOM-UP:**
-
-```cpp
-int longestCommonSubsequence(string text1, string text2) {
-int m = text1.size(), n = text2.size();                           
-vector<vector<int>> dp(m + 1, vector<int>(n + 1, 0));             
-
-// Base cases already initialized (0s)                            
-
-for (int i = 1; i <= m; i++) {           // Build row by row      
-    for (int j = 1; j <= n; j++) {       // Build column by column
-        if (text1[i-1] == text2[j-1]) {                           
-            dp[i][j] = dp[i-1][j-1] + 1;                          
-        } else {                                                  
-            dp[i][j] = max(dp[i-1][j], dp[i][j-1]);               
-        }                                                         
-    }                                                             
-}                                                                 
-
-return dp[m][n];                                                  
-
-}
-```
-
-### STEP 7: Space optimization > Only need previous row!
-
-```cpp
-int longestCommonSubsequence(string text1, string text2) {
-int m = text1.size(), n = text2.size();   
-vector<int> dp(n + 1, 0);                 
-
-for (int i = 1; i <= m; i++) {            
-    int prev = 0;  // This is dp[i-1][j-1]
-    for (int j = 1; j <= n; j++) {        
-        int temp = dp[j];                 
-        if (text1[i-1] == text2[j-1]) {   
-            dp[j] = prev + 1;             
-        } else {                          
-            dp[j] = max(dp[j], dp[j-1]);  
-        }                                 
-        prev = temp;                      
-    }                                     
-}                                         
-
-return dp[n];                             
-
-}
-```
+STEP 7: Space > Only need previous row + `prev` variable for diagonal
 
 ### **CRITICAL: DETERMINING ITERATION ORDER** 
 
@@ -2249,23 +2086,7 @@ int numSquares(int n) {
 TIME: O(N x VN)  |  SPACE: O(N)
 
  **WHY THIS BASE CASE?**
-```
-dp[0] = 0
-```
-
-> "Min squares to make 0" > Zero squares needed. Already at target.
-> Same logic as Coin Change: target reached, no more work.
-
-```
-dp[1..n] = INT_MAX
-```
-
-> "Unknown / impossible until proven otherwise."
-> Safe here because we check dp[i - j*j] and add 1. The +1 won't
-```python
-overflow INT_MAX since j*j <= i guarantees dp[i-j*j] was computed
-from dp[0] chain and is a small number.                          
-```
+Same as Coin Change: dp[0]=0 (target reached), dp[1..n]=INT_MAX (unknown).
 
 ### DETAILED TRACE for n = 12:
 
@@ -3790,62 +3611,11 @@ Sometimes optimal is to skip ALL elements (return 0)
 ### **PROBLEM: House Robber (LC 198)** 
 
 PROBLEM: Max money robbing houses (can't rob adjacent houses).
+dp[i] = max(dp[i-1], dp[i-2] + nums[i])
 
- **KEY INSIGHT**:
-At each house: max(rob this + skip last, don't rob this)
+> Full recursive, tabulation, and size n vs n+1 conversion walkthrough in **Part 2: COMPLETE CONVERSION EXAMPLE**.
 
-**RECURSIVE (Top-Down):**
-
-```cpp
-int rob(vector<int>& nums) {
-    vector<int> memo(nums.size(), -1);
-    return solve(nums, nums.size() - 1, memo);
-}
-
-int solve(vector<int>& nums, int i, vector<int>& memo) {
-    if (i < 0) return 0;
-    if (memo[i] != -1) return memo[i];
-    return memo[i] = max(solve(nums, i-1, memo),
-                         solve(nums, i-2, memo) + nums[i]);
-}
-```
-
-**TABULATION (Bottom-Up) — strict recursion-to-tabulation conversion:**
-
-```cpp
-int rob(vector<int>& nums) {
-    int n = nums.size();
-    vector<int> dp(n, 0);
-
-    for (int i = 0; i < n; i++) {
-        int skip = (i >= 1) ? dp[i-1] : 0;
-        int take = ((i >= 2) ? dp[i-2] : 0) + nums[i];
-        dp[i] = max(skip, take);
-    }
-
-    return dp[n-1];
-}
-```
-
-**Strict conversion mapping:**
-
-| Recursion | Tabulation |
-|-----------|-----------|
-| `if (i < 0) return 0` | `(i >= 1) ? dp[i-1] : 0` and `(i >= 2) ? dp[i-2] : 0` |
-| `max(solve(i-1), solve(i-2) + nums[i])` | `max(skip, take)` |
-
-> Single loop from i=0. Boundary guards inside loop — exactly mirrors `if (i < 0) return 0`.
-> i=0: max(0, 0+nums[0]) = nums[0]. i=1: max(nums[0], 0+nums[1]) = max(nums[0], nums[1]).
-> Same results as the shortcut, but mechanically derived from recursion.
-
-Space-optimized version uses prev2=0, prev1=0 (not nums[0], nums[1]):
-> This works because the loop processes nums[0] first, setting
-```
-prev1 = max(0, 0+nums[0]) = nums[0]. Then nums[1] sets
-prev1 = max(nums[0], nums[1]). Same result, cleaner code.
-```
-
-### SPACE OPTIMIZED O(1):
+**SPACE OPTIMIZED O(1):**
 
 ```cpp
 int rob(vector<int>& nums) {
@@ -4133,15 +3903,7 @@ return result;
 TIME: O(M x N)  |  SPACE: O(M x N)
 
  **WHY THIS BASE CASE?**
-Uses LCS table, so base cases are same as LCS:
-```
-dp[0][j] = 0, dp[i][0] = 0 > LCS with empty string = 0.
-```
-
-During backtracking to build the actual SCS string:
-> When i=0: remaining chars of s2 must be added.
-> When j=0: remaining chars of s1 must be added.
-> These handle the "one string exhausted" cases.
+Same as LCS: dp[0][j]=0, dp[i][0]=0. During backtrack: when one string exhausted, add remaining chars of the other.
 
 KEY INSIGHT for SCS length:
 SCS length = len(s1) + len(s2) - LCS length
@@ -4519,227 +4281,48 @@ heights[2]=3, width=4 > area=12? No, width calculation...
 
 Largest rectangle in row 2's histogram = 6
 
-### **PROBLEM: Best Time to Buy and Sell Stock (LC 121)** 
+### **STOCK BUY/SELL FAMILY (LC 121, 122, 123, 309, 714)**
 
-PROBLEM: Find max profit from ONE transaction (buy once, sell once).
+All stock problems share the SAME recursive skeleton as Stock IV (LC 188) above.
+Only the **sell action** changes. Here's what differs per variant:
 
-**RECURSIVE (Top-Down):**
-
+**UNIVERSAL SKELETON (same for all):**
 ```cpp
-int maxProfit(vector<int>& prices) {
-    int n = prices.size();
-    vector<vector<int>> memo(n, vector<int>(2, -1));
-    return solve(prices, 0, 0, memo);
-}
-
-int solve(vector<int>& prices, int i, int holding, vector<vector<int>>& memo) {
+int solve(vector<int>& prices, int i, int holding, ...) {
     if (i == prices.size()) return 0;
-    if (memo[i][holding] != -1) return memo[i][holding];
-    int doNothing = solve(prices, i+1, holding, memo);
-    if (holding)
-        return memo[i][holding] = max(doNothing, prices[i]);
-    else
-        return memo[i][holding] = max(doNothing,
-            -prices[i] + solve(prices, i+1, 1, memo));
+    int doNothing = solve(prices, i+1, holding, ...);
+    if (holding)  return max(doNothing, /* SELL — see table */);
+    else          return max(doNothing, -prices[i] + solve(prices, i+1, 1, ...));
 }
 ```
 
-**TABULATION (Bottom-Up) — strict recursion-to-tabulation conversion:**
+**WHAT CHANGES — SELL LINE ONLY:**
 
-```cpp
-int maxProfit(vector<int>& prices) {
-    int n = prices.size();
-    vector<vector<int>> dp(n + 1, vector<int>(2, 0));
-
-    for (int i = n - 1; i >= 0; i--) {
-        dp[i][0] = max(dp[i+1][0], -prices[i] + dp[i+1][1]);
-        dp[i][1] = max(dp[i+1][1], prices[i]);
-    }
-
-    return dp[0][0];
-}
+```
++---------------------+--------------------------------------------+-------------------------------------------+
+| Problem             | Sell (Recursive)                           | Sell (Tabulation dp[i][1])                |
++---------------------+--------------------------------------------+-------------------------------------------+
+| Stock I (121)       | prices[i]                                  | max(dp[i+1][1], prices[i])                |
+| 1 transaction only  | (no further recursion — done after sell)   |                                           |
++---------------------+--------------------------------------------+-------------------------------------------+
+| Stock II (122)      | prices[i] + solve(i+1, 0)                  | max(dp[i+1][1], prices[i] + dp[i+1][0])  |
+| Unlimited txns      |                                            |                                           |
++---------------------+--------------------------------------------+-------------------------------------------+
+| Stock III (123)     | Exact same as Stock IV with k=2            | Exact same as Stock IV with k=2           |
++---------------------+--------------------------------------------+-------------------------------------------+
+| Cooldown (309)      | prices[i] + solve(i+2, 0)                  | max(dp[i+1][1], prices[i] + dp[i+2][0])  |
+| Skip day after sell | (skip i+1, go to i+2)                      | (needs dp size n+2)                       |
++---------------------+--------------------------------------------+-------------------------------------------+
+| Fee (714)           | prices[i] - fee + solve(i+1, 0)            | max(dp[i+1][1], prices[i]-fee+dp[i+1][0])|
+| Same as II + fee    |                                            |                                           |
++---------------------+--------------------------------------------+-------------------------------------------+
 ```
 
-**Strict conversion mapping:**
-
-| Recursion | Tabulation |
-|-----------|-----------|
-| `if (i == n) return 0` | `dp[n][0] = dp[n][1] = 0` |
-| `max(doNothing, -prices[i] + solve(i+1, 1))` | `dp[i][0] = max(dp[i+1][0], -prices[i] + dp[i+1][1])` |
-| `max(doNothing, prices[i])` (sell, done) | `dp[i][1] = max(dp[i+1][1], prices[i])` |
-
-> dp[i][0] = not holding, dp[i][1] = holding.
-> Sell returns just prices[i] (no further recursion) — ONE transaction only.
-
-TIME: O(N)  |  SPACE: O(N) > Can optimize to O(1) with two variables!
-
-### **PROBLEM: Best Time to Buy and Sell Stock II (LC 122)** 
-
-PROBLEM: Max profit with UNLIMITED transactions.
-
-**RECURSIVE (Top-Down):**
-
-```cpp
-int maxProfit(vector<int>& prices) {
-    int n = prices.size();
-    vector<vector<int>> memo(n, vector<int>(2, -1));
-    return solve(prices, 0, 0, memo);
-}
-
-int solve(vector<int>& prices, int i, int holding, vector<vector<int>>& memo) {
-    if (i == prices.size()) return 0;
-    if (memo[i][holding] != -1) return memo[i][holding];
-    int doNothing = solve(prices, i+1, holding, memo);
-    if (holding)
-        return memo[i][holding] = max(doNothing,
-            prices[i] + solve(prices, i+1, 0, memo));
-    else
-        return memo[i][holding] = max(doNothing,
-            -prices[i] + solve(prices, i+1, 1, memo));
-}
-```
-
-**TABULATION (Bottom-Up) — strict recursion-to-tabulation conversion:**
-
-```cpp
-int maxProfit(vector<int>& prices) {
-    int n = prices.size();
-    vector<vector<int>> dp(n + 1, vector<int>(2, 0));
-
-    for (int i = n - 1; i >= 0; i--) {
-        dp[i][0] = max(dp[i+1][0], -prices[i] + dp[i+1][1]);
-        dp[i][1] = max(dp[i+1][1], prices[i] + dp[i+1][0]);
-    }
-
-    return dp[0][0];
-}
-```
-
-**Strict conversion mapping:**
-
-| Recursion | Tabulation |
-|-----------|-----------|
-| `if (i == n) return 0` | `dp[n][0] = dp[n][1] = 0` |
-| `max(doNothing, -prices[i] + solve(i+1, 1))` | `dp[i][0] = max(dp[i+1][0], -prices[i] + dp[i+1][1])` |
-| `max(doNothing, prices[i] + solve(i+1, 0))` | `dp[i][1] = max(dp[i+1][1], prices[i] + dp[i+1][0])` |
-
-> dp[i][0] = not holding, dp[i][1] = holding.
-> Sell recurses with holding=0 — UNLIMITED transactions.
-
-TIME: O(N)  |  SPACE: O(N) > Can optimize to O(1) with two variables!
-
-### **PROBLEM: Best Time to Buy and Sell Stock III (LC 123)** 
-
-PROBLEM: Max profit with at most 2 transactions.
-
-**RECURSIVE (Top-Down) — same as Stock IV with k=2:**
-
-```cpp
-int maxProfit(vector<int>& prices) {
-    int n = prices.size();
-    vector<vector<vector<int>>> memo(n, vector<vector<int>>(3, vector<int>(2, -1)));
-    return solve(prices, 0, 2, 0, memo);
-}
-
-int solve(vector<int>& prices, int i, int txLeft, int holding,
-          vector<vector<vector<int>>>& memo) {
-    if (i == prices.size() || txLeft == 0) return 0;
-    if (memo[i][txLeft][holding] != -1) return memo[i][txLeft][holding];
-    int doNothing = solve(prices, i+1, txLeft, holding, memo);
-    if (holding)
-        return memo[i][txLeft][holding] = max(doNothing,
-            prices[i] + solve(prices, i+1, txLeft-1, 0, memo));
-    else
-        return memo[i][txLeft][holding] = max(doNothing,
-            -prices[i] + solve(prices, i+1, txLeft, 1, memo));
-}
-```
-
-**TABULATION (Bottom-Up) — strict recursion-to-tabulation conversion:**
-
-```cpp
-int maxProfit(vector<int>& prices) {
-    int n = prices.size();
-    vector<vector<vector<int>>> dp(n + 1,
-        vector<vector<int>>(3, vector<int>(2, 0)));
-
-    for (int i = n - 1; i >= 0; i--) {
-        for (int t = 1; t <= 2; t++) {
-            dp[i][t][0] = max(dp[i+1][t][0], -prices[i] + dp[i+1][t][1]);
-            dp[i][t][1] = max(dp[i+1][t][1], prices[i] + dp[i+1][t-1][0]);
-        }
-    }
-
-    return dp[0][2][0];
-}
-```
-
-**Strict conversion mapping:**
-
-| Recursion | Tabulation |
-|-----------|-----------|
-| `if (i == n \|\| txLeft == 0) return 0` | `dp[n][*][*] = 0` and `dp[*][0][*] = 0` |
-| `max(doNothing, -prices[i] + solve(i+1, t, 1))` | `dp[i][t][0] = max(dp[i+1][t][0], -prices[i] + dp[i+1][t][1])` |
-| `max(doNothing, prices[i] + solve(i+1, t-1, 0))` | `dp[i][t][1] = max(dp[i+1][t][1], prices[i] + dp[i+1][t-1][0])` |
-
-> Same structure as Stock IV with k=2. 3D DP: dp[day][txLeft][holding].
-
-TIME: O(N)  |  SPACE: O(N) > Can optimize to O(1) since only 3 tx values!
-
-### **PROBLEM: Best Time to Buy/Sell Stock with Transaction Fee (LC 714)** 
-
-PROBLEM: Max profit with unlimited transactions, but each transaction costs a fee.
-
-**RECURSIVE (Top-Down):**
-
-```cpp
-int maxProfit(vector<int>& prices, int fee) {
-    int n = prices.size();
-    vector<vector<int>> memo(n, vector<int>(2, -1));
-    return solve(prices, fee, 0, 0, memo);
-}
-
-int solve(vector<int>& prices, int fee, int i, int holding,
-          vector<vector<int>>& memo) {
-    if (i == prices.size()) return 0;
-    if (memo[i][holding] != -1) return memo[i][holding];
-    int doNothing = solve(prices, fee, i+1, holding, memo);
-    if (holding)
-        return memo[i][holding] = max(doNothing,
-            prices[i] - fee + solve(prices, fee, i+1, 0, memo));
-    else
-        return memo[i][holding] = max(doNothing,
-            -prices[i] + solve(prices, fee, i+1, 1, memo));
-}
-```
-
-**TABULATION (Bottom-Up) — strict recursion-to-tabulation conversion:**
-
-```cpp
-int maxProfit(vector<int>& prices, int fee) {
-    int n = prices.size();
-    vector<vector<int>> dp(n + 1, vector<int>(2, 0));
-
-    for (int i = n - 1; i >= 0; i--) {
-        dp[i][0] = max(dp[i+1][0], -prices[i] + dp[i+1][1]);
-        dp[i][1] = max(dp[i+1][1], prices[i] - fee + dp[i+1][0]);
-    }
-
-    return dp[0][0];
-}
-```
-
-**Strict conversion mapping:**
-
-| Recursion | Tabulation |
-|-----------|-----------|
-| `if (i == n) return 0` | `dp[n][0] = dp[n][1] = 0` |
-| `max(doNothing, -prices[i] + solve(i+1, 1))` | `dp[i][0] = max(dp[i+1][0], -prices[i] + dp[i+1][1])` |
-| `max(doNothing, prices[i] - fee + solve(i+1, 0))` | `dp[i][1] = max(dp[i+1][1], prices[i] - fee + dp[i+1][0])` |
-
-> Same as Stock II but fee deducted on sell.
-
-TIME: O(N)  |  SPACE: O(N) > Can optimize to O(1) with two variables!
+> **Buy line** is IDENTICAL across all: `-prices[i] + solve(i+1, 1)`
+> **Base case** is IDENTICAL across all: `if (i == n) return 0`
+> **Tabulation fill order** is IDENTICAL: `i` from `n-1` to `0`
+> Stock IV (full code above) is the most general — all others are special cases.
+> TIME: O(N) for all (except IV: O(N x K))  |  All optimizable to O(1) space
 
 ### **PROBLEM: Maximum Profit in Job Scheduling (LC 1235)** 
 
@@ -4964,36 +4547,7 @@ int solve(vector<int>& nums, int i, vector<int>& memo) {
 }
 ```
 
-**TABULATION (Bottom-Up) — O(N^2):**
-
-```cpp
-int lengthOfLIS(vector<int>& nums) {
-    int n = nums.size();
-    vector<int> dp(n, 1);
-
-    for (int i = 1; i < n; i++) {
-        for (int j = 0; j < i; j++) {
-            if (nums[j] < nums[i]) dp[i] = max(dp[i], dp[j] + 1);
-        }
-    }
-
-    return *max_element(dp.begin(), dp.end());
-}
-```
-
-**OPTIMAL — O(N log N) patience sort:**
-
-```cpp
-int lengthOfLIS(vector<int>& nums) {
-    vector<int> tails;
-    for (int num : nums) {
-        auto it = lower_bound(tails.begin(), tails.end(), num);
-        if (it == tails.end()) tails.push_back(num);
-        else *it = num;
-    }
-    return tails.size();
-}
-```
+**TABULATION:** Same as Template 1 above.  |  **OPTIMAL:** Same as Template 2 above.
 
 ## **SOLVED: Number of Longest Increasing Subsequence (LC 673)** 
 
@@ -5228,18 +4782,7 @@ int maxSubArray(vector<int>& nums) {
 }
 ```
 
-**SPACE OPTIMIZED (Kadane's O(1)):**
-
-```cpp
-int maxSubArray(vector<int>& nums) {
-    int curr = nums[0], maxSum = nums[0];
-    for (int i = 1; i < nums.size(); i++) {
-        curr = max(nums[i], curr + nums[i]);
-        maxSum = max(maxSum, curr);
-    }
-    return maxSum;
-}
-```
+**SPACE OPTIMIZED (Kadane's O(1)):** Same as Template A above.
 
  **WHY THIS BASE CASE?**
 ```
@@ -6072,113 +5615,12 @@ return ((countUpTo(num2) - countUpTo(num1)) % MOD + MOD) % MOD;
 - 600.  Non-negative Integers without Consecutive Ones
 - 902.  Numbers At Most N Given Digit Set
 
-## **PATTERN IDENTIFICATION FLOWCHART**
-
-### **DECISION FLOWCHART**
-
-Problem asks "minimum/maximum"?
-```
-                                                                       |
-+- YES > Is it a contiguous subarray?                                   
-|                                                                      |
-|    +- YES > Pattern 7 (Kadane's Algorithm)                            
-|                                                                      |
-|    +- NO > Pattern 1 (Min/Max Path)                                   
-                                                                       |
-+- NO > "Count ways"?                                                   
-                                                                       |
-    +- YES > Is it counting numbers with digit properties?              
-                                                                  |    |
-    |    +- YES > Pattern 10 (Digit DP)                                 
-                                                                  |    |
-    |    +- NO > Pattern 2 (Distinct Ways)                              
-                                                                       |
-    +- NO > "Longest increasing subsequence"?                           
-                                                                       |
-        +- YES > Pattern 6 (LIS)                                        
-                                                                       |
-        +- NO > Two strings given?                                      
-                                                                       |
-            +- YES > Pattern 4 (DP on Strings)                          
-                                                                       |
-            +- NO > Tree structure?                                     
-                                                                       |
-                +- YES > Pattern 8 (Tree DP)                            
-                                                                       |
-                +- NO > "Take or skip" / adjacency constraint?          
-                                                                       |
-                    +- YES > Pattern 5 (Decision Making)                
-                                                                       |
-                    +- NO > Visit all nodes / subset selection (N < 20)?
-                                                                       |
-                        +- YES > Pattern 9 (Bitmask DP)                 
-                                                                       |
-                        +- NO > Merge/split intervals?                  
-                                                                       |
-                            +- YES > Pattern 3 (Merging Intervals)      
-```
-
-### **QUICK PATTERN IDENTIFICATION**
-
-```
-+----------------------------+------------------------------------------------+
-| Keywords                   | Pattern                                        |
-+----------------------------+------------------------------------------------+
-| "Minimum cost/path"        | Pattern 1: Min/Max Path                        |
-| "Maximum profit"           | Pattern 1 or Pattern 5                         |
-| "Count ways"               | Pattern 2: Distinct Ways                       |
-| "How many paths"           | Pattern 2: Distinct Ways                       |
-| "Longest common"           | Pattern 4: DP on Strings                       |
-| "Edit distance"            | Pattern 4: DP on Strings                       |
-| "Palindrome"               | Pattern 4: DP on Strings                       |
-| "Burst/merge/split"        | Pattern 3: Merging Intervals                   |
-| "Can't take adjacent"      | Pattern 5: Decision Making                     |
-| "Buy/sell stock"           | Pattern 5: Decision Making                     |
-| "0/1 Knapsack"             | Pattern 5: Decision Making                     |
-| "Longest increasing"       | Pattern 6: LIS                                 |
-| "Max subarray sum"         | Pattern 7: Kadane's                            |
-| "Tree path/diameter"       | Pattern 8: Tree DP                             |
-| "Visit all nodes" (N<20)   | Pattern 9: Bitmask DP                          |
-| "Count numbers in range"   | Pattern 10: Digit DP                           |
-+----------------------------+------------------------------------------------+
-
 ===============================================================================
         **PART 9: COMMON MISTAKES & OPTIMIZATION**                             
 ===============================================================================
-```
 
-### **COMMON MISTAKES** 
-
-### MISTAKE 1: Using INT_MAX without overflow protection
-
-```
- dp[i] = INT_MAX;
-dp[i] = min(dp[i], dp[j] + 1);  // Overflow if dp[j] = INT_MAX!
-
- dp[i] = n + 1;  // Use impossible value instead
-```
-
-### MISTAKE 2: Wrong base case initialization
-
-For "count ways" problems:
-```
- dp[0] = 0;  // Wrong!
- dp[0] = 1;  // One way to make 0
-```
-
-### MISTAKE 3: Iterating in wrong order (Bottom-Up)
-
-Dependencies matter! Make sure you compute smaller subproblems first.
-
-### MISTAKE 4: Not handling negative indices
-
-```
- if (i - coin >= 0)  // After access!
- if (coin <= i)      // Before access
-```
-
-MISTAKE 5: Using memo without initialization
-### Always initialize memo with -1 or special value!
+ See Part 2 for COMMON CONVERSION MISTAKES (iteration order, off-by-one, base cases).
+ Additional pitfalls: INT_MAX overflow (use amount+1), dp[0]=1 for count problems, check bounds before access.
 
 **SPACE OPTIMIZATION TECHNIQUES**
 ### TECHNIQUE 1: Only keep what you need
@@ -6567,163 +6009,3 @@ Count in [1, R]: solve(R) - solve(L-1)
 5. Implement top-down (easier)
 6. Convert to bottom-up  (Use 7 steps!)
 7. Optimize space
-
-## **10 PATTERNS QUICK REFERENCE**
-
-CORE PATTERNS (Foundational):
-Pattern 1:  Min/Max Path        > dp[i] = min(dp[i-k]) + cost
-Pattern 2:  Distinct Ways       > dp[i] = sum(dp[i-k])
-Pattern 3:  Merging Intervals   > dp[i][j] = best(dp[i][k] + dp[k+1][j])
-Pattern 4:  DP on Strings       > Compare s1[i] vs s2[j]
-Pattern 5:  Decision Making     > take + dp[i-2] vs skip + dp[i-1]
-
-ADDITIONAL PATTERNS (Advanced):
-Pattern 6:  LIS                 > Binary search on tails array
-Pattern 7:  Kadane's            > curr = max(nums[i], curr + nums[i])
-Pattern 8:  Tree DP             > Post-order DFS, return to parent
-Pattern 9:  Bitmask DP          > dp[mask], N < 20
-Pattern 10: Digit DP            > Digit by digit, tight bound
-
-## **COMPLETE PROBLEM LIST BY PATTERN**
-
-**PATTERN 1: MIN/MAX PATH**
-- 746.  Min Cost Climbing Stairs 
-- 322.  Coin Change 
-- 64.   Minimum Path Sum
-- 120.  Triangle
-
-**PATTERN 2: DISTINCT WAYS**
-- 70.   Climbing Stairs 
-- 62.   Unique Paths 
-- 63.   Unique Paths II 
-- 377.  Combination Sum IV
-- 494.  Target Sum 
-- 416.  Partition Equal Subset Sum
-- 279.  Perfect Squares
-- 518.  Coin Change II 
-
-**PATTERN 3: MERGING INTERVALS**
-- 312.  Burst Balloons 
-- 96.   Unique Binary Search Trees
-- 1130. Minimum Cost Tree From Leaf Values
-- 1000. Minimum Cost to Merge Stones 
-
-**PATTERN 4: DP ON STRINGS**
-- 1143. Longest Common Subsequence 
-- 72.   Edit Distance 
-- 647.  Palindromic Substrings
-- 516.  Longest Palindromic Subsequence 
-- 115.  Distinct Subsequences 
-- 1092. Shortest Common Supersequence
-- 97.   Interleaving String
-- 10.   Regular Expression Matching 
-- 139.  Word Break 
-- 140.  Word Break II 
-- 132.  Palindrome Partitioning II 
-
-**PATTERN 5: DECISION MAKING**
-- 198.  House Robber 
-- 213.  House Robber II
-- 121.  Best Time to Buy/Sell Stock 
-- 122.  Best Time to Buy/Sell Stock II 
-- 123.  Best Time to Buy/Sell Stock III 
-- 309.  Best Time to Buy/Sell Stock with Cooldown 
-- 188.  Best Time to Buy/Sell Stock IV 
-- 714.  Best Time to Buy/Sell Stock with Transaction Fee 
-- 740.  Delete and Earn
-- 887.  Super Egg Drop 
-- 1235. Maximum Profit in Job Scheduling 
-
-**PATTERN 6: LIS (Longest Increasing Subsequence)**
-- 300.  Longest Increasing Subsequence 
-- 673.  Number of Longest Increasing Subsequence 
-- 354.  Russian Doll Envelopes 
-- 1964. Find Longest Valid Obstacle Course
-- 1048. Longest String Chain
-- 368.  Largest Divisible Subset
-
-**PATTERN 7: KADANE'S (Max Subarray)**
-- 53.   Maximum Subarray 
-- 918.  Maximum Sum Circular Subarray 
-- 152.  Maximum Product Subarray 
-- 1749. Maximum Absolute Sum
-
-**PATTERN 8: TREE DP**
-- 124.  Binary Tree Maximum Path Sum 
-- 543.  Diameter of Binary Tree 
-- 337.  House Robber III 
-- 968.  Binary Tree Cameras 
-- 834.  Sum of Distances in Tree (Rerooting) 
-
-**PATTERN 9: BITMASK DP**
-- 847.  Shortest Path Visiting All Nodes 
-- 698.  Partition to K Equal Sum Subsets 
-- 473.  Matchsticks to Square
-- 1125. Smallest Sufficient Team 
-- 1595. Minimum Cost to Connect Two Groups
-
-**PATTERN 10: DIGIT DP**
-- 1012. Numbers With Repeated Digits 
-- 2719. Count of Integers 
-- 233.  Number of Digit One
-- 600.  Non-negative Integers without Consecutive Ones
-- 902.  Numbers At Most N Given Digit Set
-
-## ** PATTERN INSIGHTS CHEATSHEET - INTERVIEW READY **
-
-```
-+------------------------------------------------------------------------------+
-| PATTERN 1 (Min/Max Path):                                                    |
-|   "To reach i optimally, come from the BEST previous state + cost"           |
-|    Pitfall: INT_MAX overflow when adding                                     |
-+------------------------------------------------------------------------------+
-| PATTERN 2 (Distinct Ways):                                                   |
-|   "Ways to reach here = SUM of ways from all previous states"                |
-|    Pitfall: dp[0] = 1 not 0 (one way to reach start)                         |
-|    Pitfall: Order of loops matters (permutations vs combinations)            |
-+------------------------------------------------------------------------------+
-| PATTERN 3 (Merging Intervals):                                               |
-|   "Try every split point k, combine left and right subproblems"              |
-|    Pitfall: Must loop by LENGTH first, not by start position                 |
-|    Trick: Think backwards - "which element to remove LAST?"                  |
-+------------------------------------------------------------------------------+
-| PATTERN 4 (DP on Strings):                                                   |
-|   "Match: use diagonal | No match: use adjacent cells"                       |
-|    Pitfall: Compare s[i-1] not s[i] (dp indices are 1-based)                 |
-|    Single string palindrome = compare string with its reverse (LCS)          |
-+------------------------------------------------------------------------------+
-| PATTERN 5 (Decision Making):                                                 |
-|   "At each item: TAKE (skip previous) or SKIP (use previous)"                |
-|    Pitfall: 0/1 Knapsack inner loop must go BACKWARDS                        |
-|    State machine: draw states and transitions                                |
-+------------------------------------------------------------------------------+
-| PATTERN 6 (LIS):                                                             |
-|   "O(N2): For each i, look back at all j < i where nums[j] < nums[i]"        |
-|   "O(N log N): Binary search on smallest possible tails"                     |
-|    Strictly increasing = lower_bound | Non-decreasing = upper_bound          |
-+------------------------------------------------------------------------------+
-| PATTERN 7 (Kadane's):                                                        |
-|   "Extend previous subarray OR start fresh here"                             |
-|    Pitfall: Initialize with nums[0], not 0 (all negatives case)              |
-|    Product: Track BOTH max AND min (negatives flip signs!)                   |
-+------------------------------------------------------------------------------+
-| PATTERN 8 (Tree DP):                                                         |
-|   "Post-order: compute children first, then parent"                          |
-|    Return to parent = what CAN parent use from my subtree                    |
-|    Update global = best answer AT this node                                  |
-+------------------------------------------------------------------------------+
-| PATTERN 9 (Bitmask DP):                                                      |
-|   "Represent subset as integer, each bit = element presence"                 |
-|    Constraint: N < 20 (2^20 ~ 1M states)                                     |
-|    Check bit: mask & (1<<i) | Set bit: mask | (1<<i)                         |
-+------------------------------------------------------------------------------+
-| PATTERN 10 (Digit DP):                                                       |
-|   "Build number digit by digit, track 'tight' bound"                         |
-|    Range [L,R] = solve(R) - solve(L-1)                                       |
-|    'started' flag handles leading zeros                                      |
-+------------------------------------------------------------------------------+
-
-================================================================================
-                                **END**                                         
-================================================================================
-```

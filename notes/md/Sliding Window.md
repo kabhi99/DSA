@@ -721,34 +721,6 @@ return maxSum;
 - Add arr[right], remove arr[right - k] simultaneously
 - No while loop needed - just maintain size k
 
-## **SOLVED: Maximum Average Subarray I (LC 643)**
-
-PROBLEM: Find contiguous subarray of length k with maximum average.
-
-```cpp
-double findMaxAverage(vector<int>& nums, int k) {
-double sum = 0;                        
-
-// Initial window                      
-for (int i = 0; i < k; i++) {          
-    sum += nums[i];                    
-}                                      
-
-double maxSum = sum;                   
-
-// Slide window                        
-for (int i = k; i < nums.size(); i++) {
-    sum += nums[i] - nums[i - k];      
-    maxSum = max(maxSum, sum);         
-}                                      
-
-return maxSum / k;                     
-
-}
-```
-
-TIME: O(N)  |  SPACE: O(1)
-
 ## **SOLVED: Maximum Sum of Distinct Subarrays With Length K (LC 2461)**
 
 PROBLEM: Find max sum of subarray of length k with ALL DISTINCT elements.
@@ -819,35 +791,6 @@ long long maximumSubarraySum(vector<int>& nums, int k) {
 
 ```
 };
-```
-
-TIME: O(N)  |  SPACE: O(K)
-
-## **SOLVED: Contains Duplicate II (LC 219)**
-
-PROBLEM: Check if duplicate exists within distance k.
-
-```cpp
-bool containsNearbyDuplicate(vector<int>& nums, int k) {
-unordered_set<int> window;             
-
-for (int i = 0; i < nums.size(); i++) {
-    // Remove element outside window   
-    if (i > k) {                       
-        window.erase(nums[i - k - 1]); 
-    }                                  
-
-    // Check for duplicate             
-    if (window.count(nums[i])) {       
-        return true;                   
-    }                                  
-
-    window.insert(nums[i]);            
-}                                      
-
-return false;                          
-
-}
 ```
 
 TIME: O(N)  |  SPACE: O(K)
@@ -1042,6 +985,232 @@ TIME: O(26 * 26 * N)  |  SPACE: O(1)
           **PART 3: HOW TO IDENTIFY & APPROACH PROBLEMS**                      
 ===============================================================================
 ```
+
+### ** THE 5-QUESTION DETECTION FRAMEWORK**
+
+Run through these 5 questions in 30 seconds. **4-5 yes = sliding window.**
+
+```
++---+----------------------------------------------------+----------------------+
+| # | Question                                           | Why it matters       |
++---+----------------------------------------------------+----------------------+
+| 1 | Asked for longest/shortest/max-count of a          | SW finds optimal     |
+|   | CONTIGUOUS subarray (or "group" after sorting)?    | contiguous regions   |
++---+----------------------------------------------------+----------------------+
+| 2 | Is there a CONSTRAINT like "at most k ops",        | Window expansion     |
+|   | "at most k distinct", "sum <= X", "cost <= X"?     | bounded by this      |
++---+----------------------------------------------------+----------------------+
+| 3 | Is the constraint MONOTONIC?                       | Allows shrinking     |
+|   | (adding more elements only makes it harder)        | from left when bad   |
++---+----------------------------------------------------+----------------------+
+| 4 | Can I compute the constraint INCREMENTALLY in      | Need O(1) update     |
+|   | O(1) when window grows or shrinks?                 | per pointer move     |
++---+----------------------------------------------------+----------------------+
+| 5 | Would SORTING make positions irrelevant            | Many SW problems     |
+|   | or turn a "frequency" problem into "contiguous"?   | need sort first      |
++---+----------------------------------------------------+----------------------+
+```
+
+**TWO TRIGGER PHRASES that should make alarm bells ring:**
+
+| Trigger phrase | Why it's SW |
+|----------------|-------------|
+| "**at most k operations / flips / replacements / changes**" | bounded constraint = expand-while-valid |
+| "**maximum frequency**" or "**longest with property**" | reduces to "max valid window size" |
+
+### ** DECISION TREE**
+
+```
+                  Read the problem
+                          |
+                          v
+  +-------------------------------------------------+
+  | "at most k operations/flips/replacements"?      |
+  +-------------------------------------------------+
+        |                                |
+       YES                              NO
+        |                                |
+        v                                v
+  +-------------+              +--------------------------+
+  | Probably SW |              | longest/shortest         |
+  | with        |              | subarray with property?  |
+  | monotonic   |              +--------------------------+
+  | shrink      |                  |             |
+  +-------------+                 YES            NO
+                                   |             |
+                                   v             v
+                            +-----------+  +------------------+
+                            | SW        |  | "frequency" or   |
+                            +-----------+  | "group" problem? |
+                                           +------------------+
+                                              |          |
+                                             YES         NO
+                                              |          |
+                                              v          v
+                                        +-----------+  +-----------+
+                                        | Try sort  |  | "subarray |
+                                        | -> if     |  | sum == k" |
+                                        | becomes   |  | with      |
+                                        | contig,   |  | negatives?|
+                                        | use SW    |  +-----------+
+                                        +-----------+    |       |
+                                                        YES      NO
+                                                         |       |
+                                                         v       v
+                                                  +----------+ +-----+
+                                                  | Prefix   | | DP /|
+                                                  | sum +    | | BS  |
+                                                  | hashmap  | +-----+
+                                                  | (NOT SW) |
+                                                  +----------+
+```
+
+### ** WORKED EXAMPLE: LC 1838 (Frequency of Most Frequent)**
+
+PROBLEM: Given `nums` and `k`, you can increment any element by 1 at most `k` times.
+Maximize the frequency of any single value.
+
+```
+nums = [1, 2, 4],  k = 5
+-> increment 1 by 3, 2 by 2  ->  [4, 4, 4]  ->  freq = 3
+```
+
+RUN THE FRAMEWORK:
+
+| Q | Check | Answer |
+|---|-------|--------|
+| 1 | Longest contiguous group? | YES (after sort, "freq of value X" = how many can be lifted to X = max contiguous group) |
+| 2 | Constraint? | YES ("total cost <= k") |
+| 3 | Monotonic? | YES (expanding leftward only adds more cost) |
+| 4 | Incremental? | YES (`cost = nums[r] * windowSize - sum`, update sum in O(1)) |
+| 5 | Does sort help? | YES (without sort it looks like frequency-counting; with sort it becomes "max valid window") |
+
+5/5 -> definitely sliding window.
+
+```cpp
+int maxFrequency(vector<int>& nums, int k) {
+    sort(nums.begin(), nums.end());
+    long sum = 0;
+    int left = 0, best = 1;
+
+    for (int right = 0; right < nums.size(); right++) {
+        sum += nums[right];
+
+        // cost to make all in window equal to nums[right]
+        while ((long)nums[right] * (right - left + 1) - sum > k) {
+            sum -= nums[left++];
+        }
+
+        best = max(best, right - left + 1);
+    }
+    return best;
+}
+```
+
+KEY INSIGHT: The hardest part is realizing **you should sort first**.
+Once sorted, the SW pattern is obvious because the optimal "group" must be contiguous.
+
+### ** SIBLING PROBLEMS (Same Pattern)**
+
+Once you spot the framework, these all feel identical:
+
+| Problem | Constraint | "Cost" function |
+|---------|-----------|-----------------|
+| **LC 1838** Frequency of Most Frequent | k increments | `target * size - sum` |
+| **LC 1004** Max Consecutive Ones III | flip k zeros | `count of zeros in window` |
+| **LC 424** Longest Repeating Char Replacement | k replacements | `size - maxFreq` |
+| **LC 2024** Maximize Confusion of an Exam | k T/F flips | `size - maxFreq('T','F')` |
+| **LC 3** Longest Substring Without Repeats | no repeats | `0 if all unique else inf` |
+| **LC 1208** Get Equal Substrings Within Budget | total cost <= max | `sum of |s[i] - t[i]|` |
+| **LC 209** Minimum Size Subarray Sum | sum >= target | `sum of window` |
+
+ALL FIT THE SAME SKELETON:
+
+```
+for right in 0..n:
+    add nums[right] to window state
+    while (constraint violated):
+        remove nums[left] from window state
+        left++
+    update answer with current window size
+```
+
+If you can map a problem to this skeleton -> **it's sliding window**.
+
+### ** THE `size - maxFreq <= k` IDIOM**
+
+This validity check is so common it deserves its own callout. Whenever the
+problem says **"change at most k characters/elements to make all the same"**,
+the validity condition is:
+
+```
+   window_size - maxFreq(window) <= k
+```
+
+WHY: In a window of size W, the cheapest way to make everything equal is to
+**keep the majority character and change the rest**. So the changes needed
+equal `W - maxFreq`. If that's <= k, the window is valid.
+
+USED BY:
+- **LC 424** Longest Repeating Char Replacement (any of 26 letters)
+- **LC 2024** Maximize Confusion of an Exam (only T/F, simpler `maxFreq`)
+- **LC 1004** Max Consecutive Ones III (special case: maxFreq = #ones)
+
+### ** WORKED EXAMPLE: LC 2024 (Maximize Confusion of an Exam)**
+
+PROBLEM: Given a string `answerKey` of `'T'` and `'F'`, you can flip at most
+`k` answers. Return the longest run of the same character achievable.
+
+```
+  answerKey = "TTFTTFTT", k = 1
+  -> flip the middle 'F' -> "TTTTTTTT"... wait, only one F can be flipped
+     Best: flip index 2 -> "TTTTTFTT" -> longest run = 5
+```
+
+RUN THE FRAMEWORK:
+
+| Q | Check | Answer |
+|---|-------|--------|
+| 1 | Longest contiguous? | YES (longest substring of same character) |
+| 2 | Constraint? | YES ("at most k flips") |
+| 3 | Monotonic? | YES (bigger window -> more flips needed) |
+| 4 | Incremental? | YES (track count['T'] and count['F'] in O(1)) |
+| 5 | Sort help? | NO (order matters here) |
+
+4/5 -> sliding window. Use the `size - maxFreq <= k` idiom.
+
+```cpp
+int maxConsecutiveAnswers(string answerKey, int k) {
+    int countT = 0, countF = 0;
+    int left = 0, best = 0;
+
+    for (int right = 0; right < answerKey.size(); right++) {
+        if (answerKey[right] == 'T') countT++;
+        else countF++;
+
+        // Window invalid if min(countT, countF) > k
+        // because that's how many flips we need to make everything same
+        while (min(countT, countF) > k) {
+            if (answerKey[left] == 'T') countT--;
+            else countF--;
+            left++;
+        }
+
+        best = max(best, right - left + 1);
+    }
+    return best;
+}
+```
+
+KEY INSIGHT: With only 2 characters, `size - maxFreq = min(countT, countF)`.
+That's the count of the **minority** character — exactly the number of flips
+needed to make the window homogeneous.
+
+NOTE: For LC 424 (26 letters), `maxFreq` must be tracked across all 26 chars.
+A clever optimization: you only need to **track maxFreq monotonically** and never
+decrease it when shrinking — because a stale `maxFreq` gives a window <= the
+true best, which is fine for a max-length problem. See LC 424's solution for
+this trick.
 
 ### ** RECOGNITION: WHEN TO USE SLIDING WINDOW?**
 
@@ -1494,41 +1663,7 @@ o Non-contiguous subsequence
 o Need exact median/mode
 o Palindrome/symmetry checking
 
-## **PART 6: QUICK REVISION TABLE**
-
-```
-+-----------------------------------------------------------------------------+
-|                       GOLDEN RULES - MEMORIZE!                              |
-+-----------------------------------------------------------------------------+
-|                                                                             |
-|  1⃣  Counting/Minimum > Shrinkable (while) - NON-NEGOTIABLE!                |
-|  2⃣  Maximum length only > Non-shrinkable (if) - Cleaner!                   |
-|  3⃣  Fixed size k > Add right, remove arr[i-k]                              |
-|  4⃣  "Exactly K" = atMost(K) - atMost(K-1)                                  |
-|  5⃣  Negatives + sum=K > Use Prefix Sum.txt (SW won't work!)                |
-|  6⃣  Window [L,R] size = R - L + 1 (inclusive)                              |
-|  7⃣  For counting: count += (j - i + 1) at each step                        |
-|  8⃣  Time: O(N) because each element enters/leaves once                     |
-|                                                                             |
-+-----------------------------------------------------------------------------+
-
-+-----------------------------------------------------------------------------+
-|                         STATE MANAGEMENT                                    |
-+---------------------------+-------------------------------------------------+
-| State Type                | Implementation                                  |
-+---------------------------+-------------------------------------------------+
-| Character frequency       | int cnt[128] = {};                              |
-| Lowercase letters only    | int cnt[26] = {};                               |
-| Distinct count            | unordered_map + check size()                    |
-| Sum/Product               | long sum = 0; (Use long!)                       |
-| Max/Min in window         | Monotonic deque                                 |
-| Bit conflicts (AND)       | int usedBits = 0; (XOR/OR)                      |
-+---------------------------+-------------------------------------------------+
-
-===============================================================================
-              **PART 7: ADVANCED PATTERNS**                                    
-===============================================================================
-```
+## **PART 7: ADVANCED PATTERNS**
 
 ### **PATTERN A: CIRCULAR ARRAY SLIDING WINDOW**
 
@@ -1549,85 +1684,6 @@ USE WHEN: Array wraps around (last element connects to first)
 // First pass: normal sliding window
 // Second pass: handle wrap-around cases
 ```
-
-## **SOLVED: Defuse the Bomb (LC 1652)**
-
-PROBLEM: Replace each element with sum of next/previous k elements (circular).
-
-```cpp
-vector<int> decrypt(vector<int>& code, int k) {
-int n = code.size();                
-vector<int> result(n, 0);           
-
-if (k == 0) return result;          
-
-int start = (k > 0) ? 1 : n + k;    
-int end = (k > 0) ? k : n - 1;      
-
-// Initial window sum               
-int sum = 0;                        
-for (int i = start; i <= end; i++) {
-    sum += code[i % n];             
-}                                   
-
-// Slide window                     
-for (int i = 0; i < n; i++) {       
-    result[i] = sum;                
-    sum -= code[start % n];         
-    start++;                        
-    end++;                          
-    sum += code[end % n];           
-}                                   
-
-return result;                      
-
-}
-```
-
-TIME: O(N)  |  SPACE: O(1) (excluding output)
-
-## **SOLVED: Minimum Number of Flips to Make Binary String Alternating (LC 1888)**
-
-PROBLEM: Type-1 (rotate) + Type-2 (flip) to make alternating.
-
- **KEY INSIGHT**: Rotate = Circular array! Double the string.
-
-```
-int minFlips(string s) {
-int n = s.size();                                  
-s += s;  // Double for circular                    
-
-string alt1, alt2;                                 
-for (int i = 0; i < s.size(); i++) {               
-    alt1 += (i % 2 == 0) ? '0' : '1';  // 010101...
-    alt2 += (i % 2 == 0) ? '1' : '0';  // 101010...
-}                                                  
-
-int diff1 = 0, diff2 = 0, minFlips = INT_MAX;      
-
-for (int i = 0; i < s.size(); i++) {               
-    // Add right element                           
-    if (s[i] != alt1[i]) diff1++;                  
-    if (s[i] != alt2[i]) diff2++;                  
-
-    // Remove left element when window exceeds n   
-    if (i >= n) {                                  
-        if (s[i - n] != alt1[i - n]) diff1--;      
-        if (s[i - n] != alt2[i - n]) diff2--;      
-    }                                              
-
-    // Check window of size n                      
-    if (i >= n - 1) {                              
-        minFlips = min({minFlips, diff1, diff2});  
-    }                                              
-}                                                  
-
-return minFlips;                                   
-
-}
-```
-
-TIME: O(N)  |  SPACE: O(N)
 
 ### PRACTICE PROBLEMS - Circular Array:
 
@@ -1786,33 +1842,6 @@ return vector<int>(arr.begin() + left, arr.begin() + left + k);
 ```
 
 TIME: O(log(N-K) + K)  |  SPACE: O(1)
-
-## **SOLVED: Maximum Beauty of an Array After Applying Operation (LC 2779)**
-
-PROBLEM: Each element can change to [nums[i]-k, nums[i]+k]. Find max identical elements.
-
- **KEY INSIGHT**: After sorting, find longest window where max-min <= 2*k
-
-```cpp
-int maximumBeauty(vector<int>& nums, int k) {
-sort(nums.begin(), nums.end());                                  
-
-int left = 0, maxLen = 0;                                        
-
-for (int right = 0; right < nums.size(); right++) {              
-    // All elements in window can become same if max - min <= 2*k
-    while (nums[right] - nums[left] > 2 * k) {                   
-        left++;                                                  
-    }                                                            
-    maxLen = max(maxLen, right - left + 1);                      
-}                                                                
-
-return maxLen;                                                   
-
-}
-```
-
-TIME: O(N log N)  |  SPACE: O(1)
 
 ## **SOLVED: Minimum Number of Operations to Make Array Continuous (LC 2009)**
 
@@ -1996,210 +2025,3 @@ TIME: O(N)  |  SPACE: O(1)
 - 3306. Count of Substrings Containing Every Vowel and K Consonants II 
 - 1358. Number of Substrings Containing All Three Characters 
 - 2799. Count Complete Subarrays in an Array 
-
-## **PART 8: COMPLETE PROBLEM LIST BY PATTERN**
-
-**PATTERN 1: FIXED-SIZE WINDOW**
-
-- 219.  Contains Duplicate II 
-- 643.  Maximum Average Subarray I 
-- 1052. Grumpy Bookstore Owner 
-- 1176. Diet Plan Performance
-- 1343. Number of Sub-arrays of Size K and Avg >= Threshold 
-- 1456. Maximum Number of Vowels in a Substring of Given Length 
-- 1652. Defuse the Bomb 
-- 1984. Minimum Difference Between Highest and Lowest of K Scores 
-- 2090. K Radius Subarray Averages
-- 2269. Find the K-Beauty of a Number
-- 2379. Minimum Recolors to Get K Consecutive Black Blocks 
-- 2461. Maximum Sum of Distinct Subarrays With Length K 
-- 3254. Find the Power of K-Size Subarrays I 
-
-**PATTERN 2: VARIABLE-SIZE (Expand + Shrink)**
-
-- 3.    Longest Substring Without Repeating Characters 
-- 209.  Minimum Size Subarray Sum 
-- 485.  Max Consecutive Ones  (Simple counting, no window needed)
-- 487.  Max Consecutive Ones II 
-- 904.  Fruit Into Baskets 
-- 1004. Max Consecutive Ones III 
-- 1208. Get Equal Substrings Within Budget 
-- 1100. Find K-Length Substrings With No Repeated Characters 
-- 2024. Maximize the Confusion of an Exam
-- 2958. Length of Longest Subarray With at Most K Frequency 
-
-**PATTERN 3: FREQUENCY MAP (Anagrams/Permutations)**
-
-- 567.  Permutation in String 
-- 438.  Find All Anagrams in a String 
-- 76.   Minimum Window Substring 
-- 159.  Longest Substring with At Most Two Distinct Characters 
-- 340.  Longest Substring with At Most K Distinct Characters 
-
-**PATTERN 4: LONGEST/SHORTEST WITH CONDITION**
-
-- 121.  Best Time to Buy and Sell Stock  (One-Pass, not classic SW)
-- 424.  Longest Repeating Character Replacement 
-- 487.  Max Consecutive Ones II 
-- 1004. Max Consecutive Ones III 
-- 1493. Longest Subarray of 1's After Deleting One Element
-- 1838. Frequency of the Most Frequent Element 
-
-**PATTERN 5: EXACTLY K / AT MOST K**
-
-- 930.  Binary Subarrays With Sum 
-- 992.  Subarrays with K Different Integers 
-- 1248. Count Number of Nice Subarrays 
-- 3.    Longest Substring Without Repeating Characters 
-- 159.  Longest Substring with At Most Two Distinct Characters 
-- 340.  Longest Substring with At Most K Distinct Characters 
-- 904.  Fruit Into Baskets 
-
-**PATTERN 6: COUNTING SUBARRAYS**
-
-- 713.  Subarray Product Less Than K 
-- 1358. Number of Substrings Containing All Three Characters 
-- 2302. Count Subarrays With Score Less Than K
-- 2962. Count Subarrays Where Max Element Appears at Least K Times 
-- 3306. Count of Substrings Containing Every Vowel and K Consonants II 
- For sum=K with negatives > See Prefix Sum.txt
-
-**PATTERN 7: MONOTONIC DEQUE (Max/Min in Window)**
-
-- 239.  Sliding Window Maximum 
-- 480.  Sliding Window Median (Multiset) 
-- 862.  Shortest Subarray with Sum at Least K 
-- 1438. Longest Continuous Subarray With Absolute Diff <= Limit 
-
-**PATTERN 8: CIRCULAR ARRAY**
-
-- 1652. Defuse the Bomb 
-- 1888. Minimum Number of Flips to Make Binary String Alternating 
-- 3208. Alternating Groups II 
-- 1423. Maximum Points You Can Obtain from Cards 
-
-**PATTERN 9: INVERSE/COMPLEMENT**
-
-- 1658. Minimum Operations to Reduce X to Zero 
-- 2516. Take K of Each Character From Left and Right 
-- 1423. Maximum Points You Can Obtain from Cards 
-
-**PATTERN 10: SORTING + SLIDING WINDOW**
-
-- 658.  Find K Closest Elements 
-- 1984. Minimum Difference Between Highest and Lowest of K Scores 
-- 1838. Frequency of the Most Frequent Element 
-- 2009. Minimum Number of Operations to Make Array Continuous 
-- 2779. Maximum Beauty of an Array After Applying Operation 
-
-**PATTERN 11: SLIDING WINDOW + HEAP**
-
-- 632.  Smallest Range Covering Elements from K Lists 
-- 480.  Sliding Window Median 
-
-## **MASTER PROBLEM MAPPING TABLE**
-
-```
-+---------------------------------------------------------+------------------------+
-| Problem                                                 | Pattern                |
-+---------------------------------------------------------+------------------------+
-| Contains Duplicate II                                   | 1 - Fixed-Size         |
-| Best Time to Buy And Sell Stock                         | 4 - One-Pass/Greedy    |
-| Minimum Recolors to Get K Consecutive Black Blocks      | 1 - Fixed-Size         |
-| Minimum Difference Between Highest/Lowest of K Scores   | 10 - Sorting + SW      |
-| Number of Sub Arrays Size K and Avg >= Threshold        | 1 - Fixed-Size         |
-| Grumpy Bookstore Owner                                  | 1 - Fixed-Size         |
-| Max Consecutive Ones II                                 | 2 - Variable (flip 1)  |
-| Alternating Groups II                                   | 8 - Circular           |
-| Longest Substring Without Repeating Characters          | 2/5 - Variable/AtMost  |
-| Longest Substring with At Most Two Distinct Characters  | 5 - At Most K          |
-| Longest Repeating Character Replacement                 | 4 - Longest            |
-| Permutation In String                                   | 3 - Frequency Map      |
-| Longest Substring with At Most K Distinct Characters    | 5 - At Most K          |
-| Frequency of The Most Frequent Element                  | 10 - Sorting + SW      |
-| Fruits into Basket                                      | 5 - At Most 2 Distinct |
-| Maximum Number of Vowels in a Substring of Given Length | 1 - Fixed-Size         |
-| Minimum Number of Flips Binary String Alternating       | 8 - Circular           |
-| Defuse the Bomb                                         | 8 - Circular           |
-| Minimum Size Subarray Sum                               | 2 - Variable           |
-| Find K Closest Elements                                 | 10 - Sorting + SW      |
-| Minimum Operations to Reduce X to Zero                  | 9 - Inverse            |
-| Find K-Length Substrings With No Repeated Characters    | 2 - Variable + Fixed   |
-| Get Equal Substrings Within Budget                      | 2 - Variable           |
-| Number of Substrings Containing All Three Characters    | 6 - Counting           |
-| Binary Subarrays with Sum                               | 5 - Exactly K          |
-| Count Number of Nice Subarrays                          | 5 - Exactly K          |
-| Subarray Product Less Than K                            | 6 - Counting           |
-| Max Consecutive Ones III                                | 2 - Variable (flip k)  |
-| Find the Power of K-Size Subarrays I                    | 1 - Fixed-Size         |
-| Maximum Sum of Distinct Subarrays With Length K         | 1 - Fixed-Size         |
-| Length of Longest Subarray With at Most K Frequency     | 2 - Variable           |
-| Count Subarrays Where Max Element Appears >= K Times    | 6 - Counting           |
-| Maximum Beauty of an Array After Applying Operation     | 10 - Sorting + SW      |
-| Take K of Each Character From Left and Right            | 9 - Inverse            |
-| Count Substrings Every Vowel and K Consonants II        | 6 - Counting + Exactly |
-| Minimum Window Substring                                | 3 - Frequency Map      |
-| Sliding Window Maximum                                  | 7 - Monotonic Deque    |
-| Subarrays with K Different Integers                     | 5 - Exactly K          |
-| Minimum Number of Operations to Make Array Continuous   | 10 - Sorting + SW      |
-| Longest Subarray With Absolute Diff <= Limit            | 7 - Monotonic Deque    |
-| Smallest Range Covering Elements from K Lists           | 11 - SW + Heap         |
-+---------------------------------------------------------+------------------------+
-
-================================================================================    
-                     **11 PATTERNS QUICK REFERENCE**                                
-================================================================================    
-```
-
-Pattern 1:  Fixed-Size Window      > Window size k fixed, slide add/remove
-Pattern 2:  Variable-Size          > Expand+Shrink based on condition
-Pattern 3:  Frequency Map          > Anagrams, permutations, char matching
-Pattern 4:  Longest/Shortest       > Max/min length with constraints
-Pattern 5:  Exactly K / At Most K  > atMost(K) - atMost(K-1) trick
-Pattern 6:  Counting Subarrays     > count += (j - i + 1) at each step
-Pattern 7:  Monotonic Deque        > Max/min in each window efficiently
-Pattern 8:  Circular Array         > Double array or modulo indexing
-Pattern 9:  Inverse/Complement     > Remove from edges = Keep middle
-Pattern 10: Sorting + SW           > Sort first when order doesn't matter
-Pattern 11: SW + Heap              > For median, k-th element in window
-
-```
-  Sum=K with NEGATIVES > Use Prefix Sum.txt (Sliding Window doesn't work!)
-```
-
-```
-+------------------------------------------------------------------------------+
-|                     PATTERN DECISION FLOWCHART                               |
-+------------------------------------------------------------------------------+
-|                                                                              |
-|  Is window size FIXED (k given)?                                             |
-|    YES > Pattern 1 (Fixed-Size)                                              |
-|    Is it circular? > Pattern 8 (Circular)                                    |
-|                                                                              |
-|  Do you need to COUNT subarrays?                                             |
-|    YES > Pattern 6 (Counting) > count += (right - left + 1)                  |
-|    "Exactly K"? > Pattern 5 (atMost(K) - atMost(K-1))                        |
-|                                                                              |
-|  Remove from BOTH ends?                                                      |
-|    YES > Pattern 9 (Inverse) > Find longest MIDDLE instead                   |
-|                                                                              |
-|  Order doesn't matter / Need closest elements?                               |
-|    YES > Pattern 10 (Sorting + SW)                                           |
-|                                                                              |
-|  Need MAX or MIN within window?                                              |
-|    YES > Pattern 7 (Monotonic Deque)                                         |
-|                                                                              |
-|  Need MEDIAN / k-th element in window?                                       |
-|    YES > Pattern 11 (Heap/Multiset)                                          |
-|                                                                              |
-|  Anagrams / Permutations / Character matching?                               |
-|    YES > Pattern 3 (Frequency Map)                                           |
-|                                                                              |
-|  Otherwise > Pattern 2 (Variable-Size) with appropriate shrink condition     |
-|                                                                              |
-+------------------------------------------------------------------------------+
-
-================================================================================
-                                   END                                          
-================================================================================
-```
