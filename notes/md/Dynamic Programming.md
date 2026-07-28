@@ -256,7 +256,7 @@ return prev1;
 ```
 
 TIME: O(N)
-SPACE: O(1) Y
+SPACE: O(1) ✓
 
 ## **PART 2: TOP-DOWN vs BOTTOM-UP**
 
@@ -267,12 +267,12 @@ SPACE: O(1) Y
 | Aspect           | Top-Down (Memo)      | Bottom-Up (Tabulation|
 +------------------+----------------------+----------------------+
 | Approach         | Recursion + Cache    | Iteration + Table    |
-| Direction        | Problem > Base       | Base > Problem       |
+| Direction        | Problem → Base       | Base → Problem       |
 | Intuition        | More natural         | Requires thinking    |
 | Space            | Stack + Memo         | Just table           |
 | Speed            | Slightly slower      | Slightly faster      |
 | Subproblems      | Only needed ones     | All subproblems      |
-| Easier to write  | Yes Y                | Requires practice    |
+| Easier to write  | Yes ✓                | Requires practice    |
 +------------------+----------------------+----------------------+
 ```
 
@@ -341,8 +341,8 @@ if (n <= 2) return n;  //  Base cases
 ### **STRATEGY 2: Identify "Invalid" vs "Valid" Base Cases**
 
 **TWO TYPES:**
-1. **Valid base** > Return meaningful answer
-2. **Invalid base** > Return impossible value
+1. **Valid base** → Return meaningful answer
+2. **Invalid base** → Return impossible value
 
 ### EXAMPLE: Coin Change
 
@@ -356,12 +356,12 @@ if (amount < 0) return INT_MAX; //  Invalid: impossible
 ```
 
 For MIN problems:
-Valid base > return 0 or specific value
-Invalid > return INT_MAX or amount+1
+Valid base → return 0 or specific value
+Invalid → return INT_MAX or amount+1
 
 For COUNT problems:
-Valid base > return 1 (one way)
-Invalid > return 0 (no ways)
+Valid base → return 1 (one way)
+Invalid → return 0 (no ways)
 
 ### **STRATEGY 3: Base Case Patterns by Problem Type**
 
@@ -391,7 +391,7 @@ Invalid > return 0 (no ways)
 
 ### **STRATEGY 4: Work Backwards from Small Examples**
 
-TECHNIQUE: Manually solve for n=0, 1, 2 > These become base cases!
+TECHNIQUE: Manually solve for n=0, 1, 2 → These become base cases!
 
 ### EXAMPLE: Unique Paths (mxn grid)
 
@@ -441,36 +441,36 @@ Let's see this with COMPLETE EXAMPLES!
 
 (Full code in Part 1 above. Showing conversion steps only.)
 
-STEP 1: States > Just "n" (1 parameter)
-STEP 2: DP table > vector<int> dp(n+1)
-STEP 3: Base cases > dp[0] = 0, dp[1] = 1
-STEP 4: Order > i from 2 to n (depends on i-1, i-2, so build forward)
-STEP 5: Recurrence > dp[i] = dp[i-1] + dp[i-2]
-STEP 6: Return > dp[n]
-STEP 7: Space > Only need prev2, prev1 (O(1))
+STEP 1: States → Just "n" (1 parameter)
+STEP 2: DP table → vector<int> dp(n+1)
+STEP 3: Base cases → dp[0] = 0, dp[1] = 1
+STEP 4: Order → i from 2 to n (depends on i-1, i-2, so build forward)
+STEP 5: Recurrence → dp[i] = dp[i-1] + dp[i-2]
+STEP 6: Return → dp[n]
+STEP 7: Space → Only need prev2, prev1 (O(1))
 
 ### **EXAMPLE 2: Coin Change (1D with Loop)**
 
 (Full code in Pattern 1 below. Showing conversion steps only.)
 
-STEP 1: States > amount (1 parameter)
-STEP 2: DP table > vector<int> dp(amount+1)
-STEP 3: Base > dp[0] = 0, others = amount+1 (impossible value, avoids INT_MAX overflow)
-STEP 4: Order > i from 1 to amount (depends on smaller amounts)
-STEP 5: Recurrence > dp[i] = min(dp[i], dp[i-coin] + 1) for each coin
-STEP 6: Return > dp[amount] > amount ? -1 : dp[amount]
+STEP 1: States → amount (1 parameter)
+STEP 2: DP table → vector<int> dp(amount+1)
+STEP 3: Base → dp[0] = 0, others = amount+1 (impossible value, avoids INT_MAX overflow)
+STEP 4: Order → i from 1 to amount (depends on smaller amounts)
+STEP 5: Recurrence → dp[i] = min(dp[i], dp[i-coin] + 1) for each coin
+STEP 6: Return → dp[amount] → amount ? -1 : dp[amount]
 
 ### **EXAMPLE 3: Longest Common Subsequence (2D)**
 
 (Full code in Pattern 4 below. Showing conversion steps only.)
 
-STEP 1: States > i, j (2 parameters)
-STEP 2: DP table > vector<vector<int>> dp(m+1, vector<int>(n+1))
-STEP 3: Base > dp[0][j] = 0, dp[i][0] = 0 (empty string → LCS = 0)
-STEP 4: Order > i from 1 to m, j from 1 to n (depends on i-1, j-1)
-STEP 5: Recurrence > match: dp[i-1][j-1]+1, else: max(dp[i-1][j], dp[i][j-1])
-STEP 6: Return > dp[m][n]
-STEP 7: Space > Only need previous row + `prev` variable for diagonal
+STEP 1: States → i, j (2 parameters)
+STEP 2: DP table → vector<vector<int>> dp(m+1, vector<int>(n+1))
+STEP 3: Base → dp[0][j] = 0, dp[i][0] = 0 (empty string → LCS = 0)
+STEP 4: Order → i from 1 to m, j from 1 to n (depends on i-1, j-1)
+STEP 5: Recurrence → match: dp[i-1][j-1]+1, else: max(dp[i-1][j], dp[i][j-1])
+STEP 6: Return → dp[m][n]
+STEP 7: Space → Only need previous row + `prev` variable for diagonal
 
 ### **CRITICAL: DETERMINING ITERATION ORDER** 
 
@@ -484,8 +484,8 @@ RULE: Compute smaller subproblems BEFORE larger ones.
 fib(n) depends on fib(n-1) and fib(n-2)
 ```
 
-> Compute smaller n first
-> Loop: for (i = 0 to n) Y
+- Compute smaller n first
+- Loop: for (i = 0 to n) ✓
 
 ### EXAMPLE 2: Unique Paths
 
@@ -493,8 +493,8 @@ fib(n) depends on fib(n-1) and fib(n-2)
 dp[i][j] depends on dp[i-1][j] and dp[i][j-1]
 ```
 
-> Need previous row and previous column
-> Loop: for (i = 0 to m) { for (j = 0 to n) } Y
+- Need previous row and previous column
+- Loop: for (i = 0 to m) { for (j = 0 to n) } ✓
 
 ### EXAMPLE 3: Merging Intervals (TRICKY!)
 
@@ -502,8 +502,8 @@ dp[i][j] depends on dp[i-1][j] and dp[i][j-1]
 dp[i][j] depends on dp[i][k] and dp[k+1][j] for i < k < j
 ```
 
-> Need SMALLER intervals first!
-> Loop by LENGTH (not position!):
+- Need SMALLER intervals first!
+- Loop by LENGTH (not position!):
 ```
 for (length = 1 to n) {        
     for (i = 0 to n-length) {  
@@ -654,7 +654,7 @@ j = i + len
 ```
 
  **GOLDEN RULE**:
-Draw dependency arrows > iterate so arrows point to ALREADY computed!
+Draw dependency arrows → iterate so arrows point to ALREADY computed!
 
 ### **COMPLETE CONVERSION EXAMPLE: House Robber**
 
@@ -818,7 +818,7 @@ The ONLY thing to remember:
 dp[i] represents "first i elements", so element index = i-1
 ```
 
-> Use nums[i-1], text[i-1], etc. in the loop
+- Use nums[i-1], text[i-1], etc. in the loop
 
 Problems that ALREADY use n+1 naturally:
 Coin Change:   dp[0]=0 means "amount 0 needs 0 coins"
@@ -828,7 +828,7 @@ Climbing Stairs: dp[0]=1 means "1 way to stay at ground"
 
 Problems where n+1 is OPTIONAL (both work):
 House Robber, Stock Buy/Sell, Delete and Earn
-> Direct mapping (size n) also works fine since dp[0] = nums[0]
+- Direct mapping (size n) also works fine since dp[0] = nums[0]
 is already meaningful, but n+1 removes edge cases.
 
 ### STEP 7: Space Optimization (only need last 2 values):
@@ -855,13 +855,13 @@ return prev1;
 
 Converting Top-Down to Bottom-Up? Check these:
 
-o Identified all changing parameters > DP table dimensions
-o Found base cases from recursion > Initialize DP
-o Determined correct iteration order > Check dependencies!
-o Converted recurrence relation > Same logic
+o Identified all changing parameters → DP table dimensions
+o Found base cases from recursion → Initialize DP
+o Determined correct iteration order → Check dependencies!
+o Converted recurrence relation → Same logic
 o Handled edge cases (empty input, n=0, etc.)
-o Return correct value > dp[final_state]
-o (Optional) Optimized space > Keep only needed values
+o Return correct value → dp[final_state]
+o (Optional) Optimized space → Keep only needed values
 
  **PRO TIP**:
 Write Top-Down first (easier to think).
@@ -999,17 +999,17 @@ int minCostClimbingStairs(vector<int>& cost) {
 }
 ```
 
-TIME: O(N)  |  SPACE: O(N) > Can optimize to O(1)!
+TIME: O(N)  |  SPACE: O(N) → Can optimize to O(1)!
 
  **WHY THIS BASE CASE?**
 ```
 dp[0] = 0, dp[1] = 0
 ```
 
-> You can START from step 0 or step 1 (problem says so).
-> Starting costs nothing, so both are 0.
-> dp[i] represents min cost to REACH step i, not to LEAVE it.
-> The "top" is step n (one past the last step), which is why
+- You can START from step 0 or step 1 (problem says so).
+- Starting costs nothing, so both are 0.
+- dp[i] represents min cost to REACH step i, not to LEAVE it.
+- The "top" is step n (one past the last step), which is why
 dp array is size n+1 and answer is dp[n].
 
 ### **PROBLEM: Coin Change (LC 322)** 
@@ -1072,21 +1072,21 @@ TIME: O(Amount x Coins)  |  SPACE: O(Amount)
 dp[0] = 0
 ```
 
-> "How many coins to make amount 0?" > Zero coins. You're already there.
-> This is the VALID base: recursion stops when amount reaches 0.
+- "How many coins to make amount 0?" → Zero coins. You're already there.
+- This is the VALID base: recursion stops when amount reaches 0.
 
 ```
 dp[1..amount] = amount + 1 (not INT_MAX!)
 ```
 
-> These are UNKNOWN states, initialized to "impossible".
-> Why amount+1 not INT_MAX? Because dp[i-coin] + 1 would OVERFLOW
+- These are UNKNOWN states, initialized to "impossible".
+- Why amount+1 not INT_MAX? Because dp[i-coin] + 1 would OVERFLOW
 if dp[i-coin] = INT_MAX. amount+1 is safe because you can never
 need more than 'amount' coins (worst case: all 1-coins).
 
 WHY size amount+1?
-> dp[i] = min coins for amount i. We need dp[0] through dp[amount].
-> Index 0 is the base case, index 'amount' is the answer.
+- dp[i] = min coins for amount i. We need dp[0] through dp[amount].
+- Index 0 is the base case, index 'amount' is the answer.
 
 ---
 
@@ -1222,11 +1222,11 @@ int minPathSum(vector<vector<int>>& grid) {
 | Recursion | Tabulation |
 |-----------|-----------|
 | `if (i==0 && j==0) return grid[0][0]` | `dp[0][0] = grid[0][0]` |
-| `if (i < 0 \|\| j < 0) return INT_MAX` | `(i > 0) ? dp[i-1][j] : INT_MAX` |
+| `if (i < 0 \|\| j < 0) return INT_MAX` | `(i → 0) ? dp[i-1][j] : INT_MAX` |
 | `grid[i][j] + min(solve(i-1,j), solve(i,j-1))` | `grid[i][j] + min(top, left)` |
 
-> No separate first-row/first-col loops needed.
-> The boundary check `INT_MAX` inside the loop is exactly the `i<0 || j<0` guard from recursion.
+- No separate first-row/first-col loops needed.
+- The boundary check `INT_MAX` inside the loop is exactly the `i<0 || j<0` guard from recursion.
 
 ### **PROBLEM: Super Egg Drop (LC 887)**  HARD
 
@@ -1372,9 +1372,9 @@ dp[m][k] = floors_below + 1 + floors_above
            (k-1 eggs,            (k eggs,
             m-1 moves left)       m-1 moves left)
 ```
-> Pick any floor. If breaks: check dp[m-1][k-1] floors below.
-> If survives: check dp[m-1][k] floors above. +1 for tested floor.
-> Increment m until dp[m][k] >= n. That m is the answer.
+- Pick any floor. If breaks: check dp[m-1][k-1] floors below.
+- If survives: check dp[m-1][k] floors above. +1 for tested floor.
+- Increment m until dp[m][k] >= n. That m is the answer.
 
  TIME: O(k x n) — optimal! No inner loop over floors.
 
@@ -1477,8 +1477,8 @@ If dp[0] = 0, everything becomes 0!
  FIX: dp[0] = 1 (one way to reach the starting point)
 
  PITFALL 2: Confusing Permutations vs Combinations
-- Outer loop on TARGET > Permutations (order matters)
-- Outer loop on ITEMS  > Combinations (order doesn't matter)
+- Outer loop on TARGET → Permutations (order matters)
+- Outer loop on ITEMS  → Combinations (order doesn't matter)
 
 ```
 // ORDER MATTERS (Combination Sum IV): 1+2+1 ! 2+1+1
@@ -1534,17 +1534,17 @@ int climbStairs(int n) {
 }
 ```
 
-TIME: O(N)  |  SPACE: O(N) > Can optimize to O(1)!
+TIME: O(N)  |  SPACE: O(N) → Can optimize to O(1)!
 
  **WHY THIS BASE CASE?**
 ```
 dp[1] = 1, dp[2] = 2
 ```
 
-> 1 stair: only 1 way (take 1 step). Trivially true.
-> 2 stairs: 2 ways (1+1 or 2). You can verify by hand.
-> dp[0] is not used because "0 stairs" has no physical meaning here.
-> This is Fibonacci shifted: ways(n) = ways(n-1) + ways(n-2).
+- 1 stair: only 1 way (take 1 step). Trivially true.
+- 2 stairs: 2 ways (1+1 or 2). You can verify by hand.
+- dp[0] is not used because "0 stairs" has no physical meaning here.
+- This is Fibonacci shifted: ways(n) = ways(n-1) + ways(n-2).
 You MUST know two base values to start the chain.
 
 ### **PROBLEM: Unique Paths (LC 62)** 
@@ -1570,8 +1570,8 @@ int solve(int i, int j, vector<vector<int>>& memo) {
 }
 ```
 
-> Stops at first row/col (i==0 or j==0) → knows exactly 1 path remains.
-> i ranges 0..m-1 → memo size m x n is enough.
+- Stops at first row/col (i==0 or j==0) → knows exactly 1 path remains.
+- i ranges 0..m-1 → memo size m x n is enough.
 
 **RECURSIVE (Top-Down) — Approach 2: goes past boundary**
 
@@ -1589,8 +1589,8 @@ int solve(int m, int n, vector<vector<int>>& memo) {
 }
 ```
 
-> Goes past boundary (m<=0 or n<=0 → return 0), only counts at destination (1,1).
-> m ranges 0..m → memo size (m+1) x (n+1) needed.
+- Goes past boundary (m<=0 or n<=0 → return 0), only counts at destination (1,1).
+- m ranges 0..m → memo size (m+1) x (n+1) needed.
 
 **TWO APPROACHES COMPARED:**
 ```
@@ -1650,7 +1650,7 @@ int uniquePaths(int m, int n) {
 | `if (m <= 0 \|\| n <= 0) return 0` | `(i > 1) ? dp[i-1][j] : 0` |
 | `solve(m-1, n) + solve(m, n-1)` | `top + left` |
 
-TIME: O(M x N)  |  SPACE: O(M x N) > Can optimize to O(N)!
+TIME: O(M x N)  |  SPACE: O(M x N) → Can optimize to O(N)!
 
 ### **PROBLEM: Combination Sum IV (LC 377)** 
 
@@ -1760,16 +1760,16 @@ after choosing [1,2] — it prevents revisiting earlier elements.
 dp[0] = 1
 ```
 
-> "How many ways to make target 0?" > Exactly 1: pick nothing.
-> This is the COUNT pattern: dp[0] = 1, NOT 0!
-> If dp[0] = 0, then dp[i] += dp[0] adds nothing, and EVERY
+- "How many ways to make target 0?" → Exactly 1: pick nothing.
+- This is the COUNT pattern: dp[0] = 1, NOT 0!
+- If dp[0] = 0, then dp[i] += dp[0] adds nothing, and EVERY
 state stays 0. The whole DP collapses.
 
 ```
 dp[1..target] = 0
 ```
 
-> "No ways found yet." We'll accumulate ways during iteration.
+- "No ways found yet." We'll accumulate ways during iteration.
 
 ### **DETAILED EXAMPLE: Target Sum (LC 494)**  UNIQUE!
 
@@ -1797,7 +1797,7 @@ All numbers sum = 5
 We want: positive - negative = 3
 
 If we pick positive = 4, negative = 1:
-4 - 1 = 3 Y
+4 - 1 = 3 ✓
 
 How to find P (positive sum)?
 P + N = 5  (all numbers)
@@ -1856,12 +1856,12 @@ TIME: O(N x Sum)  |  SPACE: O(Sum)
 dp[0] = 1
 ```
 
-> "How many subsets sum to 0?" > Exactly 1: the empty subset {}.
-> This seeds the entire DP. Without it, dp[j-num] is always 0,
+- "How many subsets sum to 0?" → Exactly 1: the empty subset {}.
+- This seeds the entire DP. Without it, dp[j-num] is always 0,
 so no subset is ever counted.
 
-> Edge cases handled BEFORE DP: if target > sum or target < -sum
-or (target+sum) is odd > return 0 immediately.
+- Edge cases handled BEFORE DP: if target > sum or target < -sum
+or (target+sum) is odd → return 0 immediately.
 
  **CRITICAL**: Inner loop goes BACKWARDS!
 Why? In 0/1 knapsack, each item used once.
@@ -1889,7 +1889,7 @@ After num=1: dp[2] += dp[1]=2, dp[1] += dp[0]=1
 dp = [1, 3, 3]
 ```
 
-Answer: dp[2] = 3 Y
+Answer: dp[2] = 3 ✓
 
 ### **DETAILED EXAMPLE: Partition Equal Subset Sum (LC 416)** 
 
@@ -1904,18 +1904,18 @@ nums = [1, 5, 11, 5], sum = 22
 ```
 
 Can we split into two sets with sum = 11 each?
-Set 1: [1, 5, 5] = 11 Y
-Set 2: [11] = 11 Y
+Set 1: [1, 5, 5] = 11 ✓
+Set 2: [11] = 11 ✓
 
 Problem: "Can we pick numbers that sum to 11?"
-> Classic 0/1 Knapsack!
+- Classic 0/1 Knapsack!
 
 **BASE CASES:**
 ```
-sum = 0 > return true (pick nothing)
+sum = 0 → return true (pick nothing)
 ```
 
-sum < 0 > return false (impossible)
+sum < 0 → return false (impossible)
 ```
 i = n > return sum == 0
 ```
@@ -1980,11 +1980,11 @@ dp[1..target] = false > "No way found yet."
 ```
 
 WHY reverse loop (j = target down to num)?
-> 0/1 Knapsack: each number used AT MOST ONCE.
-> Forward loop would let dp[j-num] use an already-updated value,
+- 0/1 Knapsack: each number used AT MOST ONCE.
+- Forward loop would let dp[j-num] use an already-updated value,
 effectively using the same number multiple times.
 
-> Backward loop reads dp[j-num] from the PREVIOUS item's row.
+- Backward loop reads dp[j-num] from the PREVIOUS item's row.
 
 **EXAMPLE TRACE:**
 ```
@@ -2006,12 +2006,12 @@ dp[2] = dp[2] || dp[0] = T
 dp = [T, T, T, T, F, F]
 ```
 
-After 3: dp[5] = dp[5] || dp[2] = T Y
+After 3: dp[5] = dp[5] || dp[2] = T ✓
 ```
 dp = [T, T, T, T, T, T]
 ```
 
-Answer: dp[5] = true Y
+Answer: dp[5] = true ✓
 
 ### **DETAILED EXAMPLE: Perfect Squares (LC 279)** 
 
@@ -2028,7 +2028,7 @@ n = 12
 Perfect squares < 12: [1, 4, 9]
 
 Find minimum coins to make 12:
-12 = 4 + 4 + 4 (3 squares) Y
+12 = 4 + 4 + 4 (3 squares) ✓
 12 = 9 + 1 + 1 + 1 (4 squares)
 
 ```
@@ -2105,7 +2105,7 @@ dp[9] = dp[0] + 1 = 1              (32)
 dp[12] = min(dp[11]+1, dp[8]+1, dp[3]+1)
 ```
 
-= min(3, 3, 4) = 3 Y        (22 + 22 + 22)
+= min(3, 3, 4) = 3 ✓ (22 + 22 + 22)
 
 ### **PROBLEM: Unique Paths II (LC 63)** 
 
@@ -2215,10 +2215,10 @@ dp[0] = 1 → "1 way to make amount 0: use no coins."
 ```
 
 WHY forward loop (j = coin to amount), not backward?
-> This is UNBOUNDED knapsack: coins can be reused!
-> Forward loop allows dp[j-coin] to use already-updated values
-> from this row → same coin used multiple times.
-> Compare with 0/1 Knapsack (Partition Subset) which loops BACKWARD.
+- This is UNBOUNDED knapsack: coins can be reused!
+- Forward loop allows dp[j-coin] to use already-updated values
+- from this row → same coin used multiple times.
+- Compare with 0/1 Knapsack (Partition Subset) which loops BACKWARD.
 
 **MORE PROBLEMS:**
 - 688. Knight Probability
@@ -2412,9 +2412,9 @@ TIME: O(N3)  |  SPACE: O(N2)
 dp[i][i] = 0 (implicit, array initialized to 0)
 ```
 
-> A single leaf has no non-leaf node > cost = 0.
-> Only when we MERGE two groups do we create a non-leaf node.
-> The loop starts at len=1 (two elements), where the first
+- A single leaf has no non-leaf node > cost = 0.
+- Only when we MERGE two groups do we create a non-leaf node.
+- The loop starts at len=1 (two elements), where the first
 merge happens and costs max(left) x max(right).
 
 ### **PROBLEM: Burst Balloons (LC 312)**  HARD
@@ -2475,19 +2475,19 @@ return dp[1][n];
 ```
 
  **WHY BACKWARDS?**
-Bursting changes neighbors > hard to track forward
-Bursting LAST > neighbors are fixed (i-1 and j+1)!
+Bursting changes neighbors → hard to track forward
+Bursting LAST → neighbors are fixed (i-1 and j+1)!
 
  **WHY THIS BASE CASE?**
 ```
 dp[i][j] = 0 for all i, j (array init)
 ```
 
-> When range is empty (i > j), cost = 0. No balloons to burst.
-> Single balloon (i == j) is NOT 0 in the loop! When it's the
+- When range is empty (i → j), cost = 0. No balloons to burst.
+- Single balloon (i == j) is NOT 0 in the loop! When it's the
 LAST balloon burst in range [i,j], cost = nums[i-1]*nums[k]*nums[j+1].
 
-> Boundary balloons (value 1) are added at start and end. This handles
+- Boundary balloons (value 1) are added at start and end. This handles
 edge cases: bursting the first/last real balloon always has a
 neighbor with value 1.
 
@@ -2504,18 +2504,18 @@ n = 3, values = [1, 2, 3]
 ```
 
 Pick 1 as root:
-Left subtree: [] > 1 tree
-Right subtree: [2, 3] > ? trees
+Left subtree: [] → 1 tree
+Right subtree: [2, 3] → ? trees
 Total: 1 x numTrees(2)
 
 Pick 2 as root:
-Left: [1] > 1 tree
-Right: [3] > 1 tree
+Left: [1] → 1 tree
+Right: [3] → 1 tree
 Total: 1 x 1
 
 Pick 3 as root:
-Left: [1, 2] > numTrees(2)
-Right: [] > 1
+Left: [1, 2] → numTrees(2)
+Right: [] → 1
 Total: numTrees(2) x 1
 
 Answer: numTrees(2) + 1 + numTrees(2) = 2 + 1 + 2 = 5
@@ -2612,7 +2612,7 @@ root=1: dp[0] x dp[3] = 1 x 5 = 5
 root=2: dp[1] x dp[2] = 1 x 2 = 2
 root=3: dp[2] x dp[1] = 2 x 1 = 2
 root=4: dp[3] x dp[0] = 5 x 1 = 5
-dp[4] = 14 Y
+dp[4] = 14 ✓
 ```
 
 FUN FACT: This is the Catalan Number! C(n) = (2n)! / ((n+1)! x n!)
@@ -2633,7 +2633,7 @@ stones = [3, 2, 4, 1], k = 2
 ```
 
 Can merge 4 piles into 1?
-(4-1) / (2-1) = 3 Y (need 3 merges)
+(4-1) / (2-1) = 3 ✓ (need 3 merges)
 
 Merge [3,2]: cost = 5, result = [5, 4, 1]
 Merge [5,4]: cost = 9, result = [9, 1]
@@ -2652,7 +2652,7 @@ To merge into 1 pile:
 dp[i][j][1] = dp[i][j][k] + sum[i..j]
 ```
 
-To merge into m piles (m > 1):
+To merge into m piles (m → 1):
 ```
 dp[i][j][m] = min(dp[i][mid][1] + dp[mid+1][j][m-1])
 ```
@@ -2740,14 +2740,14 @@ dp[i][i][1] = 0 > A single pile is already 1 pile. No merge needed.
 dp[i][i][m] = INT_MAX for m > 1 > Can't split 1 pile into 2+. Impossible.
 ```
 
-(n-1) % (k-1) != 0 > return -1
-> Each merge reduces pile count by (k-1). Starting from n piles,
+(n-1) % (k-1) != 0 → return -1
+- Each merge reduces pile count by (k-1). Starting from n piles,
 after one merge: n-(k-1) piles. To reach 1 pile, need exactly
 (n-1)/(k-1) merges. If not divisible, impossible.
 
 **BRILLIANT OBSERVATION:**
 Must merge in steps of (k-1) intervals!
-If k=3: [a,b,c,d,e] > can split at b (merge [a,b,c] and [d,e])
+If k=3: [a,b,c,d,e] → can split at b (merge [a,b,c] and [d,e])
 or at d (merge [a,b,c,d] and [e])
 mid jumps by k-1!
 
@@ -2800,7 +2800,7 @@ T       v
 v = match (diagonal move)
 ```
 
-> = skip char in string1
+- = skip char in string1
 ```
 v = skip char in string2
 ```
@@ -2927,25 +2927,25 @@ int longestCommonSubsequence(string text1, string text2) {
 }
 ```
 
-TIME: O(M x N)  |  SPACE: O(M x N) > Can optimize to O(min(M,N))!
+TIME: O(M x N)  |  SPACE: O(M x N) → Can optimize to O(min(M,N))!
 
  **WHY THIS BASE CASE?**
 ```
 dp[0][j] = 0 and dp[i][0] = 0 (array initialized to 0)
 ```
 
-> dp[0][j]: LCS of "" (empty) with text2[0..j-1] > 0. No common chars.
-> dp[i][0]: LCS of text1[0..i-1] with "" > 0. Same reason.
-> This is why size is (m+1) x (n+1): row 0 and col 0 represent
+- dp[0][j]: LCS of "" (empty) with text2[0..j-1] → 0. No common chars.
+- dp[i][0]: LCS of text1[0..i-1] with "" → 0. Same reason.
+- This is why size is (m+1) x (n+1): row 0 and col 0 represent
 "empty string" and hold the base case values (all zeros).
 
-> The actual characters start at index 1, so we compare
+- The actual characters start at index 1, so we compare
 text1[i-1] vs text2[j-1] (not text1[i] vs text2[j]).
 
  SPACE OPTIMIZATION to O(N) with prev trick:
-> Row i only depends on row i-1. Use single array dp[n+1].
-> Diagonal dp[i-1][j-1] gets destroyed when dp[j-1] is overwritten.
-> Save it in a 'prev' variable before overwriting. See Space
+- Row i only depends on row i-1. Use single array dp[n+1].
+- Diagonal dp[i-1][j-1] gets destroyed when dp[j-1] is overwritten.
+- Save it in a 'prev' variable before overwriting. See Space
 Optimization section below for full explanation.
 
 ### **PROBLEM: Edit Distance (LC 72)**  HARD
@@ -3019,8 +3019,8 @@ dp[0][0] = 0 > "Convert empty to empty" > 0 operations.
 ```
 
 WHY NOT dp[i][0] = 0?
-> That would mean "converting 'abc' to '' costs 0", which is wrong.
-> You need exactly i delete operations to empty a string of length i.
+- That would mean "converting 'abc' to '' costs 0", which is wrong.
+- You need exactly i delete operations to empty a string of length i.
 
 ### **PROBLEM: Palindromic Substrings (LC 647)**
 
@@ -3070,13 +3070,13 @@ int countSubstrings(string s) {
 
  **WHY THIS BASE CASE?**
 ```
-dp[i][i] = true > Every single character is a palindrome by itself.
+dp[i][i] = true → Every single character is a palindrome by itself.
 dp[i][i+1] = true only if s[i] == s[i+1] > Two-char palindrome.
 ```
 
-> Longer substrings dp[i][j] depend on dp[i+1][j-1] (inner substring).
-> For len=3, dp[i+1][j-1] = dp[i+1][i+1] (single char) > needs base.
-> For len=2, dp[i+1][j-1] = dp[i+1][i] where i+1 > i > would be
+- Longer substrings dp[i][j] depend on dp[i+1][j-1] (inner substring).
+- For len=3, dp[i+1][j-1] = dp[i+1][i+1] (single char) → needs base.
+- For len=2, dp[i+1][j-1] = dp[i+1][i] where i+1 → i > would be
 invalid/uninitialized without the explicit len=2 base case.
 
 ### **DETAILED EXAMPLE: Longest Palindromic Subsequence (LC 516)** 
@@ -3159,13 +3159,13 @@ dp[i][i] = 1 > A single character is a palindrome of length 1.
 dp[i][i+1] = 2 if s[i]==s[i+1], else 1
 ```
 
-> Two matching chars = palindrome of length 2.
-> Two non-matching chars = best palindrome is just 1 (either char).
+- Two matching chars = palindrome of length 2.
+- Two non-matching chars = best palindrome is just 1 (either char).
 
 WHY loop by LENGTH?
-> dp[i][j] depends on dp[i+1][j-1] (shrink from both ends).
-> i+1 > i and j-1 < j, so we need SMALLER ranges computed first.
-> Looping by length (2, 3, 4...) guarantees this.
+- dp[i][j] depends on dp[i+1][j-1] (shrink from both ends).
+- i+1 → i and j-1 < j, so we need SMALLER ranges computed first.
+- Looping by length (2, 3, 4...) guarantees this.
 
 ### DETAILED TRACE for s = "bbbab":
 
@@ -3192,7 +3192,7 @@ dp[0][3]: s[0]==s[3]? NO > max(dp[1][3], dp[0][2]) = 3
 dp[1][4]: s[1]==s[4]? YES > dp[1][4] = dp[2][3] + 2 = 3
 
 len=5:
-dp[0][4]: s[0]==s[4]? YES > dp[0][4] = dp[1][3] + 2 = 4 Y
+dp[0][4]: s[0]==s[4]? YES > dp[0][4] = dp[1][3] + 2 = 4 ✓
 ```
 
 Answer: 4 (subsequence "bbbb")
@@ -3269,19 +3269,19 @@ TIME: O(M x N)  |  SPACE: O(M x N)
 dp[i][0] = 1 for all i
 ```
 
-> "How many ways to form empty string t from s[0..i-1]?"
-> Exactly 1: delete everything from s. The empty subsequence always matches "".
+- "How many ways to form empty string t from s[0..i-1]?"
+- Exactly 1: delete everything from s. The empty subsequence always matches "".
 
 ```
 dp[0][j] = 0 for j > 0 (implicit, array initialized to 0)
 ```
 
-> "How many ways to form t[0..j-1] from empty string?"
-> Zero ways. Can't form a non-empty string from nothing.
+- "How many ways to form t[0..j-1] from empty string?"
+- Zero ways. Can't form a non-empty string from nothing.
 
 WHY dp[i][0] = 1 not 0?
-> This is the "successful match" base: we've matched ALL of t.
-> Every position i in s can reach this success state by skipping
+- This is the "successful match" base: we've matched ALL of t.
+- Every position i in s can reach this success state by skipping
 all remaining characters.
 
 ### DETAILED TRACE for s = "rabb", t = "rab":
@@ -3291,7 +3291,7 @@ all remaining characters.
 r  1   1   0   0   (r matches r: use=1, skip=0, total=1)
 a  1   1   1   0   (a matches a: use=1, skip=0, total=1)
 b  1   1   1   1   (b matches b: use=1, skip=0, total=1)
-b  1   1   1   2   (b matches b: use=1, skip=1, total=2) Y
+b  1   1   1   2   (b matches b: use=1, skip=1, total=2) ✓
 ^
 Two ways to form "rab"!
 
@@ -3613,7 +3613,7 @@ Sometimes optimal is to skip ALL elements (return 0)
 PROBLEM: Max money robbing houses (can't rob adjacent houses).
 dp[i] = max(dp[i-1], dp[i-2] + nums[i])
 
-> Full recursive, tabulation, and size n vs n+1 conversion walkthrough in **Part 2: COMPLETE CONVERSION EXAMPLE**.
+- Full recursive, tabulation, and size n vs n+1 conversion walkthrough in **Part 2: COMPLETE CONVERSION EXAMPLE**.
 
 **SPACE OPTIMIZED O(1):**
 
@@ -3685,9 +3685,9 @@ int maxProfit(vector<int>& prices) {
 | `max(doNothing, -prices[i] + solve(i+1, 1))` | `dp[i][0] = max(dp[i+1][0], -prices[i] + dp[i+1][1])` |
 | `max(doNothing, prices[i] + solve(i+2, 0))` | `dp[i][1] = max(dp[i+1][1], prices[i] + dp[i+2][0])` |
 
-> Fill order: i from n-1 to 0 (depends on i+1 and i+2).
-> Size n+2 because sell triggers cooldown: solve(i+2, 0).
-> dp[i][0] = not holding, dp[i][1] = holding.
+- Fill order: i from n-1 to 0 (depends on i+1 and i+2).
+- Size n+2 because sell triggers cooldown: solve(i+2, 0).
+- dp[i][0] = not holding, dp[i][1] = holding.
 
 ### **DETAILED EXAMPLE: Best Time to Buy/Sell Stock IV (LC 188)**  HARD
 
@@ -3771,7 +3771,7 @@ int maxProfit(int k, vector<int>& prices) {
 }
 ```
 
-TIME: O(N x K)  |  SPACE: O(N x K) > Can optimize to O(K)!
+TIME: O(N x K)  |  SPACE: O(N x K) → Can optimize to O(K)!
 
 **Strict conversion mapping:**
 
@@ -3781,8 +3781,8 @@ TIME: O(N x K)  |  SPACE: O(N x K) > Can optimize to O(K)!
 | `max(doNothing, -prices[i] + solve(i+1, t, 1))` | `dp[i][t][0] = max(dp[i+1][t][0], -prices[i] + dp[i+1][t][1])` |
 | `max(doNothing, prices[i] + solve(i+1, t-1, 0))` | `dp[i][t][1] = max(dp[i+1][t][1], prices[i] + dp[i+1][t-1][0])` |
 
-> Fill order: i from n-1 to 0 (depends on i+1), t from 1 to k.
-> dp[i][t][0] = not holding with t txns left, dp[i][t][1] = holding with t txns left.
+- Fill order: i from n-1 to 0 (depends on i+1), t from 1 to k.
+- dp[i][t][0] = not holding with t txns left, dp[i][t][1] = holding with t txns left.
 
 ### EXAMPLE TRACE for prices = [3,2,6,5,0,3], k = 2:
 
@@ -3800,7 +3800,7 @@ i=4 (price=0), t=1:
 ...continue backwards to i=0...
 ```
 
-Final: dp[0][2][0] = 7 Y
+Final: dp[0][2][0] = 7 ✓
 Transaction 1: Buy at 2, sell at 6 > profit = 4
 Transaction 2: Buy at 0, sell at 3 > profit = 3
 ```
@@ -3829,8 +3829,8 @@ LCS(s1, s2) = "ab" (length 2)
 SCS length = 4 + 3 - 2 = 5
 
 One possible SCS: "cabac"
-Contains "abac"? Y (c-abac)
-Contains "cab"? Y (cab-ac)
+Contains "abac"? ✓ (c-abac)
+Contains "cab"? ✓ (cab-ac)
 
 **ALGORITHM:**
 1. Build LCS DP table
@@ -3907,7 +3907,7 @@ Same as LCS: dp[0][j]=0, dp[i][0]=0. During backtrack: when one string exhausted
 
 KEY INSIGHT for SCS length:
 SCS length = len(s1) + len(s2) - LCS length
-> LCS chars appear ONCE (shared), non-LCS chars from both strings
+- LCS chars appear ONCE (shared), non-LCS chars from both strings
 must all appear. So total = both lengths minus the overlap.
 
 ### BACKTRACKING VISUALIZATION for s1="ab", s2="ac":
@@ -3927,19 +3927,19 @@ Backtrack from (2,2):
 s1[1]='b' != s2[1]='c', dp[1][2]=1 > dp[2][1]=1
 ```
 
-> Add 'c', move to (2,1)
+- Add 'c', move to (2,1)
 
 ```
 s1[1]='b' != s2[0], dp[1][1]=1 > dp[2][0]=0
 ```
 
-> Add 'b', move to (1,1)
+- Add 'b', move to (1,1)
 
 ```
 s1[0]='a' == s2[0]='a'
 ```
 
-> Add 'a', move to (0,0)
+- Add 'a', move to (0,0)
 
 Result: "abc" (built backwards, so "a" then "b" then "c")
 
@@ -4019,7 +4019,7 @@ bool isInterleave(string s1, string s2, string s3) {
 }
 ```
 
-TIME: O(M x N)  |  SPACE: O(M x N) > Can optimize to O(N)!
+TIME: O(M x N)  |  SPACE: O(M x N) → Can optimize to O(N)!
 
 **Strict conversion mapping:**
 
@@ -4030,9 +4030,9 @@ TIME: O(M x N)  |  SPACE: O(M x N) > Can optimize to O(N)!
 | `solve(i+1, j)` | `dp[i+1][j]` |
 | `solve(i, j+1)` | `dp[i][j+1]` |
 
-> Fill order: i from m to 0, j from n to 0 (depends on i+1 and j+1).
-> Exact same state (i, j) = current index in s1, s2 as the recursion.
-> No separate first-row/first-col loops needed.
+- Fill order: i from m to 0, j from n to 0 (depends on i+1 and j+1).
+- Exact same state (i, j) = current index in s1, s2 as the recursion.
+- No separate first-row/first-col loops needed.
 
 ### DETAILED TRACE for s1="aa", s2="ab", s3="aaba":
 
@@ -4043,15 +4043,15 @@ Fill backwards from (2,2) to (0,0):
 ```
 dp[2][1]: s2[1]='b', s3[3]='a' > mismatch > false
 dp[2][0]: s2[0]='a', s3[2]='b' > mismatch > false
-dp[1][2]: s1[1]='a', s3[3]='a' > match, dp[2][2]=T > true
+dp[1][2]: s1[1]='a', s3[3]='a' → match, dp[2][2]=T > true
 dp[1][1]: s1[1]='a', s3[2]='b' > no. s2[1]='b', s3[2]='b' > match, dp[1][2]=T > true
-dp[1][0]: s1[1]='a', s3[1]='a' > match, dp[2][0]=F > no. s2[0]='a', s3[1]='a' > match, dp[1][1]=T > true
-dp[0][1]: s1[0]='a', s3[1]='a' > match, dp[1][1]=T > true
-dp[0][0]: s1[0]='a', s3[0]='a' > match, dp[1][0]=T > true Y
+dp[1][0]: s1[1]='a', s3[1]='a' → match, dp[2][0]=F > no. s2[0]='a', s3[1]='a' > match, dp[1][1]=T > true
+dp[0][1]: s1[0]='a', s3[1]='a' → match, dp[1][1]=T > true
+dp[0][0]: s1[0]='a', s3[0]='a' → match, dp[1][0]=T > true ✓
 ```
 
 Answer: dp[0][0] = true
-Interleaving: s1[0] + s1[1] + s2[0] + s2[1] = "a" + "a" + "a" + "b" = "aaba" Y
+Interleaving: s1[0] + s1[1] + s2[0] + s2[1] = "a" + "a" + "a" + "b" = "aaba" ✓
 
 ### **ADVANCED EXAMPLE: Regular Expression Matching (LC 10)**  HARD
 
@@ -4068,13 +4068,13 @@ s = "aa", p = "a*"
 ```
 
 'a*' can match "", "a", "aa", "aaa"...
-So "aa" matches! Y
+So "aa" matches! ✓
 
 ```
 s = "ab", p = ".*"
 ```
 
-'.*' matches any string! Y
+'.*' matches any string! ✓
 
 **BASE CASES:**
 ```
@@ -4151,9 +4151,9 @@ TIME: O(M x N)  |  SPACE: O(M x N)
 | `first_match && solve(i+1, j)` (use * to match 1+) | `first_match && dp[i+1][j]` |
 | `first_match && solve(i+1, j+1)` (direct match) | `first_match && dp[i+1][j+1]` |
 
-> Fill order: i from m to 0, j from n-1 to 0 (depends on i+1, j+1, j+2).
-> Column n is the base case (pattern exhausted): only dp[m][n] = true.
-> No separate first-row initialization loop needed.
+- Fill order: i from m to 0, j from n-1 to 0 (depends on i+1, j+1, j+2).
+- Column n is the base case (pattern exhausted): only dp[m][n] = true.
+- No separate first-row initialization loop needed.
 
 ### DETAILED TRACE for s="aab", p="c*a*b":
 
@@ -4174,11 +4174,11 @@ j=2 (p[2]='a', p[3]='*' > star pair!):
 
 j=0 (p[0]='c', p[1]='*' > star pair!):
   dp[i][0] = dp[i][2] || (s[i]=='c' && dp[i+1][0])
-  dp[0][0]: dp[0][2]=T > TRUE Y
+  dp[0][0]: dp[0][2]=T > TRUE ✓
 ```
 
-Final: dp[0][0] = TRUE Y
-Path: "c*" matches "" (0 c's) > "a*" matches "aa" (2 a's) > "b" matches "b"
+Final: dp[0][0] = TRUE ✓
+Path: "c*" matches "" (0 c's) → "a*" matches "aa" (2 a's) → "b" matches "b"
 
 ### **ADVANCED EXAMPLE: Maximal Rectangle (LC 85)**  BRILLIANT!
 
@@ -4275,7 +4275,7 @@ i=3: push 3 (heights[3]=2)
 i=4: push 4 (heights[4]=2)
 i=5 (end): pop all
 heights[4]=2, width=2 > area=4
-heights[3]=2, width=3 > area=6 Y
+heights[3]=2, width=3 > area=6 ✓
 heights[2]=3, width=4 > area=12? No, width calculation...
 ```
 
@@ -4318,11 +4318,11 @@ int solve(vector<int>& prices, int i, int holding, ...) {
 +---------------------+--------------------------------------------+-------------------------------------------+
 ```
 
-> **Buy line** is IDENTICAL across all: `-prices[i] + solve(i+1, 1)`
-> **Base case** is IDENTICAL across all: `if (i == n) return 0`
-> **Tabulation fill order** is IDENTICAL: `i` from `n-1` to `0`
-> Stock IV (full code above) is the most general — all others are special cases.
-> TIME: O(N) for all (except IV: O(N x K))  |  All optimizable to O(1) space
+- **Buy line** is IDENTICAL across all: `-prices[i] + solve(i+1, 1)`
+- **Base case** is IDENTICAL across all: `if (i == n) return 0`
+- **Tabulation fill order** is IDENTICAL: `i` from `n-1` to `0`
+- Stock IV (full code above) is the most general — all others are special cases.
+- TIME: O(N) for all (except IV: O(N x K))  |  All optimizable to O(1) space
 
 ### **PROBLEM: Maximum Profit in Job Scheduling (LC 1235)** 
 
@@ -4414,7 +4414,7 @@ LIS = [2, 3, 7, 101] or [2, 5, 7, 101] > length 4
 Imagine sorting cards into piles where each pile's top is increasing.
 When a new card comes:
 - If it's larger than all pile tops > start new pile
-- Otherwise > place on leftmost pile with top > card
+- Otherwise → place on leftmost pile with top > card
 
 Number of piles = LIS length!
 
@@ -4461,11 +4461,11 @@ TIME: O(N2)  |  SPACE: O(N)
 dp[i] = 1 for all i
 ```
 
-> Every single element is an increasing subsequence of length 1.
-> Even if no element before i is smaller, the answer is at least 1
+- Every single element is an increasing subsequence of length 1.
+- Even if no element before i is smaller, the answer is at least 1
 (the element itself).
 
-> The loop then tries to EXTEND by looking at all j < i where
+- The loop then tries to EXTEND by looking at all j < i where
 ```
 nums[j] < nums[i]. If found, dp[i] = max(dp[i], dp[j]+1).
 ```
@@ -4594,12 +4594,12 @@ TIME: O(N2)  |  SPACE: O(N)
 len[i] = 1, cnt[i] = 1 for all i
 ```
 
-> len[i] = 1: Each element alone is LIS of length 1 (same as standard LIS).
-> cnt[i] = 1: There's exactly 1 way to form LIS of length 1 at position i
+- len[i] = 1: Each element alone is LIS of length 1 (same as standard LIS).
+- cnt[i] = 1: There's exactly 1 way to form LIS of length 1 at position i
 (just the element itself).
 
-> When len[j]+1 > len[i]: found a LONGER LIS > reset cnt[i] = cnt[j].
-> When len[j]+1 == len[i]: found ANOTHER way to get same length > cnt[i] += cnt[j].
+- When len[j]+1 → len[i]: found a LONGER LIS → reset cnt[i] = cnt[j].
+- When len[j]+1 == len[i]: found ANOTHER way to get same length > cnt[i] += cnt[j].
 
 ## **SOLVED: Russian Doll Envelopes (LC 354)**  HARD
 
@@ -4636,7 +4636,7 @@ TIME: O(N log N)  |  SPACE: O(N)
 WHY DESCENDING HEIGHT FOR SAME WIDTH?
 Example: [3,3], [3,4], [3,5]
 If ascending: LIS might pick all 3 (wrong! same width)
-If descending: [3,5], [3,4], [3,3] > LIS picks at most 1
+If descending: [3,5], [3,4], [3,3] → LIS picks at most 1
 
 ### PRACTICE PROBLEMS - LIS Pattern:
 
@@ -4673,8 +4673,8 @@ If descending: [3,5], [3,4], [3,3] > LIS picks at most 1
 You're accumulating a running sum. At each step ask:
 "Would adding this element help, or should I ditch everything and restart?"
 
-If previous sum is NEGATIVE > restart (negative prefix hurts)
-If previous sum is POSITIVE > extend (positive prefix helps)
+If previous sum is NEGATIVE → restart (negative prefix hurts)
+If previous sum is POSITIVE → extend (positive prefix helps)
 
  **PRODUCT VS SUM** (Critical Difference!):
 ```
@@ -4733,7 +4733,7 @@ All elements could be negative!
  FIX: Initialize with nums[0]
 
  PITFALL 2: Forgetting minProd for products
-[-2, 3, -4] > max product = 24 (all three!)
+[-2, 3, -4] → max product = 24 (all three!)
 If you only track max, you miss the double-negative opportunity
 
  PITFALL 3: Circular array
@@ -4789,12 +4789,12 @@ int maxSubArray(vector<int>& nums) {
 curr = nums[0], maxSum = nums[0]
 ```
 
-> Start with first element (not 0!).
-> WHY NOT 0? If all elements are negative (e.g. [-3, -2, -1]),
+- Start with first element (not 0!).
+- WHY NOT 0? If all elements are negative (e.g. [-3, -2, -1]),
 starting at 0 would give maxSum = 0 (empty subarray), which is wrong.
 The problem requires at least 1 element.
 
-> curr tracks "best subarray ending HERE". At each step:
+- curr tracks "best subarray ending HERE". At each step:
 ```
 curr = max(nums[i], curr + nums[i]) means "start fresh or extend".
 ```
@@ -4846,10 +4846,10 @@ TIME: O(N)  |  SPACE: O(1)
 
  **WHY THIS BASE CASE?**
 All initialized with nums[0], same as Max Subarray.
-maxSum < 0 > return maxSum (edge case: ALL elements negative)
-> If all negative, total - minSum = 0 (empty subarray), which is wrong.
-> In this case, the max non-wrapping subarray is the answer.
-> The "wrap = total - minSubarray" trick only works when at least
+maxSum < 0 → return maxSum (edge case: ALL elements negative)
+- If all negative, total - minSum = 0 (empty subarray), which is wrong.
+- In this case, the max non-wrapping subarray is the answer.
+- The "wrap = total - minSubarray" trick only works when at least
 one element is non-negative.
 
 ## **SOLVED: Maximum Product Subarray (LC 152)** 
@@ -4886,14 +4886,14 @@ TIME: O(N)  |  SPACE: O(1)
 maxProd = nums[0], minProd = nums[0], result = nums[0]
 ```
 
-> Initialize with first element, not 0 or 1!
-> WHY track minProd? Because negative x negative = positive.
+- Initialize with first element, not 0 or 1!
+- WHY track minProd? Because negative x negative = positive.
 e.g. [-2, 3, -4]: minProd after [-2,3] = -6, then -6 x -4 = 24!
 
-> WHY swap when nums[i] < 0? Multiplying by negative FLIPS signs:
+- WHY swap when nums[i] < 0? Multiplying by negative FLIPS signs:
 the old max becomes the new min and vice versa.
 
-> WHY NOT start at 1? Because [0.5, 0.1] would give wrong answer
+- WHY NOT start at 1? Because [0.5, 0.1] would give wrong answer
 (though LeetCode uses integers). More importantly, empty product
 (value 1) isn't valid - problem requires at least 1 element.
 
@@ -5032,14 +5032,14 @@ maxSum = INT_MIN (global) > Must handle all-negative trees.
 leftGain = max(0, dfs(left)) > WHY max with 0?
 ```
 
-> If a subtree's best path is NEGATIVE, don't include it!
-> Taking a negative path would reduce our sum. Better to skip.
-> max(0, gain) effectively says "use this subtree or don't".
+- If a subtree's best path is NEGATIVE, don't include it!
+- Taking a negative path would reduce our sum. Better to skip.
+- max(0, gain) effectively says "use this subtree or don't".
 
-Return: node->val + max(leftGain, rightGain) > WHY only one side?
-> Parent can only use ONE path down from this node (can't fork).
-> But GLOBAL update uses BOTH sides (path passing through this node).
-> This "return vs update" distinction is the core of Tree DP.
+Return: node->val + max(leftGain, rightGain) → WHY only one side?
+- Parent can only use ONE path down from this node (can't fork).
+- But GLOBAL update uses BOTH sides (path passing through this node).
+- This "return vs update" distinction is the core of Tree DP.
 
 ## **SOLVED: Diameter of Binary Tree (LC 543)** 
 
@@ -5078,11 +5078,11 @@ if (!node) return 0 > Null node has height 0.
 diameter = 0 (global) > Minimum possible diameter.
 ```
 
-Return: 1 + max(left, right) > Height of subtree rooted here.
-Update: diameter = max(diameter, left + right) > Path THROUGH this node.
-> Diameter through a node = left height + right height (edges, not nodes).
-> We return HEIGHT to parent but update DIAMETER globally.
-> Same "return vs update" pattern as Max Path Sum.
+Return: 1 + max(left, right) → Height of subtree rooted here.
+Update: diameter = max(diameter, left + right) → Path THROUGH this node.
+- Diameter through a node = left height + right height (edges, not nodes).
+- We return HEIGHT to parent but update DIAMETER globally.
+- Same "return vs update" pattern as Max Path Sum.
 
 ## **SOLVED: House Robber III (LC 337)** 
 
@@ -5123,17 +5123,17 @@ if (!node) return {0, 0} > Null node: 0 profit whether robbed or skipped.
 robThis = node->val + leftSkip + rightSkip
 ```
 
-> If we rob THIS node, we MUST skip both children (adjacency rule).
+- If we rob THIS node, we MUST skip both children (adjacency rule).
 
 ```
 skipThis = max(leftRob, leftSkip) + max(rightRob, rightSkip)
 ```
 
-> If we skip this node, each child independently chooses best option.
-> Children are NOT adjacent to each other, so both can be robbed.
+- If we skip this node, each child independently chooses best option.
+- Children are NOT adjacent to each other, so both can be robbed.
 
-Return {robThis, skipThis} > Parent needs BOTH values to decide.
-> This "return a pair" pattern avoids recomputation. Each node
+Return {robThis, skipThis} → Parent needs BOTH values to decide.
+- This "return a pair" pattern avoids recomputation. Each node
 computed exactly once in post-order traversal.
 
 ### PRACTICE PROBLEMS - Tree DP:
@@ -5256,10 +5256,10 @@ TIME: O(2^N x N2)  |  SPACE: O(2^N x N)
 dp[1][0] = 0 > "At node 0, having visited only node 0, cost = 0."
 ```
 
-> mask = 1 means binary 0...001 > only node 0 is visited.
-> We start the journey at node 0 with zero travel cost.
-> All other dp values = INT_MAX (unreachable until computed).
-> fullMask = (1<<n)-1 = all bits set = all nodes visited.
+- mask = 1 means binary 0...001 → only node 0 is visited.
+- We start the journey at node 0 with zero travel cost.
+- All other dp values = INT_MAX (unreachable until computed).
+- fullMask = (1<<n)-1 = all bits set = all nodes visited.
 
 ## **SOLVED: Shortest Path Visiting All Nodes (LC 847)** 
 
@@ -5311,10 +5311,10 @@ TIME: O(2^N x N2)  |  SPACE: O(2^N x N)
 
  **WHY THIS BASE CASE?**
 Start BFS from EVERY node: q.push({i, 1 << i}) for all i.
-> Unlike TSP, there's no fixed start. Any node can be the start.
-> State = (currentNode, visitedMask). BFS finds shortest path.
-> mask == fullMask > all nodes visited > return steps.
-> "Can revisit nodes" > BFS handles this by tracking (node, mask)
+- Unlike TSP, there's no fixed start. Any node can be the start.
+- State = (currentNode, visitedMask). BFS finds shortest path.
+- mask == fullMask > all nodes visited > return steps.
+- "Can revisit nodes" → BFS handles this by tracking (node, mask)
 pairs, not just node. Same node with different masks = different states.
 
 ## **SOLVED: Partition to K Equal Sum Subsets (LC 698)** 
@@ -5386,14 +5386,14 @@ TIME: O(N x 2^N)  |  SPACE: O(2^N)
 dp[0] = 0 > "Empty subset has current bucket sum = 0."
 ```
 
-> dp[mask] stores the current bucket's running sum (mod target).
-> When bucket fills up (sum == target), reset to 0 via % target.
-> dp[(1<<n)-1] == 0 means all elements used AND all buckets exactly full.
+- dp[mask] stores the current bucket's running sum (mod target).
+- When bucket fills up (sum == target), reset to 0 via % target.
+- dp[(1<<n)-1] == 0 means all elements used AND all buckets exactly full.
 
-total % k != 0 > return false
-> If total sum isn't divisible by k, equal partition is impossible.
+total % k != 0 → return false
+- If total sum isn't divisible by k, equal partition is impossible.
 
-Sorting in descending order > optimization: large elements fail fast.
+Sorting in descending order → optimization: large elements fail fast.
 
 ### PRACTICE PROBLEMS - Bitmask DP:
 
@@ -5549,17 +5549,17 @@ TIME: O(10 x 2^10 x len)  |  SPACE: O(10 x 2^10)
 pos == len > return started ? 1 : 0
 ```
 
-> Reached end of number. If we actually started building (non-zero digit
+- Reached end of number. If we actually started building (non-zero digit
 placed), count this as 1 valid number. If only leading zeros, don't count.
 
 mask tracks which digits are USED (bitmask of 10 digits).
-> If digit d's bit is already set in mask > skip (duplicate digit).
-> started = false: haven't placed non-zero digit yet (leading zeros).
+- If digit d's bit is already set in mask → skip (duplicate digit).
+- started = false: haven't placed non-zero digit yet (leading zeros).
 Can "skip" (keep adding leading zeros) or place first non-zero digit.
 
 WHY n - uniqueCount?
-> Easier to count numbers with ALL UNIQUE digits, then subtract.
-> "At least one repeated" = total - "all unique".
+- Easier to count numbers with ALL UNIQUE digits, then subtract.
+- "At least one repeated" = total - "all unique".
 
 ## **SOLVED: Count of Integers (LC 2719)** 
 
@@ -5638,22 +5638,22 @@ If allowed, modify input grid/array in-place for DP!
 NOTE: This is a shortcut optimization, NOT strict recursion > tabulation conversion.
 For learning, always do strict conversion first, then optimize.
 
-### TECHNIQUE 3: Rolling array (2D > 1D)
+### TECHNIQUE 3: Rolling array (2D → 1D)
 
 If dp[i][j] only depends on previous row:
 ```cpp
 vector<vector<int>> dp(m, vector<int>(n));  // O(MN) space
 ```
 
-> vector<int> dp(n);  // O(N) space
+- vector<int> dp(n);  // O(N) space
 Update in-place or use two rows alternating
 
-### **⚡ TECHNIQUE 4: 2D > 1D with 'prev' TRICK (THE DIAGONAL PROBLEM) ⚡**
+### **⚡ TECHNIQUE 4: 2D → 1D with 'prev' TRICK (THE DIAGONAL PROBLEM) ⚡**
 
 **WHEN TO USE:**
 When dp[i][j] depends on dp[i-1][j-1] (diagonal), dp[i-1][j] (top),
 AND dp[i][j-1] (left). This is the case for:
-> LCS, Edit Distance, Distinct Subsequences, Interleaving String, etc.
+- LCS, Edit Distance, Distinct Subsequences, Interleaving String, etc.
 
 **THE PROBLEM:**
 
@@ -5709,11 +5709,11 @@ Now at j=3:      dp = [ old, NEW, NEW, old ]
 j-1=2  j=3
 
 At j=3:
-- dp[3] = "old"  > we haven't touched it > it's still row 1's value
-> dp[3] IS dp[i-1][3] IS dp[i-1][j]  
+- dp[3] = "old"  → we haven't touched it → it's still row 1's value
+- dp[3] IS dp[i-1][3] IS dp[i-1][j]  
 
-- dp[2] = "NEW"  > we just computed it in this row (at j=2)
-> dp[2] IS dp[i][2] IS dp[i][j-1]    
+- dp[2] = "NEW"  → we just computed it in this row (at j=2)
+- dp[2] IS dp[i][2] IS dp[i][j-1]    
 
 That's it. No trick needed for these two:
 ```
@@ -5739,7 +5739,7 @@ dp[i-1][(j+1)-1] = the DIAGONAL for the NEXT iteration.
 
 **STEP-BY-STEP RECIPE:**
 
-1. Check: does row i only depend on row i-1? > YES, proceed.
+1. Check: does row i only depend on row i-1? → YES, proceed.
 2. Replace 2D array with 1D array of size (n+1), initialized to base row.
 3. At start of each row: set prev = dp[0] (the column-0 base case).
 4. For each j from 1 to n:
@@ -5802,7 +5802,7 @@ j=3: temp=1, 'c'=='c'? YES > dp[3]=1+1=2, prev=1
 dp = [0, 1, 1, 2]
 ```
 
-Answer: dp[3] = 2 Y (LCS = "ac")
+Answer: dp[3] = 2 ✓ (LCS = "ac")
 
 ### FULL EXAMPLE: Edit Distance Space-Optimized
 
@@ -5838,7 +5838,7 @@ return dp[n];
 ```
 
 NOTE: dp[0] = i updates the column-0 base case EACH ROW.
-> dp[i][0] = i means "delete all i chars of word1 to get empty string".
+- dp[i][0] = i means "delete all i chars of word1 to get empty string".
 
 ```
 +------------------------------------------------------------------------------+
@@ -5881,9 +5881,9 @@ NOTE: dp[0] = i updates the column-0 base case EACH ROW.
 |  | empty string        | base case!       | sometimes base |                 |
 |  +---------------------------------------------------------+                 |
 |                                                                              |
-|  For MIN/MAX: target=0 > return 0, target<0 > return impossible              |
-|  For COUNT:   target=0 > return 1, target<0 > return 0                       |
-|  For STRINGS: empty string > return 0 or length                              |
+|  For MIN/MAX: target=0 → return 0, target<0 > return impossible              |
+|  For COUNT:   target=0 → return 1, target<0 > return 0                       |
+|  For STRINGS: empty string → return 0 or length                              |
 |                                                                              |
 +------------------------------------------------------------------------------+
 
@@ -5891,9 +5891,9 @@ NOTE: dp[0] = i updates the column-0 base case EACH ROW.
 |              TOP-DOWN > BOTTOM-UP CONVERSION                                 |
 +------------------------------------------------------------------------------+
 |                                                                              |
-|  1. Parameters of recursion > DP table dimensions                            |
-|  2. Base case returns > DP initialization                                    |
-|  3. Recursion direction > REVERSE for iteration!                             |
+|  1. Parameters of recursion → DP table dimensions                            |
+|  2. Base case returns → DP initialization                                    |
+|  3. Recursion direction → REVERSE for iteration!                             |
 |                                                                              |
 |     Top-Down: solve(n) > solve(n-1) > ... > solve(0)                         |
 |     Bottom-Up: dp[0] > dp[1] > ... > dp[n]                                   |
@@ -5901,7 +5901,7 @@ NOTE: dp[0] = i updates the column-0 base case EACH ROW.
 |                    OPPOSITE DIRECTION!                                       |
 |                                                                              |
 |  4. return memo[x] = ... > dp[x] = ...                                       |
-|  5. Final call solve(n) > return dp[n]                                       |
+|  5. Final call solve(n) → return dp[n]                                       |
 |                                                                              |
 +------------------------------------------------------------------------------+
 
@@ -5993,13 +5993,13 @@ tight=true: can only use digits < current digit of N
 Count in [1, R]: solve(R) - solve(L-1)
 
 **CONVERSION CHECKLIST:** 
-1. States > DP dimensions
-2. Base cases > Initialize DP
-3. Dependencies > Iteration order
-4. Recurrence > Same logic
+1. States → DP dimensions
+2. Base cases → Initialize DP
+3. Dependencies → Iteration order
+4. Recurrence → Same logic
 5. Edge cases > if statements before loop
-6. Return > dp[final]
-7. Optimize > Keep only needed values
+6. Return → dp[final]
+7. Optimize → Keep only needed values
 
 **STEPS TO SOLVE ANY DP:**
 1. Identify the pattern (use keywords!)

@@ -22,7 +22,7 @@ Master DFS, BFS, Topological Sort, Union-Find, Shortest Paths & More!
 
 VERTEX (NODE): A point in the graph
 EDGE: Connection between two vertices
-DIRECTED: Edges have direction (A > B)
+DIRECTED: Edges have direction (A → B)
 UNDIRECTED: Edges go both ways (A - B)
 WEIGHTED: Edges have values/costs
 DAG: Directed Acyclic Graph (no cycles)
@@ -553,7 +553,7 @@ return result;
 
 ### **WHAT IS TOPOLOGICAL SORT?**
 
-DEFINITION: Linear ordering of vertices such that for every edge u > v,
+DEFINITION: Linear ordering of vertices such that for every edge u → v,
 u comes before v in the ordering.
 
 REQUIREMENTS: Only works on DAGs (Directed Acyclic Graphs)
@@ -1480,7 +1480,7 @@ return true;
 
 - 207. Course Schedule 
 - 210. Course Schedule II 
-- 630. Course Schedule III  (Greedy + Heap > See Greedy Algorithms.txt / Heap.txt)
+- 630. Course Schedule III  (Greedy + Heap → See Greedy Algorithms.txt / Heap.txt)
 - 269. Alien Dictionary 
 - 310. Minimum Height Trees 
 - 802. Find Eventual Safe States 

@@ -66,9 +66,9 @@ WHY "BACKTRACKING"?
 ```
 
 **GOLDEN RULE:**
-> Need ALL solutions > Backtracking
-> Need OPTIMAL solution > DP (if overlapping subproblems)
-> Need to check if path EXISTS > DFS
+- Need ALL solutions → Backtracking
+- Need OPTIMAL solution → DP (if overlapping subproblems)
+- Need to check if path EXISTS → DFS
 
 ## **PART 2: UNIVERSAL TEMPLATE** 
 
@@ -238,7 +238,7 @@ for (int i = start; i < nums.size(); i++) {
 }
 ```
 
- CRITICAL: i > start (not i > 0)
+ CRITICAL: i > start (not i → 0)
 We only skip duplicates at SAME decision level!
 
 ## **PART 4: PATTERN 2 - COMBINATIONS**
@@ -306,7 +306,7 @@ for (int i = start; i <= n - (k - path.size()) + 1; i++) {
 
 **PRUNING EXPLANATION:**
 If path.size() = 1 and k = 3, we need 2 more elements
-If we're at i = 3 and n = 4, we have [3, 4] available = 2 elements Y
+If we're at i = 3 and n = 4, we have [3, 4] available = 2 elements ✓
 If we're at i = 4 and n = 4, we have [4] available = 1 element X
 So we can stop early!
 
@@ -316,7 +316,7 @@ So we can stop early!
  TEMPLATE: Don't increment start (allow reuse), check sum
 
 **KEY INSIGHT:**
-- Can reuse same element > use i (not i+1) in recursive call
+- Can reuse same element → use i (not i+1) in recursive call
 - Stop when sum >= target
 
 Input: candidates = [2,3,6,7], target = 7
@@ -881,7 +881,7 @@ return true;
 ```
 
 NOTE: Palindrome Partitioning II (LC 132) asks for MINIMUM cuts, not all partitions.
-That's a DP problem > See Dynamic Programming.txt
+That's a DP problem → See Dynamic Programming.txt
 
 ## **PART 8: PRUNING TECHNIQUES**
 
@@ -894,7 +894,7 @@ That's a DP problem > See Dynamic Programming.txt
 - if (i > start && nums[i] == nums[i-1]) continue;
 
 2. SUM CONSTRAINT
-- if (currentSum > target) return;
+- if (currentSum → target) return;
 - Stop early when sum exceeds target
 
 3. REMAINING ELEMENTS CHECK
@@ -906,7 +906,7 @@ That's a DP problem > See Dynamic Programming.txt
 - Sudoku: Check row/col/box before placing
 
 5. SORTED + EARLY TERMINATION
-- If array sorted and current > target, all future > target
+- If array sorted and current → target, all future > target
 - Can break loop entirely
 
 ### EXAMPLE - Combination Sum with Pruning:
@@ -968,7 +968,7 @@ for (int i = start; i < candidates.size(); i++) {
 +-----------------------------------------------------------------------------+
 |                                                                             |
 |  Q: Can elements be REUSED?                                                 |
-|     YES > use 'i' in recursive call                                         |
+|     YES → use 'i' in recursive call                                         |
 |     NO  > use 'i+1' in recursive call                                       |
 |                                                                             |
 |  Q: Are there DUPLICATES in input?                                          |

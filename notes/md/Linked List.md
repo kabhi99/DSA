@@ -83,7 +83,7 @@ fast = fast->next;
 
 **COMMON VARIATIONS:**
 - Middle of linked list
-- Cycle detection (Floyd's algorithm) > See Two Pointers.txt
+- Cycle detection (Floyd's algorithm) → See Two Pointers.txt
 - Remove nth from end (fixed gap)
 - Palindrome linked list (find middle + reverse)
 
@@ -94,7 +94,7 @@ KEY INSIGHT: When fast reaches end, slow is at middle (or n behind)
  **MEMORY AID**: "**D**ummy node + **T**ail pointer - compare, append, advance"
 
  USE WHEN: Merge two sorted lists, interleave lists, sort a linked list
- VISUALIZATION: L1: >  L2: > ... merged: >
+ VISUALIZATION: L1: →  L2: → ... merged: >
 
 ###  TEMPLATE (Merge Two Sorted):
 
@@ -137,7 +137,7 @@ return merge(sortList(head), sortList(mid));
 - Sort list (merge sort)
 - Add two numbers (digit by digit with carry)
 - Intersection point of two lists
-- Merge K sorted lists (with heap) > See Heap & Kth Problems.txt
+- Merge K sorted lists (with heap) → See Heap & Kth Problems.txt
 
 KEY INSIGHT: Dummy node eliminates all edge cases for the head
 
@@ -185,7 +185,7 @@ KEY INSIGHT: Linked list surgery - save references before cutting links
 
 ### **PATTERN 5: COMPLEX POINTER**
 
- **MEMORY AID**: "Extra pointers (random, child) > interleave or DFS to handle"
+ **MEMORY AID**: "Extra pointers (random, child) → interleave or DFS to handle"
 
  USE WHEN: Copy with random pointer, flatten multilevel list
  VISUALIZATION: A>A'>B>B'>C>C' (interleave copies into original)
@@ -276,12 +276,12 @@ KEY INSIGHT: Interleaving embeds a mapping in the list itself - O(1) space
 ### STEP 1: Identify Problem Type (30 seconds)
 
 Ask:
-o Need to reverse all or part of the list? > Reversal
-o Need middle, cycle, or nth from end? > Slow & Fast
-o Two lists to combine, compare, or sort one? > Merge / Sort
-o Restructure pointers in-place? > In-Place Manipulation
-o Extra pointers (random, child)? > Complex Pointer
-o Combination (e.g., palindrome, reorder)? > Multiple patterns
+o Need to reverse all or part of the list? → Reversal
+o Need middle, cycle, or nth from end? → Slow & Fast
+o Two lists to combine, compare, or sort one? → Merge / Sort
+o Restructure pointers in-place? → In-Place Manipulation
+o Extra pointers (random, child)? → Complex Pointer
+o Combination (e.g., palindrome, reorder)? → Multiple patterns
 
 ### STEP 2: Choose Template (30 seconds)
 
@@ -450,7 +450,7 @@ return true;
 - N = half the list length = the middle position
 
 **GOLDEN RULE:**
-> "while (fast && fast->next)" - check BOTH to avoid null dereference
+- "while (fast && fast->next)" - check BOTH to avoid null dereference
 
 ```cpp
 ListNode* middleNode(ListNode* head) {
@@ -542,7 +542,7 @@ return a;
 ### 7. Linked List Cycle (LC 141) - CROSS-REFERENCE
 
  PATTERN: Floyd's Cycle Detection (Slow & Fast)
- FULL SOLUTION: See Two Pointers.txt > Problem 7
+ FULL SOLUTION: See Two Pointers.txt → Problem 7
 
 **QUICK RECAP:**
 - slow moves 1 step, fast moves 2 steps
@@ -566,7 +566,7 @@ return false;
 ### 8. Linked List Cycle II (LC 142) - CROSS-REFERENCE
 
  PATTERN: Floyd's Algorithm Extended
- FULL SOLUTION: See Two Pointers.txt > Problem 8
+ FULL SOLUTION: See Two Pointers.txt → Problem 8
 
 **QUICK RECAP:**
 - Phase 1: Detect meeting point with slow/fast
@@ -597,7 +597,7 @@ return nullptr;
 ### 9. Reorder List (LC 143) - CROSS-REFERENCE
 
  PATTERN: Slow & Fast + Reversal + Merge (Three Patterns Combined!)
- FULL SOLUTION: See Two Pointers.txt > Problem 22
+ FULL SOLUTION: See Two Pointers.txt → Problem 22
 
 **QUICK RECAP:**
 - Step 1: Find middle using slow/fast
@@ -653,7 +653,7 @@ while (second) {
 - tail->next = l1 ? l1 : l2 handles remaining elements in one line
 
 **GOLDEN RULE:**
-> Dummy node is the #1 trick for linked list merge problems
+- Dummy node is the #1 trick for linked list merge problems
 
 ```cpp
 ListNode* mergeTwoLists(ListNode* l1, ListNode* l2) {
@@ -674,7 +674,7 @@ return dummy.next;
 ### 11. Sort List (LC 148) 
 
  PATTERN: Merge / Sort (Merge Sort on Linked List)
- TEMPLATE: Find middle (slow/fast) > split > recurse > merge
+ TEMPLATE: Find middle (slow/fast) → split → recurse > merge
 
 **KEY INSIGHT:**
 - Merge sort is ideal for linked lists - no random access needed
@@ -683,12 +683,12 @@ return dummy.next;
 - fast starts at head->next (not head) to get the FIRST middle for even-length
 
 **WHY IT WORKS:**
-- Splitting at the middle gives balanced halves > O(log N) depth
+- Splitting at the middle gives balanced halves → O(log N) depth
 - Merge of two sorted lists is O(N) using the merge template
 - Total: O(N log N) - same as array merge sort
 
 **EDGE CASES:**
-- Empty list or single node > return as-is (base case)
+- Empty list or single node → return as-is (base case)
 - Two nodes > split into two singles, merge them
 
 ```cpp
@@ -754,7 +754,7 @@ return dummy.next;
 
 KEY INSIGHT (CLEVER TRICK!):
 - You are NOT given access to head - only the node to delete
-- Can't find the previous node > can't do normal deletion
+- Can't find the previous node → can't do normal deletion
 - Instead: copy the NEXT node's value into this node, then delete next
 
 **WHY IT WORKS:**
@@ -792,7 +792,7 @@ node->next = node->next->next;
 
 **EDGE CASES:**
 - k == 0 or k % len == 0 > no rotation needed
-- Single node > return as-is
+- Single node → return as-is
 
 ```cpp
 ListNode* rotateRight(ListNode* head, int k) {
@@ -821,8 +821,8 @@ return head;
 
 KEY INSIGHT (BRILLIANT - O(1) Space Without HashMap!):
 - Step 1: Insert a copy of each node right after it
-Original: A > B > C
-After:    A > A' > B > B' > C > C'
+Original: A → B → C
+After:    A → A' → B → B' → C → C'
 
 - Step 2: Set random pointers using the interleaved structure
 If A.random = C, then A'.random = C.next (which is C')

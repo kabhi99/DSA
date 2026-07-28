@@ -170,7 +170,7 @@ isValid(5) is still true
 l = 5                    // l doesn't move!
 ```
 
-> INFINITE LOOP! 
+- INFINITE LOOP! 
 
 The loop will run FOREVER because l and r never converge!
 
@@ -178,7 +178,7 @@ The loop will run FOREVER because l and r never converge!
 
 ```
 while (l < r) {              // l=5, r=6
-mid = (5 + 6 + 1) / 2;   // mid = 12/2 = 6  Y  
+mid = (5 + 6 + 1) / 2;   // mid = 12/2 = 6  ✓
 
 if (isValid(6)) {        // Check if 6 is valid
     l = mid;             // l = 6              
@@ -189,7 +189,7 @@ if (isValid(6)) {        // Check if 6 is valid
 
 Now:
 ```
-l = 6, r = 6             // Y Loop exits! (l == r)
+l = 6, r = 6             // ✓ Loop exits! (l == r)
 ```
 
 OR if isValid(6) is false:
@@ -199,10 +199,10 @@ r = mid - 1;             // r = 5
 
 Next iteration:
 ```
-l = 5, r = 5             // Y Loop exits! (l == r)
+l = 5, r = 5             // ✓ Loop exits! (l == r)
 ```
 
-> CONVERGES CORRECTLY! 
+- CONVERGES CORRECTLY! 
 
 ### **THE GOLDEN RULE** 
 
@@ -216,7 +216,7 @@ l = 5, r = 5             // Y Loop exits! (l == r)
 WHY? Integer division rounds DOWN. When l and r are adjacent:
 - mid = (l + r) / 2 = l  (rounds to left)
 - If we do l = mid, nothing changes > infinite loop!
-- Adding +1 forces mid = r > loop progresses
+- Adding +1 forces mid = r → loop progresses
 
 **SYMMETRY:**
 MINIMUM: mid = (l+r)/2,     r = mid,   l = mid+1
@@ -228,8 +228,8 @@ This trips up EVERYONE! The wording seems backwards.
 
 ### **THE RULE** 
 
-"MINIMIZE the MAXIMUM"  >  Use MINIMUM Pattern (no +1)
-"MAXIMIZE the MINIMUM"  >  Use MAXIMUM Pattern (+1 needed!)
+"MINIMIZE the MAXIMUM"  →  Use MINIMUM Pattern (no +1)
+"MAXIMIZE the MINIMUM"  →  Use MAXIMUM Pattern (+1 needed!)
 
 Wait, WHAT?! Let me explain...
 
@@ -246,8 +246,8 @@ The MINIMUM value that makes the task possible!
 Search space: [some_min, some_max]
 Question: "What's the SMALLEST capacity/speed that works?"
 
-> You want the MINIMUM valid value
-> Use MINIMUM PATTERN (no +1)
+- You want the MINIMUM valid value
+- Use MINIMUM PATTERN (no +1)
 
 **TEMPLATE:**
 
@@ -278,8 +278,8 @@ piles = [3, 6, 7, 11], h = 8
 lo = 1, hi = 11
 ```
 
-> Answer: 6 (MINIMUM speed that works)
-> TEMPLATE: MINIMUM (no +1) Y
+- Answer: 6 (MINIMUM speed that works)
+- TEMPLATE: MINIMUM (no +1) ✓
 
 Other examples: Split Array (LC 410), Ship Packages (LC 1011)
 
@@ -296,8 +296,8 @@ The MAXIMUM value that's still achievable!
 Search space: [some_min, some_max]
 Question: "What's the LARGEST minimum we can guarantee?"
 
-> You want the MAXIMUM valid value
-> Use MAXIMUM PATTERN (+1 needed!)
+- You want the MAXIMUM valid value
+- Use MAXIMUM PATTERN (+1 needed!)
 
 **TEMPLATE:**
 
@@ -328,8 +328,8 @@ position = [1,2,3,4,7], m = 3
 lo = 1, hi = 6
 ```
 
-> Answer: 3 (MAXIMUM achievable minimum distance)
-> TEMPLATE: MAXIMUM (+1 needed!) Y
+- Answer: 3 (MAXIMUM achievable minimum distance)
+- TEMPLATE: MAXIMUM (+1 needed!) ✓
 
 Other examples: Maximum Candies (LC 2226), Divide Chocolate (LC 1231)
 
@@ -477,35 +477,26 @@ r = mid - 1;
 return result;
 ```
 
-###  QUICK COMPARISON TABLE
-Problem Type         Loop        Mid Calc        Updates       Return
-Find MINIMUM         l < r       (l+r)/2         r=mid         l or r
-```
-l=mid+1
-```
+### **QUICK COMPARISON TABLE**
 
-Find MAXIMUM         l < r       (l+r+1)/2     l=mid         l or r
-```
-r=mid-1
-```
+| Problem Type      | Loop     | Mid Calc      | Updates              | Return       |
+|-------------------|----------|---------------|----------------------|--------------|
+| Find MINIMUM      | `l < r`  | `(l+r)/2`     | `r = mid` / `l = mid + 1`   | `l` or `r`      |
+| Find MAXIMUM      | `l < r`  | `(l+r+1)/2`   | `l = mid` / `r = mid - 1`   | `l` or `r`      |
+| Find Element      | `l <= r` | `(l+r)/2`     | `r = mid - 1` / `l = mid + 1` | `mid` or `-1` |
+| First Occurrence  | `l <= r` | `(l+r)/2`     | keep `l`/`r`, record `result` | `result`   |
+| Last Occurrence   | `l <= r` | `(l+r)/2`     | keep `l`/`r`, record `result` | `result`   |
 
-Find Element         l <= r      (l+r)/2         r=mid-1       mid or -1
-```
-l=mid+1
-```
+**Why prefer `l <= r`?** It's valid for finding an element, but be careful:
 
-First Occurrence     l <= r      (l+r)/2         Keep l/r      result
-Last Occurrence      l <= r      (l+r)/2         Keep l/r      result
-WHY PREFER `l <= r`?
-You mentioned preferring `l <= r`. It's valid! Just be careful:
- GOOD for classic binary search (find element)
- GOOD when you need to handle l == r explicitly
- TRICKY for "binary search on answer" (min/max problems)
-- You'll need to be very careful with updates
-- The `l < r` pattern is cleaner for these
-RECOMMENDATION:
-- Classic BS (find element): Use `l <= r`
-- BS on answer (min/max): Use `l < r` (cleaner!)
+- ✅ Good for **classic** binary search (find element).
+- ✅ Good when you need to handle `l == r` explicitly.
+- ⚠ Tricky for **binary search on answer** (min/max problems) — you'll need to be very careful with updates; the `l < r` pattern is cleaner.
+
+**Recommendation:**
+
+- Classic BS (find element): use `l <= r`.
+- BS on answer (min/max): use `l < r` (cleaner).
 
 **PART 3: BINARY SEARCH PATTERNS**
 
@@ -527,392 +518,369 @@ return -1;
 
 TIME: O(log N)  |  SPACE: O(1)
 
-**⚡ HOW TO ESTABLISH BOUNDS (lo, hi) - COMPLETE GUIDE** ⚡
+## **PART 3: HOW TO ESTABLISH BOUNDS (lo, hi) — COMPLETE GUIDE**
 
-## This is THE hardest part! Use these systematic strategies:
-***STRATEGY 1: Think of WORST and BEST Case** *
+Choosing `lo` and `hi` is the hardest part of "binary search on answer". Use these systematic strategies.
+
+---
+
+### **STRATEGY 1 — Think of Worst and Best Case**
+
 Ask yourself:
-- What's the MINIMUM possible answer? (lo)
-- What's the MAXIMUM possible answer? (hi)
-Your answer MUST be in [lo, hi], so think of extremes!
-EXAMPLE 1: Koko Eating Bananas
-Problem: Minimum eating speed to finish all bananas in h hours
+
+- What is the **minimum possible answer**? → `lo`
+- What is the **maximum possible answer**? → `hi`
+
+The answer must lie in `[lo, hi]`, so reason about the extremes.
+
+#### Example 1 — Koko Eating Bananas
+
+Minimum eating speed to finish all bananas in `h` hours.
+
 ```
 piles = [3, 6, 7, 11], h = 8
 ```
 
-Think: What's the SLOWEST speed that could work?
-> Minimum speed = 1 banana/hour (can't be 0!)
-> lo = 1 Y
-WHY NOT 0? 
-If speed = 0, Koko eats 0 bananas per hour
-> She'll NEVER finish! (infinite time needed)
-> 0 is physically impossible/meaningless
-> Smallest valid speed = 1 banana/hour
-Think: What's the FASTEST speed we'd ever need?
-> If we eat the biggest pile in 1 hour, we're done fastest
-> Fastest = max(piles) = 11
-> hi = 11 Y
-Why not hi = sum(piles)? 
-> sum(piles) = 3+6+7+11 = 27
-> Would this work? YES! 
-> Is it optimal? NO! 
-DETAILED EXPLANATION:
-Option 1: hi = sum(piles) = 27
-> Binary search range: [1, 27]
-> Iterations: log₂(27) ~ 5 iterations
-Option 2: hi = max(piles) = 11
-> Binary search range: [1, 11]
-> Iterations: log₂(11) ~ 4 iterations
-Both give correct answer, but Option 2 is faster!
-WHY max(piles) IS ENOUGH:
-At speed = max(piles), Koko eats the biggest pile in 1 hour.
-Example: piles = [3, 6, 7, 11], h = 8
-At speed = 11:
-Pile 1: 3/11 = 1 hour  (eats 3, wastes capacity for 8 more)
-Pile 2: 6/11 = 1 hour  (eats 6, wastes capacity for 5 more)
-Pile 3: 7/11 = 1 hour  (eats 7, wastes capacity for 4 more)
-Pile 4: 11/11 = 1 hour (eats 11, perfect!)
-Total: 4 hours Y
-At speed = 27 (sum):
-Same result! 4 hours (even more waste per hour)
-Key insight: Eating FASTER than max(piles) doesn't help!
-> You still need 1 hour per pile minimum
-> Can't eat multiple piles in the same hour
-> Extra speed is wasted
-WHY sum(piles) WORKS BUT IS WASTEFUL:
-It's a valid upper bound (answer is definitely < sum)
-But it's unnecessarily large!
-Think: If speed = sum = 27, Koko could eat ALL piles in 1 hour...
-but the problem doesn't allow that (one pile per hour rule)!
-ANSWER: lo = 1, hi = max(piles)  (optimal)
-OR: lo = 1, hi = sum(piles)  (works but slower)
-EXAMPLE 2: Split Array Largest Sum
-Problem: Split array into k subarrays, minimize largest sum
+**What's the slowest speed that could work?**
+
+- Minimum speed = 1 banana/hour (can't be 0)
+- `lo = 1` ✓
+
+**Why not `lo = 0`?** Speed 0 means Koko eats nothing → she never finishes. Zero is physically meaningless; the smallest valid speed is `1`.
+
+**What's the fastest speed we'd ever need?**
+
+- If we finish the biggest pile in 1 hour, we're already done as fast as possible.
+- `hi = max(piles) = 11` ✓
+
+**Why not `hi = sum(piles)`?** It works, but is wastefully large:
+
+| Choice            | Range      | Iterations       |
+|-------------------|------------|------------------|
+| `sum(piles) = 27` | `[1, 27]`  | `log₂(27) ≈ 5`  |
+| `max(piles) = 11` | `[1, 11]`  | `log₂(11) ≈ 4`  |
+
+Both give the correct answer, but the tighter bound is faster.
+
+**Why `max(piles)` is enough** — at speed = `max(piles)`, Koko finishes the biggest pile in 1 hour:
+
+| Pile | Hours at speed 11 |
+|------|-------------------|
+| 3    | 1 (wastes 8)      |
+| 6    | 1 (wastes 5)      |
+| 7    | 1 (wastes 4)      |
+| 11   | 1 (perfect)       |
+| **Total** | **4 hours** ✓ |
+
+Eating faster than `max(piles)` doesn't help — you still need at least 1 hour per pile (can't eat multiple piles in the same hour). Extra speed is wasted.
+
+**Answer:** `lo = 1, hi = max(piles)` (optimal). `lo = 1, hi = sum(piles)` also works but takes more iterations.
+
+---
+
+#### Example 2 — Split Array Largest Sum
+
+Split an array into `k` subarrays; minimize the largest subarray sum.
+
 ```
 nums = [7, 2, 5, 10, 8], k = 2
 ```
 
-Think: What's the SMALLEST largest sum possible?
-> We must have at least 1 complete element in a subarray
-> Smallest largest = max(nums) = 10
-> lo = 10 Y
-Think: What's the LARGEST largest sum possible?
-> Worst case: all elements in 1 subarray
-> Largest = sum(nums) = 32
-> hi = 32 Y
-ANSWER: lo = max(nums), hi = sum(nums)
-EXAMPLE 3: Maximum Candies to K Children
-Problem: Maximize candies per child
+- **Smallest possible "largest sum"**: some subarray must contain the biggest single element → `lo = max(nums) = 10`
+- **Largest possible "largest sum"**: all elements in one subarray → `hi = sum(nums) = 32`
+
+**Answer:** `lo = max(nums), hi = sum(nums)`
+
+---
+
+#### Example 3 — Maximum Candies for K Children
+
+Maximize candies per child.
+
 ```
 candies = [5, 8, 6], k = 3
 ```
 
-Think: What's the MINIMUM candies per child?
-> If sum < k, answer is 0
-> Otherwise, minimum is 1
-> lo = 1 Y
-Think: What's the MAXIMUM candies per child?
-> Best case: give max pile to 1 child
-> Maximum = max(candies) = 8
-> hi = 8 Y
-Why not hi = sum/k?
-> That's the average, but we can't always split evenly
-> max(candies) is a safe upper bound
-ANSWER: lo = 1, hi = max(candies)
-EXAMPLE 4: Kth Smallest in Sorted Matrix
+- **Min per child**: if `sum(candies) < k`, answer is 0; otherwise at least 1 → `lo = 1`
+- **Max per child**: best case, give the biggest pile to one child → `hi = max(candies) = 8`
+
+Why not `hi = sum/k`? That's the average, but piles can't always be split evenly. `max(candies)` is a safe upper bound.
+
+**Answer:** `lo = 1, hi = max(candies)`
+
+---
+
+#### Example 4 — Kth Smallest in a Sorted Matrix
+
 ```
-matrix = [[1,  5,  9],
+matrix = [[ 1,  5,  9],
+          [10, 11, 13],   k = 8
+          [12, 13, 15]]
 ```
 
-[10, 11, 13],    k = 8
-[12, 13, 15]]
-Think: What's the SMALLEST value in matrix?
-> Top-left corner = matrix[0][0] = 1
-> lo = 1 Y
-Think: What's the LARGEST value in matrix?
-> Bottom-right corner = matrix[n-1][n-1] = 15
-> hi = 15 Y
-Key insight: kth smallest MUST be between min and max values!
-ANSWER: lo = matrix[0][0], hi = matrix[n-1][n-1]
-EXAMPLE 5: Minimum Time to Complete Trips
+- **Smallest value** in the matrix: top-left → `lo = matrix[0][0] = 1`
+- **Largest value** in the matrix: bottom-right → `hi = matrix[n-1][n-1] = 15`
+
+The kth smallest must lie between the min and the max.
+
+**Answer:** `lo = matrix[0][0], hi = matrix[n-1][n-1]`
+
+---
+
+#### Example 5 — Minimum Time to Complete Trips
+
 ```
 time = [1, 2, 3], totalTrips = 5
 ```
 
-Think: What's the MINIMUM time needed?
-> At least 1 unit of time
-> lo = 1 Y
-Think: What's the MAXIMUM time needed?
-> Worst case: slowest bus completes all trips
-> slowest_bus = max(time) = 3
-> Maximum = 3 x 5 = 15
-BUT problem says totalTrips can be 10^7 and time[i] can be 10^7
-> Worst = 10^7 x 10^7 = 10^14
-> hi = 1e14 Y
-ANSWER: lo = 1, hi = 1e14 (from constraints!)
-***STRATEGY 2: Pattern-Based Bounds** *
-Problem Type                      lo                    hi
-### Speed/Rate Problems
-Eating bananas               1                     max(piles)
-Ship packages                max(weights)          sum(weights)
-Minimum speed                1                     max_value
-### Capacity/Size Problems
-Split array                  max(nums)             sum(nums)
-Divide chocolate             min(sweetness)        sum(sweetness)
-Allocate books               max(pages)            sum(pages)
-### Distance Problems
-Pair distance                0                     max - min
-Magnetic force               1                     max_pos - min_pos
-K closest                    0                     diff_range
-### Time Problems
-Complete trips               1                     slowest x total
-Make bouquets                min(bloomDay)         max(bloomDay)
-Running computers            0                     sum(batteries)
-### Kth in Sorted Structure
-Matrix (sorted)              matrix[0][0]          matrix[n-1][n-1]
-Pair products                min_product           max_product
-Prime fractions              0.0                   1.0
-### Count/Amount Problems
-Maximum candies              1                     max(piles)
-Nth magical number           min(a, b)             n x min(a, b)
-Kth denomination             1                     k x max(coins)
-### Substring/Array Problems
-Repeating substring          0                     n - 1
-Duplicate substring          1                     n
-Subarray sum                 min_element           sum(array)
-***STRATEGY 3: Mathematical Bounds from Constraints** *
-Read problem constraints carefully!
-EXAMPLE: LC 2187 - Minimum Time to Complete Trips
-Constraints:
-- 1 <= time.length <= 10^5
-- 1 <= time[i] <= 10^7
-- 1 <= totalTrips <= 10^7
-Bounds calculation:
-```
-lo = 1 (minimum time)
-hi = max(time) x totalTrips
-```
+- **Min time**: at least 1 unit → `lo = 1`
+- **Max time**: worst case, the slowest bus alone completes all trips → `max(time) × totalTrips`
 
-= 10^7 x 10^7
-= 10^14 Y
-EXAMPLE: LC 2040 - Kth Smallest Product
+By the LC constraints (`totalTrips ≤ 10^7`, `time[i] ≤ 10^7`), the worst case is `10^7 × 10^7 = 10^14`.
+
+**Answer:** `lo = 1, hi = 1e14` (derived from problem constraints).
+---
+
+### **STRATEGY 2 — Pattern-Based Bounds**
+
+| Category              | Problem              | `lo`             | `hi`                 |
+|-----------------------|----------------------|------------------|----------------------|
+| **Speed / Rate**      | Eating bananas       | `1`              | `max(piles)`         |
+|                       | Ship packages        | `max(weights)`   | `sum(weights)`       |
+|                       | Minimum speed        | `1`              | `max_value`          |
+| **Capacity / Size**   | Split array          | `max(nums)`      | `sum(nums)`          |
+|                       | Divide chocolate     | `min(sweetness)` | `sum(sweetness)`     |
+|                       | Allocate books       | `max(pages)`     | `sum(pages)`         |
+| **Distance**          | Pair distance        | `0`              | `max − min`          |
+|                       | Magnetic force       | `1`              | `max_pos − min_pos`  |
+|                       | K closest            | `0`              | `diff_range`         |
+| **Time**              | Complete trips       | `1`              | `slowest × total`    |
+|                       | Make bouquets        | `min(bloomDay)`  | `max(bloomDay)`      |
+|                       | Running computers    | `0`              | `sum(batteries)`     |
+| **Kth in Sorted**     | Sorted matrix        | `matrix[0][0]`   | `matrix[n−1][n−1]`   |
+|                       | Pair products        | `min_product`    | `max_product`        |
+|                       | Prime fractions      | `0.0`            | `1.0`                |
+| **Count / Amount**    | Maximum candies      | `1`              | `max(piles)`         |
+|                       | Nth magical number   | `min(a, b)`      | `n × min(a, b)`      |
+|                       | Kth denomination     | `1`              | `k × max(coins)`     |
+| **Substring / Array** | Repeating substring  | `0`              | `n − 1`              |
+|                       | Duplicate substring  | `1`              | `n`                  |
+|                       | Subarray sum         | `min_element`    | `sum(array)`         |
+
+---
+
+### **STRATEGY 3 — Mathematical Bounds from Constraints**
+
+Read the problem constraints carefully; they often hand you the answer.
+
+**LC 2187 — Minimum Time to Complete Trips**
+
 Constraints:
-- -10^5 <= nums1[i], nums2[i] <= 10^5
-Products range:
-- Smallest: -10^5 x 10^5 = -10^10
-- Largest:   10^5 x 10^5 =  10^10
-ANSWER: lo = -1e10, hi = 1e10
-EXAMPLE: LC 3007 - Maximum Number (Bit Counting)
-Constraints:
-- 1 <= k <= 10^15
-Think: What number has price sum = k?
-> Could be very large!
-> Safe upper bound = 10^15
-ANSWER: lo = 1, hi = 1e15
-***STRATEGY 4: Verify Your Bounds** *
-After choosing bounds, verify:
-CHECK 1: Is the answer guaranteed to be in [lo, hi]?
-> Run through examples
-> Check edge cases
-CHECK 2: Is lo too small?
-> Would lo - 1 be impossible/invalid?
-> If yes, lo is correct Y
-CHECK 3: Is hi too large?
-> Would hi + 1 change the answer?
-> If answer can't exceed hi, it's correct Y
-EXAMPLE: Koko Bananas
-Chosen: lo = 1, hi = max(piles)
-Verify lo = 1:
-Y Can't eat 0 bananas/hour (invalid)
-Y 1 is minimum valid speed
-Verify hi = max(piles):
-Y At this speed, we eat biggest pile in 1 hour
-Y Going faster doesn't help (still 1 hour per pile)
-Y This is the maximum useful speed
-BOUNDS VERIFIED! 
-### STRATEGY 5: When Stuck, Use Safe (Wide) Bounds
-If you can't figure out tight bounds, use wider ones!
-Binary search still works, just takes a few more iterations.
-SAFE BOUNDS:
-For positive integers:     lo = 1, hi = 1e9 or 1e18
-For any integers:          lo = -1e9, hi = 1e9
-For array values:          lo = 0, hi = sum(array) x 10
-For floats:                lo = 0.0, hi = 1e9
+
+- `1 ≤ time.length ≤ 10^5`
+- `1 ≤ time[i] ≤ 10^7`
+- `1 ≤ totalTrips ≤ 10^7`
+
+Bounds: `lo = 1`, `hi = max(time) × totalTrips = 10^7 × 10^7 = 10^14`.
+
+**LC 2040 — Kth Smallest Product**
+
+Constraints: `-10^5 ≤ nums1[i], nums2[i] ≤ 10^5`.
+
+Products range from `-10^10` to `10^10`.
+
+**Answer:** `lo = -1e10, hi = 1e10`.
+
+**LC 3007 — Maximum Number (Bit Counting)**
+
+Constraint: `1 ≤ k ≤ 10^15`. Answer could be very large; safe upper bound `10^15`.
+
+**Answer:** `lo = 1, hi = 1e15`.
+---
+
+### **STRATEGY 4 — Verify Your Bounds**
+
+After choosing bounds, sanity-check them:
+
+- **Check 1** — Is the answer guaranteed to be in `[lo, hi]`? Run through examples and edge cases.
+- **Check 2** — Is `lo` too small? Would `lo − 1` be impossible or invalid? If yes, `lo` is correct.
+- **Check 3** — Is `hi` too large? Would `hi + 1` ever be a real answer? If not, `hi` is correct.
+
+**Example — Koko Bananas** with `lo = 1, hi = max(piles)`:
+
+- `lo = 1` ✓ — 0 bananas/hour is invalid.
+- `hi = max(piles)` ✓ — going faster still takes 1 hour per pile, so no benefit.
+
+Bounds verified.
+
+---
+
+### **STRATEGY 5 — When Stuck, Use Safe (Wide) Bounds**
+
+If you can't figure out tight bounds, use wider ones. Binary search still works; it just needs a few more iterations.
+
+| Domain            | Safe bounds                     |
+|-------------------|---------------------------------|
+| Positive integers | `lo = 1, hi = 1e9` or `1e18`    |
+| Any integers      | `lo = -1e9, hi = 1e9`           |
+| Array values      | `lo = 0, hi = sum(array) × 10`  |
+| Floats            | `lo = 0.0, hi = 1e9`            |
+
 Trade-off:
-- Tighter bounds > Fewer iterations
-- Wider bounds > Safer but more iterations
-Example: log₂(10⁹) ~ 30 iterations (very fast!)
-***COMMON MISTAKES TO AVOID** *
- MISTAKE 1: Setting lo = 0 when 0 is invalid
-Problem: Eating speed (can't be 0!)
-```
- lo = 0, hi = max(piles)
- lo = 1, hi = max(piles)
-```
 
-WHY 0 IS INVALID:
-```
-Speed = 0 means eating 0 bananas/hour > never finishes!
-```
+- Tighter bounds → fewer iterations.
+- Wider bounds → safer, more iterations.
 
-General rule for RATE/SPEED problems:
-- lo = 1 (can't have 0 speed/rate)
-For DISTANCE/VALUE problems:
-- lo = 0 (0 distance is valid)
-EXAMPLES:
-```
- lo = 1 (0 invalid):
-```
+`log₂(10^9) ≈ 30` iterations — still very fast.
 
-- Eating speed (0 = no progress)
-- Ship capacity (can't ship with 0 capacity)
-- Trips per bus (0 = no trips)
-- Candies per child (need at least 1)
-- Speed to arrive on time (0 = never arrive)
-```
- lo = 0 (0 valid):
-```
+---
 
-- Pair distance (0 distance is possible)
-- Subarray sum (empty subarray = 0)
-- Minimum difference (identical elements = 0)
-- Repeating substring length (no repeat = 0)
-QUICK CHECK:
-Ask: "Does value 0 make sense for this problem?"
-- If 0 means "no progress" or "impossible" > lo = 1
-- If 0 is a valid answer > lo = 0
- MISTAKE 2: Forgetting about constraints
-Problem: Arrays can be huge (10^7 elements)
-```
- hi = max_element (too small!)
- hi = constraint_max x constraint_count
-```
+## **COMMON MISTAKES TO AVOID**
 
- MISTAKE 3: Using sum when max is enough
-Problem: Koko bananas
-```
- hi = sum(piles) (unnecessarily large!)
- hi = max(piles) (sufficient!)
-```
+### Mistake 1 — Setting `lo = 0` when 0 is invalid
 
-WHY max IS ENOUGH:
-Koko eats one pile per hour.
-At speed = max(piles), she finishes biggest pile in 1 hour.
-Going faster doesn't help! (still 1 hour per pile)
-Example: piles = [3, 6, 7, 11], h = 8
-Speed 11 (max): Takes 4 hours Y
-Speed 27 (sum): Takes 4 hours (same, but searches [1,27] not [1,11])
-Binary search iterations:
-[1, 11]: log₂(11) ~ 4 iterations
-[1, 27]: log₂(27) ~ 5 iterations
-Tighter bound = fewer iterations!
-GENERAL PRINCIPLE:
-Always think: "What's the TIGHTEST upper bound?"
- GOOD (tight bounds):
-- Eating speed: max(piles)
-- Ship capacity: max(weights) to sum(weights) (need sum!)
-- Split array: max(nums) to sum(nums) (need sum!)
- WASTEFUL (loose bounds):
-- Eating speed: sum(piles) (works but slow)
-- Any problem: hi = 10^18 (usually too large!)
-WHEN TO USE sum vs max:
-Use max(array):
-- When you process items ONE AT A TIME with max capacity
-- Example: Eating bananas (one pile per hour)
-Use sum(array):
-- When you can GROUP items together
-- Example: Ship packages (combine weights in one day)
-- Example: Split array (subarrays can have multiple elements)
-RULE OF THUMB:
-If in doubt, use a wider bound. Binary search is fast!
-But try to think of the tightest reasonable bound.
-COMPARISON TABLE - max vs sum:
-+------------------------+--------------+--------------+----------------+
-| Problem                | Use max      | Use sum      | Why?           |
-+------------------------+--------------+--------------+----------------+
-| Koko Bananas           | max(piles) Y | sum(piles)  | One pile/hour  |
-| Ship Packages          | max(weights) | sum(weights)Y| Can combine    |
-| Split Array            | max(nums)    | sum(nums) Y  | Can group      |
-| Divide Chocolate       | min(sweet)   | sum(sweet) Y | Can accumulate |
-| Maximum Candies        | max(piles) Y | sum        | Distribute one |
-| Magnetic Force         | 1            | max-min Y    | Distance range |
-+------------------------+--------------+--------------+----------------+
-KEY INSIGHT:
-Can you COMBINE/GROUP items? > Use sum
-Process ONE AT A TIME? > Use max
- MISTAKE 4: Off-by-one in initialization
-Classic binary search:
-```
- int lo = 1, hi = n;  // Wrong if 0-indexed!
- int lo = 0, hi = n - 1;  // Correct for 0-indexed array
-```
+Problem: eating speed can't be 0.
 
-Binary search on answer:
-```
- int lo = min_answer, hi = max_answer;  // No -1 needed
-```
+- ❌ `lo = 0, hi = max(piles)`
+- ✅ `lo = 1, hi = max(piles)`
 
- MISTAKE 5: Not handling negative numbers
-Problem: Array has negative numbers
-```
- lo = 0, hi = max_element
- lo = min_element, hi = max_element
-```
+Speed 0 means eating 0 bananas/hour → never finishes.
 
-Or for products with negatives:
-```
- lo = negative_min x negative_min (positive!)
- hi = positive_max x positive_max
-```
+**Rule of thumb:**
 
-***STEP-BY-STEP PROCESS FOR ANY PROBLEM** *
-STEP 1: Identify what you're searching for
-> Speed? Time? Distance? Value? Count?
-STEP 2: Ask: "What's the smallest possible answer?"
-> This is your lo
-> Consider: Can it be 0? 1? min_element?
-STEP 3: Ask: "What's the largest possible answer?"
-> This is your hi
-> Consider: max_element? sum? constraint_max?
-STEP 4: Verify with examples
-> Test on given examples
-> Check edge cases
-STEP 5: If stuck, use safe wide bounds
-> lo = 1 or 0, hi = 1e9 or 1e18
-> Binary search is fast enough!
-STEP 6: Code and test
-> If WA, your bounds might be wrong
-> Debug: print lo, hi, mid values
-### PRACTICE EXERCISES
-Try determining bounds for these:
-1. Problem: Maximum distance between m balls in positions
-What are lo and hi?
-Answer: lo = 1 (minimum distance)
-```
-hi = max(positions) - min(positions) (maximum distance)
-```
+- **Rate / speed** problems → `lo = 1` (0 = no progress).
+- **Distance / value** problems → `lo = 0` (0 is a valid answer).
 
-2. Problem: Divide chocolate into k pieces, maximize minimum sweetness
-What are lo and hi?
-Answer: lo = min(sweetness) (minimum piece value)
-```
-hi = sum(sweetness) / k (maximum achievable minimum)
-```
+| `lo = 1` (0 invalid)      | `lo = 0` (0 valid)          |
+|---------------------------|-----------------------------|
+| Eating speed              | Pair distance               |
+| Ship capacity             | Subarray sum                |
+| Trips per bus             | Minimum difference          |
+| Candies per child         | Repeating substring length  |
+| Speed to arrive on time   |                             |
 
-3. Problem: Kth smallest sum from matrix rows
-What are lo and hi?
-Answer: lo = sum of first elements (minimum sum)
-```
-hi = sum of last elements (maximum sum)
-```
+Quick check: *"Does 0 make sense for this problem?"*
 
-4. Problem: Find number with k set bits at x-th positions
-What are lo and hi?
-Answer: lo = 1
-```
-hi = 1e15 (from constraints)
-```
+- If 0 means "no progress" / "impossible" → `lo = 1`.
+- If 0 is a legitimate answer → `lo = 0`.
+
+---
+
+### Mistake 2 — Forgetting about constraints
+
+Arrays can be huge (`10^7` elements).
+
+- ❌ `hi = max_element` (too small!)
+- ✅ `hi = constraint_max × constraint_count`
+
+---
+
+### Mistake 3 — Using `sum` when `max` is enough
+
+Problem: Koko bananas.
+
+- ❌ `hi = sum(piles)` (wastefully large)
+- ✅ `hi = max(piles)` (sufficient)
+
+**Why `max` is enough**: Koko eats one pile per hour; at speed = `max(piles)`, she finishes the biggest pile in 1 hour. Going faster doesn't help.
+
+`piles = [3, 6, 7, 11], h = 8`:
+
+| Speed        | Takes    | BS iterations       |
+|--------------|----------|---------------------|
+| 11 (`max`)   | 4 hrs ✓ | `log₂(11) ≈ 4`     |
+| 27 (`sum`)   | 4 hrs ✓ | `log₂(27) ≈ 5`     |
+
+Tighter bound = fewer iterations.
+
+**When to use `sum` vs `max`:**
+
+Use `max(array)` when you process items **one at a time** with max capacity.
+- Example: Eating bananas (one pile per hour).
+
+Use `sum(array)` when you can **combine / group** items.
+- Example: Ship packages (combine weights in one day).
+- Example: Split array (subarrays can have multiple elements).
+
+**Comparison table:**
+
+| Problem            | Use `max`          | Use `sum`          | Reason                      |
+|--------------------|--------------------|--------------------|-----------------------------|
+| Koko Bananas       | ✅ `max(piles)`    | `sum(piles)`       | One pile per hour           |
+| Ship Packages      | `max(weights)`     | ✅ `sum(weights)`  | Can combine                 |
+| Split Array        | `max(nums)`        | ✅ `sum(nums)`     | Can group                   |
+| Divide Chocolate   | `min(sweet)`       | ✅ `sum(sweet)`    | Can accumulate              |
+| Maximum Candies    | ✅ `max(piles)`    | `sum(piles)`       | Distribute one at a time    |
+| Magnetic Force     | `1`                | ✅ `max − min`     | Distance range              |
+
+Key insight:
+
+- Can you **combine / group** items? → use `sum`.
+- **One at a time**? → use `max`.
+
+---
+
+### Mistake 4 — Off-by-one in initialization
+
+**Classic binary search** (finding an element by index):
+
+- ❌ `int lo = 1, hi = n;` (wrong for 0-indexed arrays)
+- ✅ `int lo = 0, hi = n - 1;`
+
+**Binary search on answer** (finding a value in a range):
+
+- ✅ `int lo = min_answer, hi = max_answer;` — no `-1` needed.
+
+---
+
+### Mistake 5 — Not handling negative numbers
+
+Problem: array contains negative numbers.
+
+- ❌ `lo = 0, hi = max_element`
+- ✅ `lo = min_element, hi = max_element`
+
+For products involving negatives, remember two negatives produce a positive:
+
+- ✅ `lo = min(neg × neg, neg × pos, pos × pos)`
+- ✅ `hi = max(pos × pos, neg × neg)`
+
+---
+
+## **STEP-BY-STEP PROCESS FOR ANY PROBLEM**
+
+1. **Identify what you're searching for.** Speed? Time? Distance? Value? Count?
+2. **Smallest possible answer** → this is `lo`. Can it be 0? 1? `min_element`?
+3. **Largest possible answer** → this is `hi`. `max_element`? `sum`? `constraint_max`?
+4. **Verify with examples.** Test the given examples and consider edge cases.
+5. **If stuck, use safe wide bounds.** `lo = 0 or 1`, `hi = 1e9` or `1e18`. Binary search is fast.
+6. **Code and test.** On wrong answers, print `lo`, `hi`, `mid` to debug — your bounds may be off.
+
+---
+
+## **PRACTICE EXERCISES**
+
+Try determining bounds for these problems, then check your answers below.
+
+**1. Maximum distance between `m` balls in given positions.**
+
+- `lo = 1` (minimum distance)
+- `hi = max(positions) − min(positions)` (largest possible separation)
+
+**2. Divide chocolate into `k` pieces, maximize the minimum sweetness.**
+
+- `lo = min(sweetness)`
+- `hi = sum(sweetness) / k` (upper bound on achievable minimum)
+
+**3. Kth smallest sum from matrix rows.**
+
+- `lo = sum of the first element of each row` (minimum possible sum)
+- `hi = sum of the last element of each row` (maximum possible sum)
+
+**4. Find number with `k` set bits at x-th positions.**
+
+- `lo = 1`
+- `hi = 1e15` (from constraints)
 
 ### **ROTATED SORTED ARRAY (LC 33, 81, 153, 154)** 
 
@@ -1054,9 +1022,9 @@ nums2: [2, 3, 6 | 15]         maxLeft2 = 6,  minRight2 = 15
 <--------->
 Left half (5 elements)
 
-Valid? 4 <= 15 Y and 6 <= 7 Y
+Valid? 4 <= 15 ✓ and 6 <= 7 ✓
 ```
-Answer = max(4, 6) = 6 Y
+Answer = max(4, 6) = 6 ✓
 ```
 
 **UNDERSTANDING BOUNDS:**
@@ -1072,17 +1040,17 @@ hi = min(7, 5) = 5    (can take at most 5 from nums1)
 ```
 
 **WHEN TO ADJUST:**
-- maxLeft1 > minRight2 > Take FEWER from nums1 (hi = i - 1)
-nums1: [1, 4, 7, 10 | 12]   maxLeft1 = 10 > minRight2 = 6 
+- maxLeft1 → minRight2 → Take FEWER from nums1 (hi = i - 1)
+nums1: [1, 4, 7, 10 | 12]   maxLeft1 = 10 → minRight2 = 6 
 nums2: [2, 3 | 6, 15]       Element from left1 > element in right2!
 
-- maxLeft2 > minRight1 > Take MORE from nums1 (lo = i + 1)
+- maxLeft2 → minRight1 → Take MORE from nums1 (lo = i + 1)
 nums1: [1 | 4, 7, 10, 12]   minRight1 = 4 < maxLeft2 = 6 
 nums2: [2, 3, 6 | 15]       Element from left2 > element in right1!
 
 WHY INT_MIN/INT_MAX?
-- i = 0: Taking nothing from nums1 > maxLeft1 = INT_MIN (always valid)
-- i = m: Taking everything from nums1 > minRight1 = INT_MAX (always valid)
+- i = 0: Taking nothing from nums1 → maxLeft1 = INT_MIN (always valid)
+- i = m: Taking everything from nums1 → minRight1 = INT_MAX (always valid)
 - Handles edge cases where one array contributes 0 or all elements
 
 **CODE:**
@@ -1192,8 +1160,8 @@ maxLeft2 = nums2[0] = 2
 minRight2 = INT_MAX
 ```
 
-Check: 1 <= INT_MAX Y and 2 <= 3 Y
-Valid! Median = max(1, 2) = 2 Y
+Check: 1 <= INT_MAX ✓ and 2 <= 3 ✓
+Valid! Median = max(1, 2) = 2 ✓
 
 WHY (m + n + 1) / 2?
 - For odd total: left half gets the extra element
@@ -1405,7 +1373,7 @@ return true;
 TIME: O(N log(max))  |  SPACE: O(1)
 
 **KEY INSIGHT:**
-If speed K works, all speeds > K also work (monotonic!)
+If speed K works, all speeds → K also work (monotonic!)
 Binary search finds minimum K that works.
 
 **CEILING DIVISION TRICK:**
@@ -1467,7 +1435,7 @@ TIME: O(N log(max - min))  |  SPACE: O(1)
 Start from top-right corner.
 If matrix[r][c] <= target: All elements in row r up to col c are <= target
 Move down (r++)
-If matrix[r][c] > target: Move left (c--)
+If matrix[r][c] → target: Move left (c--)
 
 This counts efficiently without checking every element!
 
@@ -1632,9 +1600,9 @@ currentSum=0
 Add 7: sum=7
 Add 2: sum=9
 Add 5: sum=14
-Add 10: sum=24 > 21, start new: subarrays=2, sum=10
+Add 10: sum=24 → 21, start new: subarrays=2, sum=10
 Add 8: sum=18
-Total subarrays=2 <= k Y
+Total subarrays=2 <= k ✓
 
 So 21 works, try smaller...
 
@@ -2314,17 +2282,17 @@ mid = 23
 ```
 
 Can we give everyone >= 23 sweetness?
-Accumulate: 1+2+3+4+5+6+7 = 28 >= 23 Y (piece 1)
+Accumulate: 1+2+3+4+5+6+7 = 28 >= 23 ✓ (piece 1)
 8+9 = 17 < 23 X (can't make piece 2)
 
 Only 1 piece, need 6, so mid = 23 fails
 
 Try mid = 7:
-1+2+3+4 = 10 >= 7 Y
-5+6 = 11 >= 7 Y
-7 >= 7 Y
-8 >= 7 Y
-9 >= 7 Y
+1+2+3+4 = 10 >= 7 ✓
+5+6 = 11 >= 7 ✓
+7 >= 7 ✓
+8 >= 7 ✓
+9 >= 7 ✓
 Total 5 pieces, need 6... try mid = 5
 
 Eventually converge to answer!
@@ -2465,7 +2433,7 @@ If we can't fit task in empty session, other empty sessions won't work either!
 This drastically reduces backtracking branches.
 
 WHY SORT DESCENDING?
-Place larger tasks first > better pruning > faster!
+Place larger tasks first → better pruning → faster!
 
 ### **PROBLEM: Kth Smallest Product (LC 2040)**  HARD
 
@@ -2682,7 +2650,7 @@ Iteration 1: mid=5, arr[5]=6 < 7, lo=6
 Iteration 2: lo=6, hi=10, mid=8, arr[8]=9 >= 7, hi=8
 Iteration 3: lo=6, hi=8, mid=7, arr[7]=8 >= 7, hi=7
 Iteration 4: lo=6, hi=7, mid=6, arr[6]=7 >= 7, hi=6
-Now lo==hi==6, exit, return 6 (which is index of 7) Y
+Now lo==hi==6, exit, return 6 (which is index of 7) ✓
 
 ### EXAMPLE - Find Maximum (with +1):
 
@@ -2693,9 +2661,9 @@ lo=1, hi=10
 ```
 
 Iteration 1: mid=(1+10+1)/2=6, arr[6]=7 <= 7, lo=6
-Iteration 2: lo=6, hi=10, mid=(6+10+1)/2=8, arr[8]=9 > 7, hi=7
-Iteration 3: lo=6, hi=7, mid=(6+7+1)/2=7, arr[7]=8 > 7, hi=6
-Now lo==hi==6, exit, return 6 Y
+Iteration 2: lo=6, hi=10, mid=(6+10+1)/2=8, arr[8]=9 → 7, hi=7
+Iteration 3: lo=6, hi=7, mid=(6+7+1)/2=7, arr[7]=8 → 7, hi=6
+Now lo==hi==6, exit, return 6 ✓
 
 Without +1, at iteration 2:
 ```
@@ -2703,7 +2671,7 @@ mid=(6+10)/2=8... (same as above)
 ```
 
 At iteration 3: lo=6, hi=7, mid=(6+7)/2=6, arr[6]=7 <= 7, lo=6
-> INFINITE LOOP! (lo and hi don't change)
+- INFINITE LOOP! (lo and hi don't change)
 
 ### **APPROACH 2: `while (l <= r)` - BETTER FOR CLASSIC BINARY SEARCH**
 
@@ -2727,9 +2695,9 @@ lo=0, hi=9
 ```
 
 Iteration 1: mid=4, arr[4]=5 < 7, lo=5
-Iteration 2: lo=5, hi=9, mid=7, arr[7]=8 > 7, hi=6
+Iteration 2: lo=5, hi=9, mid=7, arr[7]=8 → 7, hi=6
 Iteration 3: lo=5, hi=6, mid=5, arr[5]=6 < 7, lo=6
-Iteration 4: lo=6, hi=6, mid=6, arr[6]=7 == 7, return 6 Y
+Iteration 4: lo=6, hi=6, mid=6, arr[6]=7 == 7, return 6 ✓
 
 ### **UNIFIED MENTAL MODEL** 
 
@@ -3084,7 +3052,7 @@ PROBLEM: Count elements <= target in row/col sorted matrix
 
 WHY STAIRCASE?
 Start from top-right corner. Can only move left or down.
-- If element > target: move left (all below are even larger)
+- If element → target: move left (all below are even larger)
 - If element <= target: move down (count entire row up to this col)
 
 **VISUALIZATION:**
@@ -3093,13 +3061,13 @@ Start from top-right corner. Can only move left or down.
 [3,  6,  9, 16]
 [10, 13, 14, 17]
 
-Start (0,3): 11 > 8, move left
+Start (0,3): 11 → 8, move left
 At (0,2): 7 <= 8, count += 3, move down
 At (1,2): 8 <= 8, count += 3, move down
-At (2,2): 9 > 8, move left
+At (2,2): 9 → 8, move left
 At (2,1): 6 <= 8, count += 2, move down
-At (3,1): 13 > 8, move left
-At (3,0): 10 > 8, move left > done
+At (3,1): 13 → 8, move left
+At (3,0): 10 → 8, move left > done
 
 ```
 Total = 3 + 3 + 2 = 8 elements
@@ -3219,9 +3187,9 @@ Is array sorted?
                                                                        |
         +- YES > Binary Search on Answer!                               
                                                                        |
-            +- Find MINIMUM? > Use `while (l < r)` with mid = (l+r)/2   
+            +- Find MINIMUM? → Use `while (l < r)` with mid = (l+r)/2   
                                                                        |
-            +- Find MAXIMUM? > Use `while (l < r)` with mid = (l+r+1)/2 
+            +- Find MAXIMUM? → Use `while (l < r)` with mid = (l+r+1)/2 
 ```
 
 ### **TEMPLATE SELECTION GUIDE**

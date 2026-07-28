@@ -58,9 +58,9 @@ Heights of left and right subtrees differ by at most 1
 +----------------------------------------------------------------------------+
 | Traversal      | Order              | Use Case                             |
 +----------------+--------------------+--------------------------------------+
-| Preorder       | Root > Left > Right| Copy tree, serialize, prefix expr    |
-| Inorder        | Left > Root > Right| BST gives SORTED order!              |
-| Postorder      | Left > Right > Root| Delete tree, evaluate expr, height   |
+| Preorder       | Root → Left → Right | Copy tree, serialize, prefix expr    |
+| Inorder        | Left → Root → Right | BST gives SORTED order!              |
+| Postorder      | Left → Right → Root | Delete tree, evaluate expr, height   |
 +----------------+--------------------+--------------------------------------+
 ```
 
@@ -75,7 +75,7 @@ Preorder:  1, 2, 4, 5, 3  (Process, then children)
 Inorder:   4, 2, 5, 1, 3  (Left, process, right)
 Postorder: 4, 5, 2, 3, 1  (Children first, then process)
 
-### **PREORDER TRAVERSAL (Root > Left > Right)**
+### **PREORDER TRAVERSAL (Root → Left → Right)**
 
 **RECURSIVE:**
 
@@ -116,7 +116,7 @@ return result;
 }
 ```
 
-### **INORDER TRAVERSAL (Left > Root > Right)**  BST = SORTED!
+### **INORDER TRAVERSAL (Left → Root → Right)**  BST = SORTED!
 
 **RECURSIVE:**
 
@@ -160,7 +160,7 @@ return result;
 }
 ```
 
-### **POSTORDER TRAVERSAL (Left > Right > Root)**
+### **POSTORDER TRAVERSAL (Left → Right → Root)**
 
 **RECURSIVE:**
 
@@ -465,7 +465,7 @@ return result;
 
 **FOR EVERY NODE:**
 - All values in LEFT subtree < node.val
-- All values in RIGHT subtree > node.val
+- All values in RIGHT subtree → node.val
 
 **CRITICAL INSIGHT:**
 - Inorder traversal of BST gives SORTED order!
@@ -638,7 +638,7 @@ return root;
 PROBLEM: Two nodes swapped in BST, recover it.
 
  KEY INSIGHT: Inorder traversal should be sorted.
-Find two violations (prev > curr) to identify swapped nodes.
+Find two violations (prev → curr) to identify swapped nodes.
 
 ```cpp
 TreeNode* first = nullptr;
@@ -868,7 +868,7 @@ return max(left, right) + node->val;
 ```
 
 WHY TWO VALUES?
-Complete path: can curve (left > node > right)
+Complete path: can curve (left → node → right)
 Return value: can only continue in one direction (for parent to use)
 
 ### **PROBLEM: Diameter of Binary Tree (LC 543)** 
@@ -1031,7 +1031,7 @@ return root;
 preserve the structure
 
 - Serialize: preorder DFS, write "null" for empty children
-- Deserialize: read tokens in same preorder order, "null" > return nullptr
+- Deserialize: read tokens in same preorder order, "null" → return nullptr
 
 WHY PREORDER + NULL MARKERS?
 - Example:     1

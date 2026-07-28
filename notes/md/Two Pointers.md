@@ -11,7 +11,7 @@
 
 ### **PATTERN 1: OPPOSITE ENDS (Convergence)**
 
- **MEMORY AID**: "**S**orted or **S**ymmetry > **S**queeze from ends"
+ **MEMORY AID**: "**S**orted or **S**ymmetry → **S**queeze from ends"
 
  USE WHEN: Start from both ends, move toward center
  VISUALIZATION: <---------->
@@ -48,7 +48,7 @@ KEY INSIGHT: Array must be sorted OR you're checking symmetry
  **MEMORY AID**: "**F**ast scouts, **S**low writes" (Fast explores, Slow builds result)
 
  USE WHEN: One pointer moves faster than the other
- VISUALIZATION: >--> (slow > fast >>)
+ VISUALIZATION: >--> (slow → fast >>)
 
 **TEMPLATE:**
 
@@ -77,10 +77,10 @@ KEY INSIGHT: Fast pointer scouts, slow pointer builds result
 
 ### **PATTERN 3: PARALLEL (Two Arrays/Lists)**
 
- **MEMORY AID**: "Two lists > Two pointers **P**arallel" (Merge, Intersect, Compare)
+ **MEMORY AID**: "Two lists → Two pointers **P**arallel" (Merge, Intersect, Compare)
 
  USE WHEN: Process two arrays/lists simultaneously
- VISUALIZATION: arr1: > arr2: >
+ VISUALIZATION: arr1: → arr2: >
 
 **TEMPLATE:**
 
@@ -114,7 +114,7 @@ KEY INSIGHT: Usually involves sorted arrays or pattern matching
 ### **PATTERN 4: SPLIT & MERGE (Divide & Conquer)**
 
  USE WHEN: Split array, then merge back
- VISUALIZATION: [----] [----] > merge
+ VISUALIZATION: [----] [----] → merge
 
 **TEMPLATE:**
 
@@ -175,19 +175,19 @@ KEY INSIGHT: Recursive splitting + iterative merging
 ### STEP 1: Identify Problem Type (30 seconds)
 
 Ask:
-o Is array sorted? > Opposite Ends
-o Need in-place modification? > Slow & Fast
-o Two arrays given? > Parallel
-o Need to sort? > Split & Merge
-o Looking for pairs/symmetry? > Opposite Ends
+o Is array sorted? → Opposite Ends
+o Need in-place modification? → Slow & Fast
+o Two arrays given? → Parallel
+o Need to sort? → Split & Merge
+o Looking for pairs/symmetry? → Opposite Ends
 
 ### STEP 2: Choose Template (30 seconds)
 
 Decision:
-- Sorted array + target > Opposite Ends
-- Remove/modify in-place > Slow & Fast
-- Compare two sequences > Parallel
-- Sort or partition > Slow & Fast or Split & Merge
+- Sorted array + target → Opposite Ends
+- Remove/modify in-place → Slow & Fast
+- Compare two sequences → Parallel
+- Sort or partition → Slow & Fast or Split & Merge
 
 ### STEP 3: Define Movement Rules (1 minute)
 
@@ -207,36 +207,36 @@ o What's the termination condition?
 ###  GOLDEN RULES
 
 1. OPPOSITE ENDS RULE
-> Only works if array is sorted OR checking symmetry
+- Only works if array is sorted OR checking symmetry
 
 2. SLOW & FAST RULE
-> Slow builds result, fast explores
-> Fast is always ahead: fast >= slow
+- Slow builds result, fast explores
+- Fast is always ahead: fast >= slow
 
 3. PARALLEL RULE
-> Process smaller element first (if sorted)
-> Handle remaining elements after main loop
+- Process smaller element first (if sorted)
+- Handle remaining elements after main loop
 
 4. POINTER MOVEMENT RULE
-> Be clear about when to move which pointer
-> Avoid infinite loops: ensure progress
+- Be clear about when to move which pointer
+- Avoid infinite loops: ensure progress
 
 5. IN-PLACE MODIFICATION RULE
-> Use slow pointer to track write position
-> Fast pointer reads, slow pointer writes
+- Use slow pointer to track write position
+- Fast pointer reads, slow pointer writes
 
 6. CYCLE DETECTION RULE (Floyd's)
-> slow moves 1 step, fast moves 2 steps
-> If cycle exists, they will meet
+- slow moves 1 step, fast moves 2 steps
+- If cycle exists, they will meet
 
 ### **GOLDEN RULE: `left < right` vs `left <= right`**
 
  **MEMORY AID**: "When pointers MEET, do I still have work to do?"
 
 **THE ONE-LINE RULE:**
-> Ask yourself: When `left == right`, is there still meaningful work to do?
-> - **YES** → use `while (left <= right)` (must process that single element)
-> - **NO**  → use `while (left < right)` (state is invalid or pointless)
+- Ask yourself: When `left == right`, is there still meaningful work to do?
+- - **YES** → use `while (left <= right)` (must process that single element)
+- - **NO**  → use `while (left < right)` (state is invalid or pointless)
 
 **WHY THIS MATTERS (with example):**
 
@@ -283,9 +283,9 @@ Step 4: left=3, right=2  ✗ STOP
 - Using `left < right` in "fill from end" problems (Squares of Sorted Array) → middle element left as 0
 
 **QUICK MENTAL TEST:**
-> "Do my pointers represent TWO DIFFERENT things (a pair) or ONE thing (a position)?"
-> - Two different things → `left < right` (they must stay distinct)
-> - One position being checked → `left <= right` (don't skip the last one)
+- "Do my pointers represent TWO DIFFERENT things (a pair) or ONE thing (a position)?"
+- - Two different things → `left < right` (they must stay distinct)
+- - One position being checked → `left <= right` (don't skip the last one)
 
 ## PART 3: KEY PROBLEMS WITH SOLUTIONS
 
@@ -297,13 +297,13 @@ Step 4: left=3, right=2  ✗ STOP
  TEMPLATE: left++/right-- based on sum comparison
 
 NOTE: This is different from Two Sum (LC 1)!
-- LC 1 (Two Sum): Unsorted array > Use Hashmap O(N) (See Hashmap Patterns.txt)
-- LC 167 (Two Sum II): Sorted array > Use Two Pointers O(N) (this problem)
+- LC 1 (Two Sum): Unsorted array → Use Hashmap O(N) (See Hashmap Patterns.txt)
+- LC 167 (Two Sum II): Sorted array → Use Two Pointers O(N) (this problem)
 
 **KEY INSIGHT:**
 - Since array is sorted, we can eliminate half the search space each time
-- If sum < target, need bigger numbers > left++
-- If sum > target, need smaller numbers > right--
+- If sum < target, need bigger numbers → left++
+- If sum → target, need smaller numbers → right--
 
 **WHY IT WORKS:**
 - Sorted array allows us to make decisions about pointer movement
@@ -311,7 +311,7 @@ NOTE: This is different from Two Sum (LC 1)!
 - O(N) instead of O(N2)
 
 **GOLDEN RULE:**
-> For sorted array + target problems, always consider opposite ends!
+- For sorted array + target problems, always consider opposite ends!
 
 ```cpp
 vector<int> twoSum(vector<int>& numbers, int target) {
@@ -395,7 +395,7 @@ KEY INSIGHT (BRILLIANT!):
 - We don't need to know exact rightMax, just that it's bigger!
 
 **GOLDEN RULE:**
-> Always process the side with smaller boundary
+- Always process the side with smaller boundary
 
 ```cpp
 int trap(vector<int>& height) {
@@ -540,7 +540,7 @@ return result;
 - Overwriting is safe because fast is always ahead
 
 **GOLDEN RULE:**
-> slow tracks "good" elements, fast explores
+- slow tracks "good" elements, fast explores
 
 ```cpp
 int removeDuplicates(vector<int>& nums) {
@@ -577,7 +577,7 @@ return slow + 1;  // Length of unique array
 - No cycle > fast reaches end
 
 **GOLDEN RULE:**
-> slow = 1 step, fast = 2 steps
+- slow = 1 step, fast = 2 steps
 
 ```cpp
 bool hasCycle(ListNode *head) {
@@ -740,7 +740,7 @@ while (j >= 0) {
 ### 11a. Intersection of Two Arrays (LC 349)
 
  PATTERN: Two Pointers (Sorted) or Hash Set
- SERIES: I (unique intersect) > II (with duplicates)
+ SERIES: I (unique intersect) → II (with duplicates)
 
 **KEY INSIGHT:**
 - Sort both arrays, use two pointers
@@ -778,7 +778,7 @@ return result;
 ### 11b. Intersection of Two Arrays II (LC 350)
 
  PATTERN: Parallel (Sorted Arrays)
- SERIES: I (unique intersect) > II (with duplicates, keeps frequency)
+ SERIES: I (unique intersect) → II (with duplicates, keeps frequency)
  TEMPLATE: Compare and collect common elements
 
 ```cpp
@@ -854,7 +854,7 @@ KEY INSIGHT (BRILLIANT!):
  Only advance mid for 0s and 1s, NOT for 2s
 
 **GOLDEN RULE:**
-> After swap with right, DON'T move mid (might get 0 or 2)
+- After swap with right, DON'T move mid (might get 0 or 2)
 
 ```cpp
 void sortColors(vector<int>& nums) {
@@ -886,14 +886,14 @@ while (mid <= right) {
  TEMPLATE: Treat array indices as pointers
 
 KEY INSIGHT (MIND-BLOWING!):
-- Array with n+1 elements and values in [1, n] > must have duplicate
+- Array with n+1 elements and values in [1, n] → must have duplicate
 - Treat each value as pointer: nums[i] points to nums[nums[i]]
 - Duplicate creates a cycle! Use Floyd's algorithm
 
 **WHY IT WORKS:**
 - If nums[i] = j, think of it as i > j (like linked list)
-- Duplicate means two indices point to same value > cycle!
-- Example: [1,3,4,2,2] > 0>1>3>2>4>2 (cycle at 2)
+- Duplicate means two indices point to same value → cycle!
+- Example: [1,3,4,2,2] → 0>1>3>2>4>2 (cycle at 2)
 
 **MATHEMATICAL PROOF:**
 - Position 0 is always outside cycle (no value can be 0)
@@ -946,7 +946,7 @@ WHY O(N3) not O(N⁴):
 - Total: O(N3)
 
 **OPTIMIZATION TRICKS:**
-- Skip early if nums[i] + nums[i+1] + nums[i+2] + nums[i+3] > target
+- Skip early if nums[i] + nums[i+1] + nums[i+2] + nums[i+3] → target
 - Skip early if nums[i] + nums[n-3] + nums[n-2] + nums[n-1] < target
 
 ```cpp
@@ -1004,17 +1004,17 @@ return result;
 4. Reverse everything after pivot position
 
 **WHY IT WORKS:**
-- Example: [1,3,5,4,2] > pivot=3 (index 1)
+- Example: [1,3,5,4,2] → pivot=3 (index 1)
 - Find smallest > 3 from right: 4
 - Swap: [1,4,5,3,2]
-- Reverse after pivot: [1,4,2,3,5] Y
+- Reverse after pivot: [1,4,2,3,5] ✓
 
 **EDGE CASES:**
 - Descending array > reverse entire array
-- [3,2,1] > [1,2,3]
+- [3,2,1] → [1,2,3]
 
 **GOLDEN RULE:**
-> Find first decrease from right, that's where change happens
+- Find first decrease from right, that's where change happens
 
 ```cpp
 void nextPermutation(vector<int>& nums) {
@@ -1100,12 +1100,12 @@ return lessHead.next;
 - Build result array from end to start (largest to smallest)
 
 **WHY IT WORKS:**
-- [-4,-1,0,3,10] > squares: [0,1,9,16,100]
+- [-4,-1,0,3,10] → squares: [0,1,9,16,100]
 - Compare |nums[left]| vs |nums[right]|
 - Larger absolute value > larger square > place at end
 
 **GOLDEN RULE:**
-> Fill result backwards, comparing absolute values from ends
+- Fill result backwards, comparing absolute values from ends
 
 ```cpp
 vector<int> sortedSquares(vector<int>& nums) {
@@ -1140,12 +1140,12 @@ return result;
 
 **KEY INSIGHT (TRIANGLE INEQUALITY):**
 - For triangle: a + b > c (where c is largest)
-- After sorting, if a + b > c, then ALL pairs between them work!
-- If nums[i] + nums[j] > nums[k], count = j - i
+- After sorting, if a + b → c, then ALL pairs between them work!
+- If nums[i] + nums[j] → nums[k], count = j - i
 
 **WHY IT WORKS:**
 - Fix largest side (k)
-- For any i < j < k where nums[i] + nums[j] > nums[k]
+- For any i < j < k where nums[i] + nums[j] → nums[k]
 - ALL pairs (i, i+1), (i, i+2), ..., (i, j) also satisfy condition!
 - Because array is sorted
 
@@ -1194,7 +1194,7 @@ return count;
 - Optimal to send them alone
 
 **PROOF OF CORRECTNESS:**
-- If heavy + light > limit, heavy must go alone
+- If heavy + light → limit, heavy must go alone
 - If heavy + light < limit, this is best use of boat
 - Any other pairing wastes opportunity
 
@@ -1231,7 +1231,7 @@ return boats;
 
 **WHY THIS APPROACH:**
 - Can't use extra space (must be in-place)
-- Pattern: L0 > Ln > L1 > Ln-1 > L2 > Ln-2...
+- Pattern: L0 → Ln → L1 → Ln-1 → L2 → Ln-2...
 - Split, reverse second, then alternate merge
 
 **COMMON MISTAKES:**

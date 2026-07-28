@@ -31,7 +31,7 @@
 - Need to check ALL possible subarrays
 
 **GOLDEN RULE:**
-> If Sliding Window fails due to negatives or non-monotonic state,
+- If Sliding Window fails due to negatives or non-monotonic state,
 try Prefix Sum!
 
 ### ** FUNDAMENTAL CONCEPT**
@@ -59,8 +59,8 @@ At index i, check if (psum[i] - K) exists in hashmap!
 ### ** UNIVERSAL TEMPLATE**
 
  **MEMORY AID for Initialization**:
-**C**ount > map[0] = **1** (count of seeing sum=0 once)
-**L**ength > map[0] = **-1** (index before array starts)
+**C**ount → map[0] = **1** (count of seeing sum=0 once)
+**L**ength → map[0] = **-1** (index before array starts)
 
 **FOR COUNTING PROBLEMS:**
 
@@ -142,16 +142,16 @@ FOR LENGTH: map[0] = -1
 
 ### **BRILLIANT TRANSFORMATIONS** 
 
- Equal 0s and 1s > Track diff = count(0) - count(1)
+ Equal 0s and 1s → Track diff = count(0) - count(1)
 When diff repeats, we have equal counts between those indices
 
- K odd numbers > Transform: odd>1, even>0, find sum = K
+ K odd numbers → Transform: odd>1, even>0, find sum = K
 Converts "count odds" to "subarray sum" problem
 
- Remove from ends > Find max middle with sum = total - x
+ Remove from ends → Find max middle with sum = total - x
 Minimum operations = n - maximum_middle_length
 
- Divisible by K > Store remainders, same remainder = divisible diff
+ Divisible by K → Store remainders, same remainder = divisible diff
 ```
 psum[i] % K = psum[j] % K > (psum[j] - psum[i]) % K = 0
 ```
@@ -169,8 +169,8 @@ psum[i] % K = psum[j] % K > (psum[j] - psum[i]) % K = 0
 **WHY IT WORKS:**
 - Each occurrence of (psum - K) represents a valid starting point
 - Example: [1, 2, 3], K=3
-- At i=1: psum=3, look for 0 (found in map[0]=1) > count=1
-- At i=2: psum=6, look for 3 (found once) > count=2
+- At i=1: psum=3, look for 0 (found in map[0]=1) → count=1
+- At i=2: psum=6, look for 3 (found once) → count=2
 
 **COMMON MISTAKES:**
  Forgetting to initialize map[0] = 1
@@ -284,7 +284,7 @@ int sumRange(int left, int right) {
  TEMPLATE: Convert to 1/0, then standard prefix sum
 
 **KEY INSIGHT:**
-- "K odd numbers" > convert odd=1, even=0
+- "K odd numbers" → convert odd=1, even=0
 - Now it's "subarray sum equals K"
 - Same template as LC 560!
 
@@ -317,8 +317,8 @@ return ans;
  TRANSFORMATION: Track diff = count(0) - count(1)
 
 KEY INSIGHT (GENIUS!):
-- Equal 0s and 1s > count(0) - count(1) = 0
-- Transform: 0 > -1, 1 > 1 (or just track difference)
+- Equal 0s and 1s → count(0) - count(1) = 0
+- Transform: 0 → -1, 1 > 1 (or just track difference)
 - When same diff appears again > equal counts in between!
 - Find longest subarray where diff returns to same value
 
@@ -423,10 +423,10 @@ C++ gives negative remainder for negative numbers
 Fix: ((psum % K) + K) % K
 
 Example: -5 % 3 = -2 in C++
-Fix: ((-2) + 3) % 3 = 1 Y
+Fix: ((-2) + 3) % 3 = 1 ✓
 
 **GOLDEN RULE:**
-> For divisibility, store and check: ((psum % K) + K) % K
+- For divisibility, store and check: ((psum % K) + K) % K
 
 ### 6. Subarray Sums Divisible by K (LC 974) 
 
@@ -473,7 +473,7 @@ return ans;
 
 **KEY INSIGHT:**
 - Same as above, but length must be > 2
-- Store indices, check: i - map[remainder] > 1
+- Store indices, check: i - map[remainder] → 1
 
 ```cpp
 bool checkSubarraySum(vector<int>& nums, int k) {
@@ -620,7 +620,7 @@ Then XOR of subarray [j+1...i] = K
 - Check: same mask (all even) + toggle each bit (1 odd)
 
 WHY BITMASK?
-- 10 characters (0-9) > 10 bits
+- 10 characters (0-9) → 10 bits
 - Bit i = 0: char i appears even times
 - Bit i = 1: char i appears odd times
 
@@ -713,7 +713,7 @@ return maxLen;
 
 **KEY INSIGHT:**
 - Only vowels matter (5 bits: a,e,i,o,u)
-- All must be even > check same mask
+- All must be even → check same mask
 - Ignore consonants
 
 ```

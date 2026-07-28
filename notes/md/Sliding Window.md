@@ -64,7 +64,7 @@ KEY: Window is ALWAYS valid after while loop
 
 PROBLEM: Find longest substring with all unique characters.
 
-KEY INSIGHT: Window invalid when freq[char] > 1. Shrink until all unique.
+KEY INSIGHT: Window invalid when freq[char] → 1. Shrink until all unique.
 
 ```
 int lengthOfLongestSubstring(string s) {
@@ -308,7 +308,7 @@ TIME: O(N log N)  |  SPACE: O(1)
 PROBLEM: Max consecutive same answers after at most k changes.
 
 KEY INSIGHT: Same as LC 424! Run twice - once for 'T', once for 'F'.
-Or: Track both counts, window invalid if min(countT, countF) > k.
+Or: Track both counts, window invalid if min(countT, countF) → k.
 
 ```cpp
 int maxConsecutiveAnswers(string answerKey, int k) {
@@ -454,7 +454,7 @@ return count;
 ```
 
 WHY THIS COUNTING: After shrinking, window [left, right] is INVALID (missing one).
-So window [left-1, right] was last valid > all [0..left-1] starting points work.
+So window [left-1, right] was last valid → all [0..left-1] starting points work.
 TIME: O(N)  |  SPACE: O(1)
 
 ### **LC 2302: Count Subarrays With Score Less Than K**
@@ -490,7 +490,7 @@ TIME: O(N)  |  SPACE: O(1)
 ### **TEMPLATE 4: "EXACTLY K" TRANSFORMATION** 
 
  **MEMORY AID**: "Exact = Almost - Almost Less"
-> **exactly(K) = atMost(K) - atMost(K-1)**
+- **exactly(K) = atMost(K) - atMost(K-1)**
 
 USE WHEN: Problem asks for "exactly K" (hard to do directly)
 
@@ -966,7 +966,7 @@ TIME: O(26 * 26 * N)  |  SPACE: O(1)
 | "Exactly K" problem       | atMost(K) - (K-1)     | Two helper calls        |
 | Window size k (fixed)     | Fixed-Size            | Add right, remove left  |
 | Two conditions tracking   | Dual Windows          | Multiple states         |
-| Sum=K with NEGATIVES      | > See Prefix Sum.txt  | SW doesn't work here!   |
+| Sum=K with NEGATIVES      | → See Prefix Sum.txt  | SW doesn't work here!   |
 +---------------------------+-----------------------+-------------------------+
 
 +-----------------------------------------------------------------------------+
@@ -1249,13 +1249,13 @@ o Are there negative numbers? (affects which template)
 ### STEP 2: Choose the Template (30 seconds)
 
 Decision tree:
-- Has NEGATIVE numbers + sum=K? > Use Prefix Sum.txt (not SW!)
-- Fixed window size k? > Template 5 (Fixed-Size)
-- "Exactly K" problem? > Template 4 (atMost trick)
-- Count ALL valid subarrays? > Template 3 (Counting)
-- Find MINIMUM window? > Template 1 (Shrinkable)
-- Find MAXIMUM length? > Template 2 (Non-shrinkable)
-- Two conditions tracking? > Template 6 (Dual Windows)
+- Has NEGATIVE numbers + sum=K? → Use Prefix Sum.txt (not SW!)
+- Fixed window size k? → Template 5 (Fixed-Size)
+- "Exactly K" problem? → Template 4 (atMost trick)
+- Count ALL valid subarrays? → Template 3 (Counting)
+- Find MINIMUM window? → Template 1 (Shrinkable)
+- Find MAXIMUM length? → Template 2 (Non-shrinkable)
+- Two conditions tracking? → Template 6 (Dual Windows)
 
 ### STEP 3: Define the State (1 minute)
 
@@ -1292,33 +1292,33 @@ o All valid or all invalid
 ### ** GOLDEN RULES - APPLY TO EVERY PROBLEM**
 
 1. TEMPLATE SELECTION RULE
-> Counting/Minimum: use while (shrinkable)
-> Maximum only: use if (non-shrinkable)
-> Fixed size: no while/if, just add/remove
+- Counting/Minimum: use while (shrinkable)
+- Maximum only: use if (non-shrinkable)
+- Fixed size: no while/if, just add/remove
 
 2. WINDOW SIZE RULE
-> Inclusive [i, j]: size = j - i + 1
-> Never: size = j - i (unless exclusive right)
+- Inclusive [i, j]: size = j - i + 1
+- Never: size = j - i (unless exclusive right)
 
 3. COUNTING RULE
-> Add (j - i + 1) at each step, not window size
+- Add (j - i + 1) at each step, not window size
 
 4. "EXACTLY K" RULE
-> Transform to: atMost(K) - atMost(K-1)
+- Transform to: atMost(K) - atMost(K-1)
 
 5. NEGATIVE NUMBERS RULE
-> SW won't work! Use Prefix Sum.txt instead
+- SW won't work! Use Prefix Sum.txt instead
 
 6. STATE UPDATE RULE
-> Add: arr[j] (expand right)
-> Remove: arr[i] (shrink left)
-> Update BEFORE or AFTER moving pointer consistently
+- Add: arr[j] (expand right)
+- Remove: arr[i] (shrink left)
+- Update BEFORE or AFTER moving pointer consistently
 
 7. COMPLEXITY RULE
-> Each element enters once, leaves once > O(2N) = O(N)
+- Each element enters once, leaves once → O(2N) = O(N)
 
 8. OVERFLOW RULE
-> Use long for sum/product calculations
+- Use long for sum/product calculations
 
 ## **PART 4: KEY PROBLEMS WITH SOLUTIONS**
 
@@ -1694,7 +1694,7 @@ USE WHEN: Array wraps around (last element connects to first)
 
 ### **PATTERN B: INVERSE/COMPLEMENT PROBLEM**
 
-USE WHEN: Remove from BOTH ends > Find longest MIDDLE subarray
+USE WHEN: Remove from BOTH ends → Find longest MIDDLE subarray
 
  **KEY INSIGHT**:
 "Remove elements from edges with sum X"

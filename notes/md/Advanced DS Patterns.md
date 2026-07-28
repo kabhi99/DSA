@@ -720,7 +720,7 @@ void unfollow(int followerId, int followeeId) {
 
 ## **SOLVED: Insert Delete GetRandom O(1) - Duplicates Allowed (LC 381)** 
 
-SERIES: I (LC 380, no dups) > II (LC 381, with dups)
+SERIES: I (LC 380, no dups) → II (LC 381, with dups)
 
  KEY INSIGHT:
 - Same as LC 380 but use unordered_map<int, unordered_set<int>> to track ALL indices

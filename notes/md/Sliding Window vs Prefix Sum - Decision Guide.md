@@ -17,10 +17,10 @@ PREFIX SUM + HASHMAP:
 - Time: O(N) - single pass with hash lookups
 
 **GOLDEN RULE:**
-> If adding elements can INCREASE or DECREASE your constraint randomly
+- If adding elements can INCREASE or DECREASE your constraint randomly
 (non-monotonic), use PREFIX SUM + HASHMAP
 
-> If adding elements consistently moves in ONE direction
+- If adding elements consistently moves in ONE direction
 (monotonic), use SLIDING WINDOW
 
 ###  QUICK DECISION FLOWCHART
@@ -114,7 +114,7 @@ i=0, j=0: sum=1, sum<K, expand
 i=0, j=1: sum=0, sum<K, expand   Problem! Sum DECREASED
 i=0, j=2: sum=1, sum<K, expand
 i=0, j=3: sum=2, sum<K, expand
-i=0, j=4: sum=3, sum=K Y Found one
+i=0, j=4: sum=3, sum=K ✓ Found one
 ```
 
 But wait! When sum decreased from 1>0, we might have missed valid windows
@@ -129,7 +129,7 @@ i=3: psum=2, check psum-K=-1 (not found), map[2]=1
 i=4: psum=3, check psum-K=0 (found! count+=1), map[3]=1
 ```
 
-Found: [1,-1,1,1,1] Y Correct!
+Found: [1,-1,1,1,1] ✓ Correct!
 
 ### EXAMPLE 2: Longest Subarray with Sum < K = 5
 
@@ -146,12 +146,12 @@ i=2, j=3: sum=7, invalid! shrink
 i=3, j=3: sum=4, valid, len=1
 ```
 
-Maximum length = 2 Y Works perfectly!
+Maximum length = 2 ✓ Works perfectly!
 
 PREFIX SUM + HASHMAP STRUGGLES:
-For "sum < K", we'd need to check if ANY previous psum is > (current_psum - K)
+For "sum < K", we'd need to check if ANY previous psum is → (current_psum - K)
 This requires checking RANGE of values, not exact value
-Would need TreeMap/Binary Search > O(N log N)
+Would need TreeMap/Binary Search → O(N log N)
 
 Sliding Window is superior here!
 
@@ -195,7 +195,7 @@ Longest Substring K Distinct (LC 340)           | Sliding Window     | Monotonic
 ```
 
 Binary Subarrays With Sum (LC 930)              | BOTH work!         | All 0/1
-> Sliding Window preferred (simpler)           |                    |
+- Sliding Window preferred (simpler)           |                    |
 
 ###  TEST CASES TO IDENTIFY TECHNIQUE
 
@@ -207,7 +207,7 @@ Array: [3, -2, 5, 1], K = 3
 
 Question: Can sum ever decrease when expanding right?
 Answer: YES! When we add -2, sum decreases.
-Verdict:  Sliding Window won't work > Use Prefix Sum + Hashmap
+Verdict:  Sliding Window won't work → Use Prefix Sum + Hashmap
 
 ### TEST 2: Check monotonicity of constraint
 
@@ -215,16 +215,16 @@ Array: [1, 2, 3, 4], Constraint: at most K distinct
 
 Question: Does constraint get "worse" when expanding?
 Answer: YES! Adding element increases distinct count (monotonic).
-Verdict:  Sliding Window works! When distinct > K, shrink left.
+Verdict:  Sliding Window works! When distinct → K, shrink left.
 
 ### TEST 3: Exact vs At Most
 
 Problem: "Subarray sum EXACTLY equals K" with positive numbers
 
-Question: If sum > K, can shrinking left help find sum = K?
+Question: If sum → K, can shrinking left help find sum = K?
 Answer: Maybe! But we might miss valid windows because shrinking changes sum.
 Example: [1,2,3], K=3
-- Window [1,2] sum=3 Y
+- Window [1,2] sum=3 ✓
 - Expand to [1,2,3] sum=6
 - Shrink to [2,3] sum=5 (missed [3]!)
 Verdict:  Use Prefix Sum + Hashmap for "exactly K"
@@ -240,8 +240,8 @@ Decision: BOTH techniques work!
 - Prefix Sum: no negatives but "exactly K" easier with hashmap
 
 Recommendation:
-> For "exactly K": Prefix Sum (cleaner)
-> For "at most K": Sliding Window (more efficient)
+- For "exactly K": Prefix Sum (cleaner)
+- For "at most K": Sliding Window (more efficient)
 
 ### CASE 2: All Positive but "Exactly K"
 
@@ -289,20 +289,20 @@ STEP 1: Read problem, identify it's about subarrays/substrings
 STEP 2: Ask yourself:
 "Does the array have negative numbers?"
 
-YES > Prefix Sum + Hashmap
-NO > Continue to Step 3
+YES → Prefix Sum + Hashmap
+NO → Continue to Step 3
 
 STEP 3: Ask yourself:
 "Is the problem asking for EXACTLY equals K?"
 
-YES > Prefix Sum + Hashmap (easier for exact)
-NO > Continue to Step 4
+YES → Prefix Sum + Hashmap (easier for exact)
+NO → Continue to Step 4
 
 STEP 4: Ask yourself:
 "Can I maintain a valid window by shrinking left when invalid?"
 
-YES > Sliding Window
-NO > Prefix Sum + Hashmap
+YES → Sliding Window
+NO → Prefix Sum + Hashmap
 
 STEP 5: Implement and verify with examples!
 
@@ -334,21 +334,21 @@ I'd prefer sliding window for its O(1) space complexity."
 
 ###  GOLDEN RULES - MEMORIZE THESE!
 
-1⃣  NEGATIVES > Prefix Sum + Hashmap (Sliding Window fails!)
+1⃣  NEGATIVES → Prefix Sum + Hashmap (Sliding Window fails!)
 
-2⃣  "EXACTLY K" > Prefer Prefix Sum + Hashmap (cleaner)
+2⃣  "EXACTLY K" → Prefer Prefix Sum + Hashmap (cleaner)
 
-3⃣  "AT MOST K" / "AT LEAST K" > Prefer Sliding Window (simpler)
+3⃣  "AT MOST K" / "AT LEAST K" → Prefer Sliding Window (simpler)
 
-4⃣  MONOTONIC constraint > Sliding Window works great
+4⃣  MONOTONIC constraint → Sliding Window works great
 
-5⃣  NON-MONOTONIC constraint > Must use Prefix Sum + Hashmap
+5⃣  NON-MONOTONIC constraint → Must use Prefix Sum + Hashmap
 
-6⃣  COUNTING subarrays > Both can work, choose based on above rules
+6⃣  COUNTING subarrays → Both can work, choose based on above rules
 
-7⃣  MAXIMUM LENGTH > Both work, prefer SW if monotonic
+7⃣  MAXIMUM LENGTH → Both work, prefer SW if monotonic
 
-8⃣  DIVISIBILITY > Always Prefix Sum + Hashmap (use remainders)
+8⃣  DIVISIBILITY → Always Prefix Sum + Hashmap (use remainders)
 
 ###  PRACTICE PROBLEMS (Try to decide before solving!)
 
@@ -385,11 +385,11 @@ Answer: Sliding Window (all positive, "less than" constraint)
 |  SLIDING WINDOW                      vs      PREFIX SUM + HASHMAP           |
 |  ---------------                             ---------------------          |
 |                                                                             |
-|  Y All positive/negative              Y Has negatives/zeros                 |
-|  Y "At most K"                        Y "Exactly K"                         |
-|  Y Monotonic state                    Y Non-monotonic state                 |
-|  Y O(1) space                         Y O(N) space                          |
-|  Y Shrinking fixes invalid            Y Hash lookup finds valid             |
+|  ✓ All positive/negative              ✓ Has negatives/zeros                |
+|  ✓ "At most K"                        ✓ "Exactly K"                        |
+|  ✓ Monotonic state                    ✓ Non-monotonic state                |
+|  ✓ O(1) space                         ✓ O(N) space                         |
+|  ✓ Shrinking fixes invalid            ✓ Hash lookup finds valid            |
 |                                                                             |
 |   Can't handle negatives             "At most K" harder                     |
 |   "Exactly K" trickier               Needs extra space                      |
@@ -399,8 +399,8 @@ Answer: Sliding Window (all positive, "less than" constraint)
 
 **THE ULTIMATE DECISION RULE:**
 
-If you see NEGATIVES or "EXACTLY" > Prefix Sum + Hashmap
-If all POSITIVE with "AT MOST/LEAST" > Sliding Window
+If you see NEGATIVES or "EXACTLY" → Prefix Sum + Hashmap
+If all POSITIVE with "AT MOST/LEAST" → Sliding Window
 
 When in doubt, ask: "Is my state monotonic?"
 

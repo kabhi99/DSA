@@ -16,6 +16,12 @@ PART 4: Pattern 2 - Palindrome Techniques
 - Longest Palindromic Substring (LC 5) 
 - Minimum Insertions to Make String Palindrome (LC 1312) 
 
+PART 4B: Pattern 2.5 - At Most One Modification (Prefix + Suffix + Split Point)
+- Is Subsequence (LC 392) - base case
+- Valid Palindrome II (LC 680) - skip one
+- Can Make Subsequence (LC 2825 / replace-one variant)
+- Split Two Strings to Make Palindrome (LC 1616)
+
 PART 5: Pattern 3 - Pattern Matching Algorithms
 - KMP Algorithm / strStr (LC 28) 
 - Rabin-Karp Algorithm
@@ -52,15 +58,15 @@ PART 10: Master Problem Mapping Table
 - "pattern matching", "find substring"
 - "convert", "parse", "atoi"
 - "common prefix/suffix"
-- "anagram" > See Hashmap Patterns.txt
-- "longest substring with condition" > See Sliding Window.txt
+- "anagram" → See Hashmap Patterns.txt
+- "longest substring with condition" → See Sliding Window.txt
 
 ### **⚡ GOLDEN RULES OF STRING PROBLEMS**
 
 ### RULE 1: IN-PLACE vs NEW STRING
 
 - C++ strings are MUTABLE - you CAN modify in-place!
-- In-place > O(1) space. Building new string > O(N) space.
+- In-place → O(1) space. Building new string → O(N) space.
 - Always ask: "Can I solve this without extra space?"
 
 ### RULE 2: TWO POINTERS FOR PALINDROMES
@@ -77,7 +83,7 @@ PART 10: Master Problem Mapping Table
 ### RULE 4: KMP FOR O(N+M) PATTERN MATCHING
 
 - Build LPS (Longest Prefix Suffix) array first
-- Never re-scan matched characters > O(N+M) instead of O(N*M)
+- Never re-scan matched characters → O(N+M) instead of O(N*M)
 - LPS[i] = length of longest proper prefix that is also suffix
 
 ### RULE 5: CAREFUL WITH OVERFLOW IN PARSING
@@ -88,7 +94,7 @@ PART 10: Master Problem Mapping Table
 
 ### RULE 6: SLIDING WINDOW FOR SUBSTRING PROBLEMS
 
-- "Longest/shortest substring with condition" > Sliding Window
+- "Longest/shortest substring with condition" → Sliding Window
 - See Sliding Window.txt for templates
 - Frequency array [26] or [128] for character counts
 
@@ -96,16 +102,16 @@ PART 10: Master Problem Mapping Table
 
 **USEFUL OPERATIONS:**
 
-s.size() / s.length()        > length of string
-s.substr(pos, len)           > substring from pos, length len
-s.find(sub)                  > index of first occurrence (string::npos if not found)
-s.find(sub, start)           > find starting from index start
+s.size() / s.length()        → length of string
+s.substr(pos, len)           → substring from pos, length len
+s.find(sub)                  → index of first occurrence (string::npos if not found)
+s.find(sub, start)           → find starting from index start
 ```
 reverse(s.begin(), s.end())  > reverse entire string
 ```
 
-s.resize(n)                  > truncate or pad to length n
-s.push_back(c)               > append char
+s.resize(n)                  → truncate or pad to length n
+s.push_back(c)               → append char
 ```
 s += "abc"                   > append string
 to_string(num)               > int/long to string
@@ -218,11 +224,11 @@ TIME: O(N)  |  SPACE: O(1) - true in-place!
 ### **LC 38: Count and Say**
 
 PROBLEM: Generate the nth term of the count-and-say sequence.
-1 > "1"
-2 > "11" (one 1)
-3 > "21" (two 1s)
-4 > "1211" (one 2, one 1)
-5 > "111221" (one 1, one 2, two 1s)
+1 → "1"
+2 → "11" (one 1)
+3 → "21" (two 1s)
+4 → "1211" (one 2, one 1)
+5 → "111221" (one 1, one 2, two 1s)
 
 KEY INSIGHT: Iteratively build each term by "reading" the previous term.
 Group consecutive identical characters, then write count + character.
@@ -301,18 +307,18 @@ SPACE: O(1)
 
 **THREE MAIN APPROACHES:**
 
-1. EXPAND FROM CENTER > Find longest palindromic SUBSTRING
+1. EXPAND FROM CENTER → Find longest palindromic SUBSTRING
 - Try each index as center
 - Expand outward while chars match
 - Handle odd (single center) and even (two centers)
 - Time: O(N2), Space: O(1)
 
-2. TWO POINTERS FROM ENDS > Check if string IS a palindrome
+2. TWO POINTERS FROM ENDS → Check if string IS a palindrome
 - left = 0, right = n-1, compare and converge
 - See Two Pointers.txt for details
 - Time: O(N), Space: O(1)
 
-3. DP / LCS > Palindromic SUBSEQUENCE or MIN INSERTIONS
+3. DP / LCS → Palindromic SUBSEQUENCE or MIN INSERTIONS
 - LCS of string and its reverse = longest palindromic subsequence
 - Min insertions = N - LPS length
 - Time: O(N2), Space: O(N2) or O(N) with optimization
@@ -367,8 +373,8 @@ return s.substr(start, maxLen);
 ```
 
 **WHY EXPAND FROM CENTER:**
-- Brute force checks all O(N2) substrings, each O(N) > O(N3)
-- Expanding from center: 2N-1 centers, each expands O(N) > O(N2)
+- Brute force checks all O(N2) substrings, each O(N) → O(N3)
+- Expanding from center: 2N-1 centers, each expands O(N) → O(N2)
 - Much cleaner than DP approach for this specific problem
 
 TIME: O(N2)  |  SPACE: O(1)
@@ -430,32 +436,279 @@ TIME: O(N2)  |  SPACE: O(N2) or O(N) optimized
  CROSS-REFERENCE: For full DP on Strings patterns (LCS, Edit Distance,
 Longest Palindromic Subsequence), see Dynamic Programming.txt Pattern 4.
 
+## **PART 4B: PATTERN 2.5 - AT MOST ONE MODIFICATION**
+
+### ** THE BIG IDEA**
+
+Whenever a problem says *"with at most one modification/replacement/deletion/swap,
+can we achieve X?"* — the shape of the answer is almost always:
+
+  1. Try to solve the base problem X with a plain two-pointer scan.
+  2. If it fails, precompute a `pre[]` and `suf[]` array capturing
+     "how far can I get matching from the LEFT" and "from the RIGHT",
+     then try every possible modification position in O(1) each.
+
+This is the string cousin of the "Fix Middle Element" pattern
+(see `DSA/Problems/md/array/PATTERN_Fix_Middle_Element.md`).
+
+### ** WHEN TO USE**
+
+**STRONG KEYWORDS:**
+
+- "at most one" / "you may" / "allowed to..."
+- "replace/delete/swap ONE character"
+- "make s a subsequence of t after at most one change"
+- "is it a palindrome after removing at most one character"
+- "split into two halves such that..."
+
+**PATTERN RECOGNITION:**
+
+If greedy two-pointer with a `usedModification` flag *feels* like it should work
+but you can construct a counterexample where committing the modification early
+was wrong > you need this pattern.
+
+**GOLDEN COUNTEREXAMPLE (memorize this):**
+
+```
+s = "az", t = "xay"    (canMakeSubsequence with one replace)
+```
+
+Greedy: 'a' vs 'x' mismatch > burn the replacement → 'z' vs 'a' fails > returns false.
+Correct: skip 'x' first, match 'a', then replace 'z' with 'y' → returns true.
+
+Moral: **the modification position needs a GLOBAL view, not a local one.**
+
+### ** THE TEMPLATE**
+
+Two arrays with clear meanings:
+
+```
+pre[i] = smallest j such that s[0..i] is subsequence/prefix-match of t[0..j]
+         (or m/sentinel if impossible)
+
+suf[i] = largest j such that s[i..] is subsequence/suffix-match of t[j..]
+         (or -1/sentinel if impossible)
+```
+
+Then for each candidate modification position `i` in `s`:
+
+```
+leftEnd    = (i == 0)     ? -1 : pre[i-1]     // end of matched prefix
+rightStart = (i == n-1)   ?  m : suf[i+1]     // start of matched suffix
+
+// We need at least one free slot in t between leftEnd and rightStart:
+if (leftEnd + 1 < rightStart) return true;
+```
+
+Sentinels: `pre[-1] = -1`, `suf[n] = m`. Handle these when i=0 or i=n-1.
+
+### ** CANONICAL EXAMPLES**
+
+| # | Problem | Modification | Where in notes |
+|---|---|---|---|
+| LC 392 | Is Subsequence | None (base case) | Two Pointers.md (mentioned) |
+| LC 680 | Valid Palindrome II | Delete at most 1 char | DSA-PRIORITY-80-20.md |
+| LC 1616 | Split Two Strings to Make Palindrome | Choose split point | *(new — this section)* |
+| LC 2825 | Cyclic-Increment Subseq | +1 mod 26 anywhere | *(new — this section)* |
+| LC 2565 | Can Make Subseq w/ Replace | Replace 1 char | *(new — this section)* |
+
+### ** LC 680: Valid Palindrome II (skip-one variant)**
+
+PROBLEM: Return true if s can be a palindrome after deleting at most one char.
+
+KEY INSIGHT: Two pointers from ends. On first mismatch, try skipping EITHER
+the left char OR the right char — check if the resulting substring is a
+palindrome. That's the "at most one modification" applied to palindrome check.
+
+```cpp
+bool validPalindrome(string s) {
+    int l = 0, r = s.size() - 1;
+    while (l < r) {
+        if (s[l] != s[r]) {
+            return isPalin(s, l+1, r) || isPalin(s, l, r-1);
+        }
+        l++; r--;
+    }
+    return true;
+}
+
+bool isPalin(const string& s, int l, int r) {
+    while (l < r) {
+        if (s[l++] != s[r--]) return false;
+    }
+    return true;
+}
+```
+
+TIME: O(N)  |  SPACE: O(1)
+
+**Why greedy works here (but not always):** For palindrome checking, the two
+mismatch resolutions (skip left vs skip right) are the ONLY options. There's
+no third path to worry about. For subsequence-style problems below, greedy
+fails and you need the pre/suf technique.
+
+### ** LC 2565 / canMakeSubsequence (replace-one variant)**
+
+PROBLEM: Given s and t, can you make s a subsequence of t by replacing at
+most one character in s with any lowercase letter?
+
+KEY INSIGHT: pre/suf technique. Base subsequence check first, then for each
+replacement position i, check that we can match s[0..i-1] as prefix of t
+and s[i+1..] as suffix of t, with at least one free slot in t between them.
+
+```cpp
+bool canMakeSubsequence(string s, string t) {
+    int n = s.size(), m = t.size();
+    if (n > m) return false;
+
+    vector<int> pre(n, m);
+    {
+        int j = 0;
+        for (int i = 0; i < n; i++) {
+            while (j < m && t[j] != s[i]) j++;
+            if (j == m) break;
+            pre[i] = j;
+            j++;
+        }
+    }
+
+    if (pre[n - 1] < m) return true;
+
+    vector<int> suf(n, -1);
+    {
+        int j = m - 1;
+        for (int i = n - 1; i >= 0; i--) {
+            while (j >= 0 && t[j] != s[i]) j--;
+            if (j < 0) break;
+            suf[i] = j;
+            j--;
+        }
+    }
+
+    for (int i = 0; i < n; i++) {
+        int leftEnd    = (i == 0)     ? -1 : pre[i - 1];
+        int rightStart = (i == n - 1) ?  m : suf[i + 1];
+
+        if (leftEnd == m) break;
+        if (i + 1 < n && rightStart == -1) continue;
+
+        if (leftEnd + 1 < rightStart) return true;
+    }
+
+    return false;
+}
+```
+
+TIME: O(N + M)  |  SPACE: O(N)
+
+### ** LC 1616: Split Two Strings to Make Palindrome**
+
+PROBLEM: Given strings a and b of equal length. Split each at the SAME index
+i, forming aPrefix + aSuffix and bPrefix + bSuffix. Is aPrefix + bSuffix
+(or bPrefix + aSuffix) a palindrome for SOME choice of i?
+
+KEY INSIGHT: This is the "pick a split point" variant. Use two pointers from
+both ends: match a[l] with b[r] as long as they're equal. When they diverge,
+try to finish the middle as a palindrome within either a or b alone.
+
+```cpp
+bool checkPalindromeFormation(string a, string b) {
+    return check(a, b) || check(b, a);
+}
+
+bool check(const string& a, const string& b) {
+    int l = 0, r = a.size() - 1;
+    while (l < r && a[l] == b[r]) { l++; r--; }
+    return isPalin(a, l, r) || isPalin(b, l, r);
+}
+
+bool isPalin(const string& s, int l, int r) {
+    while (l < r) {
+        if (s[l++] != s[r--]) return false;
+    }
+    return true;
+}
+```
+
+TIME: O(N)  |  SPACE: O(1)
+
+**WHY THIS WORKS:** The prefix of a and suffix of b that already match are
+"free" — the palindrome constraint is auto-satisfied there. The middle part
+must itself be a palindrome, and it can come entirely from a OR entirely
+from b (since after the split index, we only take from one side).
+
+### ** DECISION FLOWCHART**
+
+```
+Problem says "at most one modification" or "you may X once"?
+        Y
+        v
+[Step 1] Try base problem greedily (two-pointer, no modification).
+         Works?
+                Y → return true
+                N > continue
+        v
+[Step 2] Is the modification symmetric with only 2 local options?
+         (like "skip left OR skip right" in palindrome)
+                Y > branch into both, recurse each
+                N > continue
+        v
+[Step 3] Precompute pre[] and suf[]. For each modification position i,
+         check pre[i-1] and suf[i+1] can bridge. O(1) per position.
+```
+
+### ** GOTCHAS**
+
+1. **Greedy-with-flag is wrong for non-symmetric problems.**
+   Always check with the `s="az", t="xay"` counterexample before submitting.
+
+2. **Sentinel values matter.** `pre[-1] = -1` and `suf[n] = m` — get these
+   wrong and you'll fail edge cases like "modify the first/last character."
+
+3. **Strict inequality.** You need `pre[i-1] + 1 < suf[i+1]` (strictly),
+   because you need at least one slot for the modified character to land.
+
+4. **"Already works" fast path.** Always check if the base problem succeeds
+   BEFORE building suf[]. Saves work on the common case.
+
+5. **Impossible prefix > impossible everything.** If `pre[k] = m` (sentinel),
+   then `pre[k+1..n-1]` are all sentinels too. You can break the loop early.
+
+### ** CROSS-REFERENCE**
+
+- Fix-Middle-Element pattern (array version): 
+  `DSA/Problems/md/array/PATTERN_Fix_Middle_Element.md`
+- Product of Array Except Self (pure prefix/suffix arrays): 
+  `Company-Wise-DSA-Questions.md` (LC 238)
+- LCS-based subsequence questions: 
+  `Dynamic Programming.md` Pattern 4
+
 ## **PART 5: PATTERN 3 - PATTERN MATCHING ALGORITHMS**
 
 ### ** PATTERN OVERVIEW**
 
 **THREE KEY ALGORITHMS:**
 
-1. KMP (Knuth-Morris-Pratt) > O(N+M)
+1. KMP (Knuth-Morris-Pratt) → O(N+M)
 - Precompute LPS (failure function) for pattern
 - On mismatch, skip already-matched prefix
 - Best for: single pattern search, repeated pattern detection
 
-2. RABIN-KARP > O(N+M) average, O(N*M) worst
+2. RABIN-KARP → O(N+M) average, O(N*M) worst
 - Rolling hash to compare pattern hash with window hash
 - Best for: multiple pattern search, plagiarism detection
 - Verify matches to handle hash collisions
 
-3. Z-FUNCTION > O(N+M)
+3. Z-FUNCTION → O(N+M)
 - Z[i] = length of longest substring starting at i that matches a prefix
 - Concatenate pattern + "$" + text, then scan Z-array
 - Best for: all occurrences, period detection, string compression
 
 **WHEN TO CHOOSE:**
-- Single exact pattern > KMP (guaranteed O(N+M))
-- All occurrences + simpler code > Z-function (O(N+M))
-- Multiple patterns > Rabin-Karp or Aho-Corasick
-- Simple problems > built-in s.find() is fine!
+- Single exact pattern → KMP (guaranteed O(N+M))
+- All occurrences + simpler code → Z-function (O(N+M))
+- Multiple patterns → Rabin-Karp or Aho-Corasick
+- Simple problems → built-in s.find() is fine!
 
 ### ** KMP ALGORITHM - DEEP DIVE**
 
@@ -478,9 +731,9 @@ LPS[7] = 2  > "ABACABAD" > "AB"... wait, check pattern[3]='C' vs 'D'
 
 fallback to LPS[2]=1, check pattern[1]='B' vs 'D'
 fallback to LPS[0]=0, check pattern[0]='A' vs 'D'
-no match > LPS[7] = 0
+no match → LPS[7] = 0
 (Actually rechecking: "ABACABAD" proper prefixes
-that are also suffixes: none > 0. Let me fix.)
+that are also suffixes: none → 0. Let me fix.)
 
 Corrected:
 Pattern: "AABAAAB"
@@ -551,10 +804,10 @@ haystack = "ABABDABACDABABCABAB"
 needle   = "ABABCABAB"
 LPS      = [0,0,1,2,0,1,2,3,4]
 
-i=0,j=0: A=A Y > i=1,j=1
-i=1,j=1: B=B Y > i=2,j=2
-i=2,j=2: A=A Y > i=3,j=3
-i=3,j=3: B=B Y > i=4,j=4
+i=0,j=0: A=A ✓ > i=1,j=1
+i=1,j=1: B=B ✓ > i=2,j=2
+i=2,j=2: A=A ✓ > i=3,j=3
+i=3,j=3: B=B ✓ > i=4,j=4
 i=4,j=4: D!C X > j=LPS[3]=2  (skip! already matched "AB")
 i=4,j=2: D!A X > j=LPS[1]=0
 i=4,j=0: D!A X > i=5
@@ -756,10 +1009,10 @@ return result;
 WHY ++seen[sub] == 2:
 - First time seen: count becomes 1, not added
 - Second time seen: count becomes 2, added to result
-- Third+ time: count > 2, NOT added again (no duplicates)
+- Third+ time: count → 2, NOT added again (no duplicates)
 
 ROLLING HASH OPTIMIZATION (for very large strings):
-Encode A=0, C=1, G=2, T=3 > each 10-char window is a 20-bit number.
+Encode A=0, C=1, G=2, T=3 → each 10-char window is a 20-bit number.
 Shift hash left by 2 bits, add new char, mask to 20 bits.
 
 TIME: O(N)  |  SPACE: O(N)
@@ -808,7 +1061,7 @@ Step 5: Return result * sign
 ### **LC 13: Roman to Integer**
 
 PROBLEM: Convert Roman numeral string to integer.
-"MCMXCIV" > 1994
+"MCMXCIV" → 1994
 
 KEY INSIGHT: If a smaller value appears BEFORE a larger value, subtract it.
 Otherwise add it. Scan left to right, compare current with next.
@@ -840,7 +1093,7 @@ M(1000) < X? No > +1000  result=1900
 X(10) < C(100)? Yes > -10  result=1890
 C(100) < I? No > +100  result=1990
 I(1) < V(5)? Yes > -1  result=1989
-V(5) last > +5  result=1994 Y
+V(5) last > +5  result=1994 ✓
 ```
 
 TIME: O(N)  |  SPACE: O(1)
@@ -848,7 +1101,7 @@ TIME: O(N)  |  SPACE: O(1)
 ### **LC 12: Integer to Roman**
 
 PROBLEM: Convert integer to Roman numeral string.
-1994 > "MCMXCIV"
+1994 → "MCMXCIV"
 
 KEY INSIGHT: Greedy approach - always use the LARGEST possible Roman value.
 Pre-define all 13 values (including subtractives like 900, 400, etc.) in
@@ -888,7 +1141,7 @@ Rules: skip whitespace, optional sign, read digits, clamp to [INT_MIN, INT_MAX].
 Input:  "   -42abc"
 Output: -42
 
-KEY INSIGHT: Sequential state machine - whitespace > sign > digits > stop.
+KEY INSIGHT: Sequential state machine - whitespace > sign > digits → stop.
 Check overflow BEFORE each multiplication/addition to avoid UB.
 
 ```
@@ -913,19 +1166,19 @@ return result * sign;
 ```
 
 **EDGE CASES TO HANDLE:**
-- "   " > 0 (all spaces)
-- "+-12" > 0 (invalid sign)
-- "21474836460" > INT_MAX (overflow)
-- "words 123" > 0 (non-digit first)
-- "" > 0 (empty string)
+- "   " → 0 (all spaces)
+- "+-12" → 0 (invalid sign)
+- "21474836460" → INT_MAX (overflow)
+- "words 123" → 0 (non-digit first)
+- "" → 0 (empty string)
 
 TIME: O(N)  |  SPACE: O(1)
 
 ### **LC 165: Compare Version Numbers**
 
 PROBLEM: Compare two version strings. Return -1, 0, or 1.
-"1.01" vs "1.001" > 0 (equal: 1.1 vs 1.1)
-"1.0.1" vs "1" > 1 (1.0.1 > 1.0.0)
+"1.01" vs "1.001" → 0 (equal: 1.1 vs 1.1)
+"1.0.1" vs "1" → 1 (1.0.1 → 1.0.0)
 
 KEY INSIGHT: Parse one revision at a time from each string. Compare
 numerically (leading zeros don't matter). If one string is shorter,
@@ -1034,11 +1287,11 @@ string repeated(n, c);      // n copies of char c
 ### ** COMMON MISTAKES TO AVOID**
 
 MISTAKE 1: Off-by-one with substr
-X s.substr(i, j)   > NOT from i to j!
-Y s.substr(i, len) > from index i, length len
+X s.substr(i, j)   → NOT from i to j!
+Y s.substr(i, len) → from index i, length len
 
 MISTAKE 2: Forgetting string::npos check
-X if (s.find("abc"))  > 0 is a valid index, not false!
+X if (s.find("abc"))  → 0 is a valid index, not false!
 Y if (s.find("abc") != string::npos)
 
 MISTAKE 3: Modifying string while iterating by index
@@ -1046,8 +1299,8 @@ X Erasing characters shifts indices
 Y Use two-pointer compaction or build new string
 
 MISTAKE 4: Comparing s.size() with negative int
-X if (i < s.size() - 1)  > when s is empty, size()-1 wraps to huge number!
-Y if (i + 1 < s.size())  > OR cast: if (i < (int)s.size() - 1)
+X if (i < s.size() - 1)  → when s is empty, size()-1 wraps to huge number!
+Y if (i + 1 < s.size())  → OR cast: if (i < (int)s.size() - 1)
 
 MISTAKE 5: Integer overflow in atoi
 X result = result * 10 + digit  > overflow before you check!

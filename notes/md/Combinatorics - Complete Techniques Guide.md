@@ -151,7 +151,7 @@ Total arrangements: C(5+3-1, 3-1) = C(7, 2) = 21
 
 Applications:
 - Distribute items into groups
-- Count solutions to x₁+x₂+...+xₖ = n (xᵢ > 0)
+- Count solutions to x₁+x₂+...+xₖ = n (xᵢ → 0)
 - Partition problems
 
 Code:
@@ -206,13 +206,13 @@ Problems:
 
 ## 5. PIGEONHOLE PRINCIPLE
 
-Principle: If n items are placed into m containers and n > m,
+Principle: If n items are placed into m containers and n → m,
 then at least one container has more than one item.
 
 Extended: If n items in m containers, at least one has ⌈n/m⌉ items.
 
 Example: In any group of 13 people, at least 2 share birth month
-13 people > 12 months > pigeonhole!
+13 people > 12 months → pigeonhole!
 
 Applications:
 - Prove existence (not construct)
@@ -308,7 +308,7 @@ Problems:
 - LC 894: All Possible Full Binary Trees
 
 **Unique Binary Search Trees II (LC 95)** 
-SERIES: I (count trees) > II (generate all trees)
+SERIES: I (count trees) → II (generate all trees)
 
 **KEY INSIGHT:**
 - For each root value i, left subtrees use [1..i-1], right use [i+1..n]
@@ -391,7 +391,7 @@ Problems:
 **INTEGER PARTITION:**
 ------------------
 Ways to write n as sum of positive integers (order doesn't matter)
-Example: 4 = 4 = 3+1 = 2+2 = 2+1+1 = 1+1+1+1 > 5 partitions
+Example: 4 = 4 = 3+1 = 2+2 = 2+1+1 = 1+1+1+1 → 5 partitions
 
 Code (DP):
 ```cpp
@@ -414,7 +414,7 @@ SET PARTITION (Bell Numbers):
 B(n) = ways to partition set of n elements
 ```
 
-Example: {1,2,3} > {{1,2,3}}, {{1,2},{3}}, {{1,3},{2}}, {{2,3},{1}}, {{1},{2},{3}}
+Example: {1,2,3} → {{1,2,3}}, {{1,2},{3}}, {{1,3},{2}}, {{2,3},{1}}, {{1},{2},{3}}
 ```
 B(3) = 5
 ```
@@ -451,17 +451,17 @@ Problems:
 
 KEYWORD/PATTERN                 TECHNIQUE
 -------------------            --------------------------
-"arrange/order matters"     >  Permutations
-"choose/select"             >  Combinations
-"at least one"              >  Inclusion-Exclusion
-"distribute identical"      >  Stars and Bars
-"must exist"                >  Pigeonhole Principle
-"valid parentheses"         >  Catalan Numbers
-"no element in position"    >  Derangements
-"ways to partition"         >  Partition/Bell Numbers
-"sum of products of pairs"  >  Running Sum Pattern
-"count paths in grid"       >  Combinations/DP
-"subset sum"                >  DP/Generating Functions
+"arrange/order matters"     →  Permutations
+"choose/select"             →  Combinations
+"at least one"              →  Inclusion-Exclusion
+"distribute identical"      →  Stars and Bars
+"must exist"                →  Pigeonhole Principle
+"valid parentheses"         →  Catalan Numbers
+"no element in position"    →  Derangements
+"ways to partition"         →  Partition/Bell Numbers
+"sum of products of pairs"  →  Running Sum Pattern
+"count paths in grid"       →  Combinations/DP
+"subset sum"                →  DP/Generating Functions
 
 ## 12. COMMON PROBLEM TYPES
 

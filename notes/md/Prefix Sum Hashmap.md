@@ -55,7 +55,7 @@ Rearranged: psum[i] = psum[j] - K
 
 **LOOKUP STRATEGY:**
 At index j with psum[j], look for (psum[j] - K) in hashmap
-If found > valid subarray exists!
+If found → valid subarray exists!
 
 ### ❓ WHY NOT SLIDING WINDOW?
 
@@ -75,8 +75,8 @@ Example: [1, -1, 5, -2, 3], K = 3
 Sliding window can't handle this non-monotonic behavior!
 
 **GOLDEN RULE:**
-> Negative numbers in array > Use Prefix Sum + Hashmap
-> All positive numbers > Can use Sliding Window OR Prefix Sum + Hashmap
+- Negative numbers in array → Use Prefix Sum + Hashmap
+- All positive numbers → Can use Sliding Window OR Prefix Sum + Hashmap
 
 ###  UNIVERSAL TEMPLATE
 
@@ -190,8 +190,8 @@ arr = [1, 2, 3], K = 6
 
 At i=2: psum=6, look for psum-K=0
 
-Counting: mp[0]=1 > count += 1 Y
-Length: mp[0]=-1 > length = 2 - (-1) = 3 Y
+Counting: mp[0]=1 → count += 1 ✓
+Length: mp[0]=-1 → length = 2 - (-1) = 3 ✓
 
 ## **PART 2: CATEGORY 1 - COUNT SUBARRAYS**
 
@@ -266,7 +266,7 @@ Or:  sum = (sum % k + k) % k
 **WHY REMAINDERS WORK:**
 If two positions have same remainder, their difference is divisible by K
 Example: psum[i] % 5 = 2, psum[j] % 5 = 2
-> (psum[j] - psum[i]) % 5 = 0 Y
+- (psum[j] - psum[i]) % 5 = 0 ✓
 
 ```cpp
 int subarraysDivByK(vector<int>& nums, int k) {
@@ -334,14 +334,14 @@ return count;
   TRANSFORMATION: Convert to binary (odd=1, even=0)
 
 **KEY INSIGHT:**
-- Transform problem: odd > 1, even > 0
+- Transform problem: odd → 1, even > 0
 - Now it's "count subarrays with sum = K"
 - Use same template as LC 560!
 
 **TRANSFORMATION MAGIC:**
 [1,1,2,1,1], k=3 (count 3 odds)
-> [1,1,0,1,1] (mark odds as 1)
-> Count subarrays with sum = 3
+- [1,1,0,1,1] (mark odds as 1)
+- Count subarrays with sum = 3
 
 ```cpp
 int numberOfSubarrays(vector<int>& nums, int k) {
@@ -371,19 +371,19 @@ return count;
   TRANSFORMATION: Convert 0 to -1
 
 KEY INSIGHT (GENIUS TRANSFORMATION!):
-- Equal 0s and 1s > count(0) - count(1) = 0
-- Transform: 0 > -1, 1 > 1
+- Equal 0s and 1s → count(0) - count(1) = 0
+- Transform: 0 → -1, 1 > 1
 - Now: count(0) - count(1) = 0 becomes sum = 0!
 - Find longest subarray with sum = 0
 
 **WHY THIS WORKS:**
 [0,1,0] with 2 zeros and 1 one
-> [-1,1,-1]
-> sum = -1 (not equal)
+- [-1,1,-1]
+- sum = -1 (not equal)
 
 [0,1,0,1] with 2 zeros and 2 ones
-> [-1,1,-1,1]
-> sum = 0 (equal!) Y
+- [-1,1,-1,1]
+- sum = 0 (equal!) ✓
 
 ALTERNATIVE APPROACH (Same idea):
 - Track difference = count(0) - count(1)
@@ -481,8 +481,8 @@ nums = [1,1,4,2,3], x = 5, total = 11
 ```
 
 Find: max length subarray with sum = 11 - 5 = 6
-> [4,2] has sum 6, length 2
-> Minimum operations = 5 - 2 = 3
+- [4,2] has sum 6, length 2
+- Minimum operations = 5 - 2 = 3
 
 ```cpp
 int minOperations(vector<int>& nums, int x) {
@@ -524,7 +524,7 @@ return maxLen == 0 ? -1 : nums.size() - maxLen;
 WHY IT'S HARD:
 - Can't just check for (psum - K) in map
 - Need to check for ALL values in range [psum - K, psum - (-~)]
-- This requires sorted structure (TreeMap) > O(N log N)
+- This requires sorted structure (TreeMap) → O(N log N)
 
 **BETTER APPROACH:**
 - If all positive: Use Sliding Window O(N)
@@ -544,9 +544,9 @@ NOTE: This shows the limitation of basic Prefix Sum + Hashmap technique.
 **KEY INSIGHT:**
 - Similar to LC 974, but check existence + length constraint
 - Store remainders and indices
-- Check if i - mp[remainder] > 2
+- Check if i - mp[remainder] → 2
 
-WHY LENGTH > 2?
+WHY LENGTH → 2?
 - Single element doesn't count
 - Must check: current_index - stored_index > 2
 

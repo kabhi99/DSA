@@ -38,9 +38,9 @@
 
 ###  HASHMAP vs HASHSET
 
-USE HASHMAP (key > value):
+USE HASHMAP (key → value):
 - Need to store associated data (frequency, index, etc.)
-- Example: {num > frequency}, {word > anagram_key}
+- Example: {num → frequency}, {word → anagram_key}
 - C++: unordered_map<K, V>
 
 USE HASHSET (key only):
@@ -49,8 +49,8 @@ USE HASHSET (key only):
 - C++: unordered_set<T>
 
 **GOLDEN RULE:**
-> If you need "count" or "index", use map
-> If you only need "exists", use set
+- If you need "count" or "index", use map
+- If you only need "exists", use set
 
 ### ⚡ TIME & SPACE COMPLEXITY
 
@@ -287,7 +287,7 @@ seen[nums[i]] = i;
 ```
 
 **GOLDEN RULE:**
-> Check BEFORE inserting (to avoid using same element twice)
+- Check BEFORE inserting (to avoid using same element twice)
 
 ### 4. Two Sum (LC 1)  FUNDAMENTAL
 
@@ -330,14 +330,14 @@ return {};
 ```
 
 **VARIATIONS:**
-- Two Sum II (sorted array) > Use two pointers
-- Two Sum III (design data structure) > Store frequencies
-- Two Sum IV (BST) > Inorder + two pointers
+- Two Sum II (sorted array) → Use two pointers
+- Two Sum III (design data structure) → Store frequencies
+- Two Sum IV (BST) → Inorder + two pointers
 
 ### 4b. Two Sum III - Data Structure Design (LC 170)
 
  PATTERN: Hashmap + Design
- SERIES: I (single query) > II (sorted, two pointers) > III (streaming design)
+ SERIES: I (single query) → II (sorted, two pointers) → III (streaming design)
 
 **KEY INSIGHT:**
 - Store frequency of each number
@@ -373,7 +373,7 @@ bool find(int value) {
 // add: O(1), find: O(N), Space: O(N)
 ```
 
-### 5. 3Sum (LC 15) > See Two Pointers.txt
+### 5. 3Sum (LC 15) → See Two Pointers.txt
 
  PATTERN: Sort + Two pointers (primarily a TWO POINTERS problem)
  NOTE: Full solution in "Two Pointers.txt"
@@ -389,7 +389,7 @@ bool find(int value) {
 - O(1) space (excluding result)
 - More intuitive for multiple elements
 
-> See "Two Pointers.txt" for complete solution and detailed walkthrough
+- See "Two Pointers.txt" for complete solution and detailed walkthrough
 
 ### 6. 4Sum II (LC 454) 
 
@@ -444,7 +444,7 @@ return count;
 ### PATTERN OVERVIEW
 
 **CORE IDEA:**
-Anagrams have same character frequency > use sorted string or frequency as key
+Anagrams have same character frequency → use sorted string or frequency as key
 
 **TEMPLATE:**
 
@@ -552,7 +552,7 @@ return result;
 // Space: O(N * K)
 ```
 
-### 9. Find All Anagrams in a String (LC 438) > See Sliding Window.txt
+### 9. Find All Anagrams in a String (LC 438) → See Sliding Window.txt
 
  PATTERN: Sliding window + frequency comparison (primarily SLIDING WINDOW)
  NOTE: Full solution in "Sliding Window.txt" (Problem 10)
@@ -568,7 +568,7 @@ WHY SLIDING WINDOW?
 - Fixed-size window slides through string
 - Frequency comparison is the anagram check
 
-> See "Sliding Window.txt" for complete solution with frequency matching optimization
+- See "Sliding Window.txt" for complete solution with frequency matching optimization
 
 ## **PART 5: PATTERN 4 - SET OPERATIONS**
 
@@ -652,7 +652,7 @@ return false;
 ### 11b. Contains Duplicate III (LC 220)  HARD
 
  PATTERN: Bucket Sort / Sliding Window
- SERIES: I (any dup) > II (dup within k) > III (diff < t within k)
+ SERIES: I (any dup) → II (dup within k) → III (diff < t within k)
 
 **KEY INSIGHT:**
 - Bucket elements by value / (t+1) so nearby values share a bucket
@@ -749,7 +749,7 @@ set = {1, 2, 3, 4, 100, 200}
 num=100: 99 not in set > sequence start! Count: 100 (length 1)
 num=4: 3 in set > not sequence start, skip
 num=200: 199 not in set > sequence start! Count: 200 (length 1)
-num=1: 0 not in set > sequence start! Count: 1,2,3,4 (length 4) Y
+num=1: 0 not in set > sequence start! Count: 1,2,3,4 (length 4) ✓
 ```
 
 Result: 4
@@ -787,7 +787,7 @@ KEY INSIGHT (BRILLIANT ENCODING!):
 - Need to check 3 constraints: row, column, 3x3 box
 - Instead of 3 separate data structures, use ONE set
 - Encode state as string: "r<row><digit>", "c<col><digit>", "b<box><digit>"
-- If string already in set > invalid!
+- If string already in set → invalid!
 
 WHY STRING ENCODING?
 - Elegant: one set instead of multiple arrays
@@ -836,7 +836,7 @@ return true;
 board[0][0] = '5'
 ```
 
-> Encodes as:
+- Encodes as:
 "r05" (row 0, digit 5)
 "c05" (col 0, digit 5)
 "b005" (box (0,0), digit 5)
@@ -960,7 +960,7 @@ WHY DOUBLY LINKED LIST?
 - Both operations are O(1) with doubly linked list
 
 **DATA STRUCTURE:**
-- Map: {key > iterator/pointer to list node}
+- Map: {key → iterator/pointer to list node}
 - List: Stores {key, value} pairs in usage order
 - Front = most recently used
 - Back = least recently used

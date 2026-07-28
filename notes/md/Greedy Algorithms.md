@@ -27,7 +27,7 @@ the most obvious and immediate benefit.
 
 **TWO KEY PROPERTIES FOR GREEDY:**
 
-1. **Greedy Choice Property**: Locally optimal > Globally optimal
+1. **Greedy Choice Property**: Locally optimal → Globally optimal
 2. **Optimal Substructure**: Optimal solution contains optimal subproblems
 
 ### GREEDY vs DP:
@@ -35,7 +35,7 @@ the most obvious and immediate benefit.
 Greedy:  O(N) or O(N log N), make choice without looking back
 DP:      O(N2) or more, explore multiple possibilities
 
-> TRY GREEDY FIRST! If it doesn't work, fall back to DP
+- TRY GREEDY FIRST! If it doesn't work, fall back to DP
 
 ## **PART 2: THE 15 ESSENTIAL GREEDY PATTERNS**
 
@@ -679,7 +679,7 @@ PROBLEM: Delete min chars so all remaining chars have unique frequencies.
 
 **EXAMPLE:**
 Input: "aaabbbcc"
-Output: 2 (delete 2 b's > "aaabcc" with freq a=3, b=1, c=2)
+Output: 2 (delete 2 b's → "aaabcc" with freq a=3, b=1, c=2)
 
 **APPROACH:**
 Sort frequencies descending. Greedily reduce if duplicate exists.
@@ -884,7 +884,7 @@ Maximize final capital.
 
 **EXAMPLE:**
 Input: k = 2, w = 0, profits = [1,2,3], capital = [0,1,1]
-Output: 4 (project 0 > w=1, project 2 > w=4)
+Output: 4 (project 0 → w=1, project 2 → w=4)
 
 ```java
 class Solution {

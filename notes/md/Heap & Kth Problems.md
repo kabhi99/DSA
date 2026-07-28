@@ -57,17 +57,17 @@ TIME: O(log(range) x O(count))  |  SPACE: O(1)
 
 **GOLDEN RULE:**
 
-> If you need ALL K elements > Use HEAP
-> If you only need the Kth value > Try BINARY SEARCH first
-> If Binary Search gives TLE > Fall back to optimized approach
+- If you need ALL K elements → Use HEAP
+- If you only need the Kth value → Try BINARY SEARCH first
+- If Binary Search gives TLE → Fall back to optimized approach
 
 ## **PART 2: HEAP PATTERNS & TEMPLATES**
 
 ### **PATTERN 1: KTH SMALLEST/LARGEST ELEMENT**
 
 **CORE IDEA:**
-- For Kth SMALLEST > Use MAX HEAP of size K
-- For Kth LARGEST > Use MIN HEAP of size K
+- For Kth SMALLEST → Use MAX HEAP of size K
+- For Kth LARGEST → Use MIN HEAP of size K
 
 WHY MAX HEAP FOR KTH SMALLEST?
 Keep the K smallest elements in heap. The top (maximum) is the Kth smallest!
@@ -478,7 +478,7 @@ By always picking highest frequency, we minimize chance of getting stuck.
 
 WHY MAX HEAP?
 Need to quickly find most frequent remaining element.
-After using element, reduce count and put back if count > 0.
+After using element, reduce count and put back if count → 0.
 
 ### TEMPLATE - Reorganize String:
 
@@ -522,7 +522,7 @@ Like dealing cards from biggest pile first. If "AAA" and "BB",
 we alternate A-B-A-B-A. Can't start with all A's or we're stuck!
 
 **COMMON MISTAKE:**
- Using array/map without heap > O(26N) to find max each time
+ Using array/map without heap → O(26N) to find max each time
  Heap gives O(log 26) = O(1) per operation
 
 ### TEMPLATE - Task Scheduler with Cooldown:
@@ -1020,7 +1020,7 @@ Wrong way (merge largest first):
 (4+3)=7, then (7+2)=9, total = 7+9 = 16
 
 Right way (merge smallest first):
-(2+3)=5, then (5+4)=9, total = 5+9 = 14 Y
+(2+3)=5, then (5+4)=9, total = 5+9 = 14 ✓
 
 Why? Merged stick appears in ALL future merges. Keep merged values small!
 
@@ -1332,7 +1332,7 @@ TIME: O(N log(sum))  |  SPACE: O(1)
 IDEA: Binary search on running time. Can we run all N computers for T minutes?
 
 **KEY INSIGHT:**
-- If battery > T: Can only power ONE computer for T minutes (wasted capacity)
+- If battery → T: Can only power ONE computer for T minutes (wasted capacity)
 - If battery < T: Can be swapped between computers (fully utilized)
 
 FORMULA: sum(min(battery[i], T)) >= N x T
@@ -1535,7 +1535,7 @@ TRICKY: Arrays can have negative numbers!
 - Keep reversed copies for easier counting
 - Count differently based on guess sign
 
-If guess > 0:
+If guess → 0:
 ```
 count = pos1xpos2 + neg1_revxneg2_rev + neg1.size()xpos2.size() + pos1.size()xneg2.size()
 ```
@@ -1975,15 +1975,15 @@ return {count, numIdx, denIdx};
 TIME: O(N log(max/min))  |  SPACE: O(1)
 
 **KEY TRICK:**
-Compare fractions without division: a/b < c/d > axd < bxc
+Compare fractions without division: a/b < c/d → axd < bxc
 
 **INTUITION - BINARY SEARCH APPROACH:**
 Search space: [0.0, 1.0] (all possible fraction values)
 
 For each guess (mid = 0.5):
 - Count how many fractions < 0.5
-- If count > k, answer is < 0.5 (search left)
-- If count < k, answer is > 0.5 (search right)
+- If count → k, answer is < 0.5 (search left)
+- If count < k, answer is → 0.5 (search right)
 
 **WHY THIS IS BRILLIANT:**
 Instead of generating all N2 fractions, we:
@@ -2103,7 +2103,7 @@ START: Is this a Kth/K-type problem?
                                                  |
 +- YES > Do you need ALL K elements?              
 |                                                |
-|   +- YES > Use HEAP                             
+|   +- YES → Use HEAP                             
 |   |   +- Kth smallest? > Max Heap of size K     
 |   |   +- Kth largest? > Min Heap of size K      
 |                                                |
@@ -2112,11 +2112,11 @@ START: Is this a Kth/K-type problem?
 |                                                |
 |           +- YES > Can you write count function?
 |                                            |   |
-|           |   +- YES > Use BINARY SEARCH + COUNT
+|           |   +- YES → Use BINARY SEARCH + COUNT
 |                                            |   |
-|           |   +- NO > Try different approach    
+|           |   +- NO → Try different approach    
 |                                                |
-|           +- NO > Use HEAP or other approach    
+|           +- NO → Use HEAP or other approach    
                                                  |
 +- NO > Not a Kth problem, use other techniques   
 ```
@@ -2267,18 +2267,18 @@ Key: Compare fractions without division (cross multiply)
 
 ### ** PATTERN SELECTION CHEAT SHEET**
 
-### Problem Keyword                   >  Pattern to Use
+### Problem Keyword                   →  Pattern to Use
 
-"Median" / "Middle element"       >  Two Heaps
-"Meeting rooms" / "Intervals"     >  Sweep Line + Min Heap
-"Reorganize" / "No adjacent same" >  Greedy + Max Heap (frequency)
-"K lists" / "Multiple sources"    >  Min Heap (merge/range)
-"2D water" / "Elevation"          >  Boundary Min Heap
-"Servers" / "Resource over time"  >  Multiple Heaps (available/busy)
-"Kth smallest pair/product"       >  Binary Search + Count
-"Split into K parts"              >  Binary Search (min/max optimization)
-"Ugly/Prime/Magical numbers"      >  Heap or Multi-pointer DP
-"Connect ropes/sticks"            >  Min Heap (greedy merge)
+"Median" / "Middle element"       →  Two Heaps
+"Meeting rooms" / "Intervals"     →  Sweep Line + Min Heap
+"Reorganize" / "No adjacent same" →  Greedy + Max Heap (frequency)
+"K lists" / "Multiple sources"    →  Min Heap (merge/range)
+"2D water" / "Elevation"          →  Boundary Min Heap
+"Servers" / "Resource over time"  →  Multiple Heaps (available/busy)
+"Kth smallest pair/product"       →  Binary Search + Count
+"Split into K parts"              →  Binary Search (min/max optimization)
+"Ugly/Prime/Magical numbers"      →  Heap or Multi-pointer DP
+"Connect ropes/sticks"            →  Min Heap (greedy merge)
 
 ### **⚡ INTERVIEW TIPS**
 

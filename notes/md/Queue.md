@@ -412,7 +412,7 @@ PROBLEM: Implement FIFO queue using only LIFO stacks.
 
  **WHY IT WORKS**:
 Reversing twice = original order!
-Stack1 (LIFO) > Stack2 (reverses) > FIFO
+Stack1 (LIFO) → Stack2 (reverses) → FIFO
 
 ```java
 class MyQueue {
@@ -711,11 +711,11 @@ SPACE: O(N)
 Need shortest path in UNWEIGHTED graph?
 ```
                                          |
-+- YES > BFS with queue Y                 
++- YES > BFS with queue ✓
                                          |
 +- NO > Need to process level by level?   
                                          |
-    +- YES > BFS with level tracking Y    
+    +- YES > BFS with level tracking ✓
                                          |
     +- NO > Need to explore all paths?    
                                          |
@@ -723,7 +723,7 @@ Need shortest path in UNWEIGHTED graph?
                                          |
         +- NO > Process in arrival order? 
                                          |
-            +- YES > Simple queue Y       
+            +- YES > Simple queue ✓
 ```
 
 ### **QUEUE vs STACK**
@@ -734,19 +734,19 @@ Need shortest path in UNWEIGHTED graph?
 +----------------------+-----------------+-------------------------+
 | Tree Traversal       | Level-order     | Pre/In/Post-order       |
 | Graph Traversal      | BFS             | DFS                     |
-| Shortest Path        | BFS Y           | Not suitable            |
-| All Paths            | Not ideal       | DFS Y                   |
-| Explore Nearest      | BFS Y           | DFS goes deep first     |
-| Backtracking         | Not suitable    | DFS Y                   |
+| Shortest Path        | BFS ✓           | Not suitable            |
+| All Paths            | Not ideal       | DFS ✓                   |
+| Explore Nearest      | BFS ✓           | DFS goes deep first     |
+| Backtracking         | Not suitable    | DFS ✓                   |
 | Memory Usage         | Can be large    | Generally smaller       |
 +----------------------+-----------------+-------------------------+
 ```
 
  **MEMORY AID**:
-**B**FS = **B**readth (wide, level by level) > Queue
-**D**FS = **D**epth (deep, backtrack) > Stack
+**B**FS = **B**readth (wide, level by level) → Queue
+**D**FS = **D**epth (deep, backtrack) → Stack
 
-### **PROBLEM TYPE > QUEUE TYPE**
+### **PROBLEM TYPE → QUEUE TYPE**
 
 ```
 +--------------------------------+----------------------------------+
@@ -801,7 +801,7 @@ for (int i = 0; i < size; i++)
 
 ### MISTAKE 3: Using queue for DFS-type problems
 
-Finding ALL paths > Use DFS (stack/recursion), not BFS!
+Finding ALL paths → Use DFS (stack/recursion), not BFS!
 
 ### MISTAKE 4: Forgetting to check empty queue
 

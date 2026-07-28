@@ -43,19 +43,19 @@ D7. Pattern Recognition Guide
 **PROBLEMS:**
 
 - 1598. Crawler Log Folder 
-> Track folder depth, "../" pops, "./" stays, else push
+- Track folder depth, "../" pops, "./" stays, else push
 
 - 682. Baseball Game 
-> Simulate score with undo (+, D, C operations)
+- Simulate score with undo (+, D, C operations)
 
 - 946. Validate Stack Sequences 
-> Simulate push/pop and verify if sequence is valid
+- Simulate push/pop and verify if sequence is valid
 
 - 71. Simplify Path 
-> Stack for directory traversal, ".." pops, skip "."
+- Stack for directory traversal, ".." pops, skip "."
 
 - 1209. Find Permutation 
-> Use stack to build lexicographically smallest permutation
+- Use stack to build lexicographically smallest permutation
 
 ### TEMPLATE - Path Processing:
 
@@ -123,13 +123,13 @@ return sum;
 **PROBLEMS:**
 
 - 20. Valid Parentheses 
-> Push open brackets, pop and match for close brackets
+- Push open brackets, pop and match for close brackets
 
 - 921. Minimum Add to Make Parentheses Valid 
-> Count unmatched open/close parentheses
+- Count unmatched open/close parentheses
 
 - 1190. Reverse Substrings Between Each Pair of Parentheses 
-> Stack of strings, reverse on closing paren
+- Stack of strings, reverse on closing paren
 
 ### TEMPLATE - Valid Parentheses:
 
@@ -180,22 +180,22 @@ return open + close;  // Total unmatched
 **PROBLEMS:**
 
 - 1544. Make The String Great 
-> Remove adjacent chars that differ only in case (aA, Aa)
+- Remove adjacent chars that differ only in case (aA, Aa)
 
 - 2390. Removing Stars From a String 
-> Star removes previous character
+- Star removes previous character
 
 - 1047. Remove All Adjacent Duplicates In String 
-> Remove pairs of adjacent duplicates
+- Remove pairs of adjacent duplicates
 
 - 1209. Remove All Adjacent Duplicates In String II 
-> Remove k consecutive duplicates (need count tracking)
+- Remove k consecutive duplicates (need count tracking)
 
 - 2696. Minimum String Length After Removing Substrings 
-> Remove "AB" or "CD" substrings
+- Remove "AB" or "CD" substrings
 
 - 3174. Clear Digits 
-> Digit removes closest non-digit to its left
+- Digit removes closest non-digit to its left
 
 ### TEMPLATE - Remove Adjacent (Make String Great):
 
@@ -250,13 +250,13 @@ return result;
 **PROBLEMS:**
 
 - 735. Asteroid Collision 
-> Positive = right, Negative = left; larger wins collision
+- Positive = right, Negative = left; larger wins collision
 
 - 2751. Robot Collisions 
-> Similar to asteroids but with health tracking
+- Similar to asteroids but with health tracking
 
 - 853. Car Fleet 
-> Cars merge into fleet when faster catches slower
+- Cars merge into fleet when faster catches slower
 
  **KEY INSIGHT**:
 Stack represents "active/surviving" elements from one direction.
@@ -378,7 +378,7 @@ Process operators based on precedence
 ### **SOLVED: Basic Calculator I (LC 224)** 
 
  PATTERN: Stack for parentheses + running sum
- SERIES: Calculator I (+ - parens) > II (+ - * /) > III (all + parens)
+ SERIES: Calculator I (+ - parens) → II (+ - * /) → III (all + parens)
 
 **KEY INSIGHT:**
 - Process digits to form numbers
@@ -505,7 +505,7 @@ return result;
 
 **PROBLEMS:**
 
-- 394. Decode String  (e.g., "3[a2[c]]" > "accaccacc")
+- 394. Decode String  (e.g., "3[a2[c]]" → "accaccacc")
 - 1106. Parsing A Boolean Expression 
 - 726. Number of Atoms 
 - 341. Flatten Nested List Iterator 
@@ -674,10 +674,10 @@ bool empty() { return in.empty() && out.empty(); }
 **PROBLEMS:**
 
 - 895. Maximum Frequency Stack 
-> Pop element with highest frequency (most recent if tie)
+- Pop element with highest frequency (most recent if tie)
 
 - 341. Flatten Nested List Iterator 
-> Use stack to flatten nested structure lazily
+- Use stack to flatten nested structure lazily
 
 ### TEMPLATE - Maximum Frequency Stack:
 
@@ -718,8 +718,8 @@ int pop() {
 A stack that maintains elements in sorted order (increasing or decreasing).
 
 WHY USE IT?
- Find next greater/smaller element > O(N) instead of O(N2)
- Find previous greater/smaller element > O(N)
+ Find next greater/smaller element → O(N) instead of O(N2)
+ Find previous greater/smaller element → O(N)
  Solve rectangle/histogram problems efficiently
 
 ### **WHEN TO USE?** 
@@ -735,8 +735,8 @@ KEYWORDS in problem:
 
 **PATTERN:**
 For each element, need to find:
-> First larger/smaller element to the right
-> First larger/smaller element to the left
+- First larger/smaller element to the right
+- First larger/smaller element to the left
 
 ### **D2. 4 TYPES OF MONOTONIC STACKS**
 
@@ -796,7 +796,7 @@ return result;
 
 **KEY POINTS:**
 
- Store INDICES in stack (not values) > easier to calculate distances
+ Store INDICES in stack (not values) → easier to calculate distances
  NEXT problems > process inside while loop
  PREVIOUS problems > process outside while loop (after while)
  Change OPERATOR to change behavior
@@ -914,8 +914,8 @@ PROCESS: Outside while loop
 TIME: O(N)  |  SPACE: O(N)
 
  **MEMORY AID**:
-NEXT > Answer found INSIDE while (when popping)
-PREVIOUS > Answer found OUTSIDE while (what remains)
+NEXT → Answer found INSIDE while (when popping)
+PREVIOUS → Answer found OUTSIDE while (what remains)
 
 ### **3. NEXT SMALLER ELEMENT**
 
@@ -999,11 +999,11 @@ PROCESS: Outside while loop
 ```
 
 **MEMORY AID:**
-NEXT > Process INSIDE while loop (when popping)
-PREVIOUS > Process OUTSIDE while loop (after popping)
+NEXT → Process INSIDE while loop (when popping)
+PREVIOUS → Process OUTSIDE while loop (after popping)
 
-GREATER > Use Decreasing stack (pop smaller elements)
-SMALLER > Use Increasing stack (pop greater elements)
+GREATER → Use Decreasing stack (pop smaller elements)
+SMALLER → Use Increasing stack (pop greater elements)
 
 ### **D6. CLASSIC MONOTONIC STACK PROBLEMS**
 
@@ -1045,7 +1045,7 @@ return result;
 ### **SOLVED: Next Greater Element III (LC 556)** 
 
  PATTERN: Next Permutation on digits of a number
- SERIES: NGE I (two arrays) > II (circular) > III (digit rearrangement)
+ SERIES: NGE I (two arrays) → II (circular) → III (digit rearrangement)
 
 **KEY INSIGHT:**
 - Convert number to string of digits
@@ -1084,7 +1084,7 @@ PROBLEM: How many days until warmer temperature?
 Instead of returning the VALUE, return the DISTANCE (i - idx).
 
  **PATTERN RECOGNITION**:
-"How many days/steps until..." > Next Greater/Smaller + Distance
+"How many days/steps until..." → Next Greater/Smaller + Distance
 Always think: Can I use monotonic stack here?
 
 ```cpp
@@ -1110,9 +1110,9 @@ return result;
 TIME: O(N)  |  SPACE: O(N)
 
 **VARIATIONS OF THIS PATTERN:**
-- Stock Span Problem > Previous Greater + Count
-- Online Stock Span > Same with streaming data
-- Sum of Subarray Minimums > Next/Prev Smaller
+- Stock Span Problem → Previous Greater + Count
+- Online Stock Span → Same with streaming data
+- Sum of Subarray Minimums → Next/Prev Smaller
 
 ### **PROBLEM: Buildings With Ocean View (LC 1762)**
 
@@ -1121,8 +1121,8 @@ PROBLEM: Which buildings have no taller building to the right?
  **KEY INSIGHT**: Elements that remain in stack = NO next greater exists!
 
  **WHY IT WORKS**:
-If a building gets popped > it has a taller building to the right
-If it stays in stack > no taller building exists
+If a building gets popped → it has a taller building to the right
+If it stays in stack → no taller building exists
 Stack at end = all buildings with ocean view!
 
 **CLEVER TRICK:**
@@ -1167,7 +1167,7 @@ Each pop calculates water for one "horizontal slice"
 [0,1,0,2,1,0,1,3,2,1,2,1]
 v       <water>
 
-When at 2: Pop 0, left=1, right=2 > water fills here!
+When at 2: Pop 0, left=1, right=2 → water fills here!
 
 **ALTERNATIVE APPROACH:**
 Two pointers (easier to understand): Track max_left, max_right
@@ -1293,7 +1293,7 @@ minLeft[j] tells us the smallest element before index j.
 ```
 
 **TRANSFORMATION:**
-"132 pattern" > Previous Greater + Min Tracking
+"132 pattern" → Previous Greater + Min Tracking
 This shows monotonic stack's versatility!
 
 ```cpp
@@ -1383,13 +1383,13 @@ CONFUSION: "Nested loops = O(N2), right?"
 **AMORTIZED ANALYSIS:**
 
 For each element:
-1. Pushed onto stack once > O(1)
-2. Popped from stack once > O(1)
-3. Compared when pushing > O(1)
-4. Compared when popping > O(1)
+1. Pushed onto stack once → O(1)
+2. Popped from stack once → O(1)
+3. Compared when pushing → O(1)
+4. Compared when popping → O(1)
 
 Total operations per element = 4 (constant!)
-Total for N elements = 4N = O(N) Y
+Total for N elements = 4N = O(N) ✓
 
 **THE TRICK:**
 While loop runs variable times, BUT total pops across ALL iterations = N
@@ -1420,12 +1420,12 @@ Problem mentions "next/first to the right"?
 ```
 
 Looking for GREATER or LARGER?
-> Use DECREASING stack
-> Pop SMALLER elements
+- Use DECREASING stack
+- Pop SMALLER elements
 
 Looking for SMALLER?
-> Use INCREASING stack
-> Pop GREATER elements
+- Use INCREASING stack
+- Pop GREATER elements
 
 ### **PROBLEM TO PATTERN MAPPING**
 
@@ -1447,21 +1447,21 @@ Looking for SMALLER?
 ### **COMMON VARIATIONS**
 
 **Circular Array:**
-> Run loop twice (2 x n iterations)
-> LC 503: Next Greater Element II
+- Run loop twice (2 x n iterations)
+- LC 503: Next Greater Element II
 
 **Distance/Count Instead of Value:**
-> Return `i - idx` instead of `arr[i]`
-> LC 739: Daily Temperatures
+- Return `i - idx` instead of `arr[i]`
+- LC 739: Daily Temperatures
 
 **Elements Remaining in Stack:**
-> Those with no next greater/smaller
-> LC 1762: Buildings with Ocean View
+- Those with no next greater/smaller
+- LC 1762: Buildings with Ocean View
 
 **Both Next AND Previous:**
-> Combine both patterns in one loop
-> LC 84: Largest Rectangle
-> LC 42: Trapping Rain Water
+- Combine both patterns in one loop
+- LC 84: Largest Rectangle
+- LC 42: Trapping Rain Water
 
 ### **COMMON PITFALLS & HOW TO AVOID** 
 
@@ -1481,8 +1481,8 @@ For next greater or equal: Use <= (keep when equal)
 
 ### MISTAKE 3: Processing in wrong place
 
-NEXT > Process INSIDE while (when popping)
-PREVIOUS > Process OUTSIDE while (after popping)
+NEXT → Process INSIDE while (when popping)
+PREVIOUS → Process OUTSIDE while (after popping)
 
 ### MISTAKE 4: Forgetting to push current element
 
@@ -1490,10 +1490,10 @@ Always push current index at the end of each iteration!
 
 ### MISTAKE 5: Wrong stack type
 
-GREATER > Use DECREASING stack
-SMALLER > Use INCREASING stack
+GREATER → Use DECREASING stack
+SMALLER → Use INCREASING stack
 
-Think: "I want greater, so I pop smaller" > decreasing stack
+Think: "I want greater, so I pop smaller" → decreasing stack
 
 ## **QUICK REFERENCE CHEAT SHEET** 
 
