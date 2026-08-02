@@ -1584,6 +1584,15 @@ current sum would exceed maxSum.
 
 If we can split into <= k subarrays with max sum = mid, then mid is valid.
 
+> **"At most k" and "exactly k" are the same question.**
+> The greedy `canSplit` returns whether the *minimum* number of subarrays
+> needed (with cap `mid`) is `≤ k`. If it is, we can always spend the extra
+> splits by cutting any existing subarray in two — both pieces still fit
+> under `mid`, so the max-sum constraint is preserved.
+> So `min_needed ≤ k`  ⇔  `can achieve exactly k subarrays with max sum ≤ mid`.
+> This equivalence is what makes the binary-search-on-answer work for
+> the entire "split into k pieces / ship in k days / place k items" family.
+
 **EXAMPLE:**
 [7,2,5,10,8], k=2
 
