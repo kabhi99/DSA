@@ -1027,6 +1027,45 @@ The mirror image holds for Smaller with `>` vs `>=`.
 | Next Smaller or Equal      | `>=`     |
 | Previous Smaller or Equal  | `>`      |
 
+#### 🧠 **Simple Mind Map — Pick the right template in 3 steps**
+
+```
+                        ┌─────────────────────┐
+                        │  MONOTONIC  STACK   │
+                        └──────────┬──────────┘
+                                   │
+                Q1: Direction?  NEXT or PREVIOUS
+                                   │
+                    ┌──────────────┴──────────────┐
+                    │                             │
+                ┌───▼────┐                    ┌───▼────┐
+                │  NEXT  │                    │  PREV  │
+                │ (right)│                    │ (left) │
+                └───┬────┘                    └───┬────┘
+        process INSIDE while           process OUTSIDE while
+        result[popped]  = i / arr[i]   result[i] = st.top() / arr[st.top()]
+                    │                             │
+                Q2: Target?  GREATER or SMALLER
+                    │                             │
+          ┌─────────┴─────────┐         ┌─────────┴─────────┐
+          │                   │         │                   │
+      ┌───▼───┐           ┌───▼───┐  ┌──▼────┐          ┌───▼───┐
+      │GREATER│           │SMALLER│  │GREATER│          │SMALLER│
+      └───┬───┘           └───┬───┘  └───┬───┘          └───┬───┘
+       pop when             pop when    pop when          pop when
+      arr[top] <           arr[top] >  arr[top] <=       arr[top] >=
+      Non-Increasing       Non-Decreasing  Strict Dec.   Strict Inc.
+         stack                stack         stack          stack
+```
+
+**3-question checklist to pick your template:**
+
+1. **Direction?** NEXT → process inside `while`. PREV → process outside `while`.
+2. **Target?** GREATER → decreasing stack (pop smaller). SMALLER → increasing stack (pop greater).
+3. **Equal elements?** NEXT uses strict `< / >` (keeps equals). PREV uses loose `<= / >=` (pops equals).
+
+**Memory anchor:** *NEXT keeps equals, PREV kicks equals.*
+
 ### **D6. CLASSIC MONOTONIC STACK PROBLEMS**
 
 ### **PROBLEM: Next Greater Element II (LC 503)** - Circular Array
