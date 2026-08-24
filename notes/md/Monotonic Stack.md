@@ -1005,6 +1005,28 @@ PREVIOUS → Process OUTSIDE while loop (after popping)
 GREATER → Use Decreasing stack (pop smaller elements)
 SMALLER → Use Increasing stack (pop greater elements)
 
+#### ⚠️ **What does "strict" mean in this table?**
+
+All 4 rows solve the **STRICT** version of the problem — find the first element that is **strictly** greater / **strictly** smaller.
+
+The `<` vs `<=` (or `>` vs `>=`) in the **Operator** column is NOT changing what we're searching for — it's how the stack handles **equal** elements so the answer stays strict.
+
+**Why NEXT vs PREVIOUS use different operators (both are still "strict"):**
+
+- **Next Greater** (pop when `arr[top] < arr[i]`): Pop only when incoming is *strictly* greater → popped element's answer is strictly greater. Equal elements can sit together on the stack.
+- **Previous Greater** (pop when `arr[top] <= arr[i]`): After the while, stack top must be *strictly* greater than `arr[i]`. So we must also pop equals → strictly decreasing stack.
+
+The mirror image holds for Smaller with `>` vs `>=`.
+
+**If you want the NON-STRICT (≥ / ≤) variants → flip each operator:**
+
+| Problem (non-strict)       | Operator |
+|----------------------------|----------|
+| Next Greater or Equal      | `<=`     |
+| Previous Greater or Equal  | `<`      |
+| Next Smaller or Equal      | `>=`     |
+| Previous Smaller or Equal  | `>`      |
+
 ### **D6. CLASSIC MONOTONIC STACK PROBLEMS**
 
 ### **PROBLEM: Next Greater Element II (LC 503)** - Circular Array
@@ -1268,6 +1290,19 @@ return maxArea;
 ```
 
 TIME: O(N)  |  SPACE: O(N)
+
+#### ⚠️ **Why does this use `>` for prev smaller (not `>=` like the D5 table)?**
+
+This template **fuses two passes into one loop** and shares ONE `while` condition for BOTH `nextSmaller` and `prevSmaller`. That single condition (`>`) is chosen to make `nextSmaller` strictly correct. As a side effect, `prevSmaller` here finds "previous smaller-**OR-EQUAL**", not the pure strict previous smaller.
+
+**Why it's still correct for Largest Rectangle:**
+For a run of equal heights, at least ONE of them (the leftmost in this version) will get `nextSmaller`/`prevSmaller` such that its width spans the entire equal-height block → captures the true max area. The other duplicates undercount, but `max()` filters them out.
+
+**Example:** `heights = [2,2,2]`
+- `nextSmaller = [3,3,3]`, `prevSmaller = [-1,0,1]`
+- Areas: `2*3=6`, `2*2=4`, `2*1=2` → max = **6** ✓
+
+⚠️ **Do NOT reuse this fused pattern** for problems where EVERY index's answer matters (e.g. "Sum of Subarray Minimums") — you'll double-count equal elements. In those cases, run **two separate passes** and use `>=` on one side as the D5 table prescribes.
 
 **RELATED PROBLEMS:**
 - Maximal Rectangle (2D version using this as subroutine!)
